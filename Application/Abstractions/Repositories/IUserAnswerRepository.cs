@@ -4,10 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Application.interfaces
+namespace Application.Abstractions.Repositories
 {
-    public interface IDateTimeService
+    public interface IUserAnswerRepository
     {
-        DateTime NowUtc { get; }
+
     }
 }

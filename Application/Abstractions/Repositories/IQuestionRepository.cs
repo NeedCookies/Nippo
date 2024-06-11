@@ -1,6 +1,6 @@
 ﻿using Domain.Entities;
 
-namespace Application.interfaces.Repositories
+namespace Application.Abstractions.Repositories
 {
     public interface IQuestionRepository
     {

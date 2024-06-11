@@ -1,15 +1,14 @@
 ﻿using Microsoft.AspNet.Identity.EntityFramework;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Domain.Entities
 {
-    internal class UserAnswer : Answer
+    public class UserAnswer
     {
-        public string StringUserId { get; set; }
+        public int Id { get; set; }
+        public int QuestionId { get; set; }
+        public Question Question { get; set; }
+        public string Text { get; set; }
+        public string UserId { get; set; }
         public IdentityUser User { get; set; }
         public int Attempt { get; set; }
     }
