@@ -10,7 +10,8 @@ namespace DataAccess.Configurations
         {
             builder.HasKey(a => a.Id);
 
-            builder.
+            builder.Property(a => a.Text).IsRequired();
+            builder.HasOne(a => a.Question).WithMany(q => q.Answers);
         }
     }
 }
