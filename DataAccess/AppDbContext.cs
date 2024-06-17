@@ -1,4 +1,6 @@
-﻿using Domain.Entities;
+﻿using DataAccess.Configurations;
+using Domain.Entities;
+using Microsoft.AspNet.Identity.EntityFramework;
 using Microsoft.EntityFrameworkCore;
 
 namespace DataAccess
@@ -13,5 +15,14 @@ namespace DataAccess
         public DbSet<Quiz> Quizzes => Set<Quiz>();
         public DbSet<QuizResult> QuizResult => Set<QuizResult>();
         public DbSet<UserAnswer> UserAnswers => Set<UserAnswer>();
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.ApplyConfiguration(new CourseEntityConfiguration());
+            modelBuilder.Entity<IdentityUserLogin<string>>().HasNoKey();
+            modelBuilder.Entity<IdentityUserRole<string>>().HasNoKey();
+            modelBuilder.Ignore<QuizResult>().Ignore<UserAnswer>();
+            base.OnModelCreating(modelBuilder);
+        }
     }
 }

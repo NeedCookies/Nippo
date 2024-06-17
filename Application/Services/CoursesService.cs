@@ -1,21 +1,62 @@
 ﻿using Application.Abstractions.Repositories;
 using Application.Abstractions.Services;
+using Application.Contracts;
 using Domain.Entities;
+using System.Text;
 
 namespace Application.Services
 {
     public class CoursesService(ICourseRepository courseRepository) : ICoursesService
     {
-        public Task<List<Course>> GetAllCourses()
+        public async Task<Course> Create(CreateCourseRequest request)
+        {
+            string title = request.Title;
+            string descript = request.Description;
+            decimal price = request.Price;
+            string imgPath = request.ImgPath;
+
+            StringBuilder error = new StringBuilder("");
+            if (title.Length == 0)
+            {
+                error.Append("Title shouldn't be null");
+            }
+            if (descript.Length == 0)
+            {
+                error.Append("Description shouldn't be null");
+            }
+            if (price < 0)
+            {
+                error.Append("Prize should be equal 0 or more");
+            }
+
+            if (error.Length > 0)
+            {
+                throw new ArgumentException(error.ToString());
+            }
+
+            return await courseRepository.Create(title, descript, price, imgPath);
+        }
+
+        public async Task<List<Course>> GetAllCourses()
         {
             var allCourses = courseRepository.GetAllCourses();
 
-            if (allCourses == null)
+            /*if (allCourses == null)
             {
                 throw new Exception();
+            }*/
+
+            return await allCourses;
+        }
+
+        public async Task<Course> GetById(int id)
+        {
+            if (id < 0)
+            {
+                throw new ArgumentOutOfRangeException("id should be more than 0");
             }
 
-            return allCourses;
+            return await courseRepository.GetById(id);
         }
     }
 }
