@@ -1,0 +1,13 @@
+version: '3.4'
+
+services:
+  postgres:
+    container_name: postgres
+    image: postgres
+    restart: always
+    environment:
+      POSTGRES_DB: Nippo
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 231
+    ports:
+      - 5433:5432
