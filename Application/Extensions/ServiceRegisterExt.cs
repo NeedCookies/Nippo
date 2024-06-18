@@ -11,6 +11,7 @@ namespace Application.Extensions
         {
             services.AddScoped<ICoursesService, CoursesService>();
             services.AddScoped<ILessonsService, LessonsService>();
+            services.AddScoped<IBlockService, BlockService>(); 
             return services;
         }
     }
