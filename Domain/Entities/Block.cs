@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Domain.Entities
+﻿namespace Domain.Entities
 {
     public class Block
     {
@@ -12,6 +6,10 @@ namespace Domain.Entities
         public int LessonId { get; set; }
         public Lesson Lesson { get; set; }
         public BlockType Type { get; set; }
+        /// <summary>
+        /// depend on typr content property will
+        /// contain text, or url on image or video
+        /// </summary>
         public string Content { get; set; }
         public int Order { get; set; }
     }
