@@ -9,7 +9,8 @@ namespace Application.Extensions
     {
         public static IServiceCollection AddAppServices(this IServiceCollection services)
         {
-            services.AddTransient<ICoursesService, CoursesService>();
+            services.AddScoped<ICoursesService, CoursesService>();
+            services.AddScoped<ILessonsService, LessonsService>();
             return services;
         }
     }

@@ -11,7 +11,7 @@ namespace DataAccess.Configurations
             builder.HasKey(l => l.Id);
 
             builder.Property(l => l.Title).HasMaxLength(255).IsRequired();
-            builder.Property(l => l.CreatedDate).HasColumnType("date");
+            builder.Property(l => l.CreateDate).HasColumnType("date");
 
             builder.HasOne(l => l.Course).WithMany(c => c.Lessons);
             builder.HasMany(l => l.Blocks).WithOne(b => b.Lesson);
