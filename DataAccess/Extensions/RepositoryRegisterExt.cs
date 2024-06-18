@@ -13,7 +13,8 @@ namespace DataAccess.Extensions
     {
         public static IServiceCollection AddAppRepositories(this IServiceCollection services)
         {
-            services.AddTransient<ICourseRepository, CourseRepository>();
+            services.AddScoped<ICourseRepository, CourseRepository>();
+            services.AddScoped<ILessonRepository, LessonRepository>();
             return services;
         }
     }
