@@ -12,7 +12,6 @@ namespace DataAccess.Repositories
             {
                 Title = title,
                 CourseId = courseId,
-                AuthorId = authorId,
                 CreateDate = date
             };
 

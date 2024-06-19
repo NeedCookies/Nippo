@@ -1,10 +1,6 @@
 ﻿using Application.Abstractions.Repositories;
 using Domain.Entities;
-<<<<<<< Updated upstream
-using System.Data.Entity;
-=======
 using Microsoft.EntityFrameworkCore;
->>>>>>> Stashed changes
 
 namespace DataAccess.Repositories
 {
@@ -37,7 +33,7 @@ namespace DataAccess.Repositories
 
         public async Task<Course?> GetById(int id)
         {
-            return await dbContext.Courses.Where(c => c.Id == id).FirstOrDefaultAsync();
+            return await dbContext.Courses.FindAsync(id);
         }
     }
 }
