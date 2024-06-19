@@ -1,6 +1,7 @@
 using DataAccess.Extensions;
 using Application.Extensions;
 using DataAccess;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -13,9 +14,18 @@ builder.Services.AddAppRepositories();
 builder.Services.AddAppServices();
 
 var app = builder.Build();
-using var scope = app.Services.CreateScope();
-await using var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-await dbContext.Database.EnsureCreatedAsync();
+
+//В случае если приложение запускается в первый раз, и база данных не создана - будут выполнены миграции
+await using (var scope = app.Services.CreateAsyncScope())
+{
+    await Task.Delay(1000);
+
+    var dbContext = scope.ServiceProvider.GetService<AppDbContext>();
+    if (dbContext!.Database.IsRelational())
+    {
+        await dbContext.Database.MigrateAsync();
+    }
+}
 
 if (app.Environment.IsDevelopment())
 {

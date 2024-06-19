@@ -1,13 +1,23 @@
-version: '3.4'
+services:  
+  backend:
+    build:
+      context: "."
+      dockerfile: "./WebAPI/Dockerfile"
+    ports:
+      - "8080:8080"
+      - "8081:8081"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+    depends_on:
+      - database
 
-services:
-  postgres:
+  database:
     container_name: postgres
     image: postgres
     restart: always
     environment:
       POSTGRES_DB: nippo
       POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: 231
+      POSTGRES_PASSWORD: admin
     ports:
       - 5435:5432
