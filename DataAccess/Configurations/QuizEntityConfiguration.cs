@@ -11,8 +11,10 @@ namespace DataAccess.Configurations
             builder.HasKey(q => q.Id);
 
             builder.Property(q => q.Title).HasMaxLength(255).IsRequired();
-            builder.HasOne(q => q.Course).WithMany(c => c.Quizes);
-            builder.HasMany(q => q.Questions).WithOne(q => q.Quiz);
+
+            builder.HasOne(q => q.Course)
+                .WithMany(c => c.Quizes)
+                .HasForeignKey(q => q.CourseId);
         }
     }
 }

@@ -13,6 +13,9 @@ namespace DataAccess.Configurations
             builder.Property(c => c.Title).HasMaxLength(255).IsRequired();
             builder.Property(c => c.Description).IsRequired();
 
+            builder.HasOne(c => c.Author)
+                .WithMany(a => a.Courses)
+                .HasForeignKey(c => c.AuthorId);
         }
     }
 }

@@ -11,8 +11,11 @@ namespace DataAccess.Configurations
             builder.HasKey(b => b.Id);
 
             builder.Property(b => b.Type).IsRequired();
-            builder.Property(b => b.Content).HasMaxLength(255).IsRequired();
-            builder.HasOne(b => b.Lesson).WithMany(l => l.Blocks);
+            builder.Property(b => b.Content).IsRequired();
+
+            builder.HasOne(b => b.Lesson)
+                .WithMany(l => l.Blocks)
+                .HasForeignKey(b => b.LessonId);
         }
     }
 }

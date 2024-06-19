@@ -11,8 +11,10 @@ namespace DataAccess.Configurations
             builder.HasKey(q => q.Id);
 
             builder.Property(q => q.Text).IsRequired();
-            builder.HasOne(q => q.Quiz).WithMany(q => q.Questions);
-            builder.HasMany(q => q.Answers).WithOne(a => a.Question);
+
+            builder.HasOne(q => q.Quiz)
+                .WithMany(q => q.Questions)
+                .HasForeignKey(q => q.QuizId);
         }
     }
 }
