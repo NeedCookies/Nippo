@@ -1,6 +1,6 @@
 ﻿using Application.Abstractions.Repositories;
 using Domain.Entities;
-using System.Data.Entity;
+using Microsoft.EntityFrameworkCore;
 
 namespace DataAccess.Repositories
 {

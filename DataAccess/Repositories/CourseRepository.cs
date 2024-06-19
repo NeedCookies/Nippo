@@ -1,6 +1,10 @@
 ﻿using Application.Abstractions.Repositories;
 using Domain.Entities;
+<<<<<<< Updated upstream
 using System.Data.Entity;
+=======
+using Microsoft.EntityFrameworkCore;
+>>>>>>> Stashed changes
 
 namespace DataAccess.Repositories
 {
@@ -13,11 +17,13 @@ namespace DataAccess.Repositories
 
         public async Task<Course> Create(string title, string desc, decimal price, string imgPath)
         {
-            var course = new Course();
-            course.Title = title;
-            course.Description = desc;
-            course.Price = price;
-            course.ImgPath = imgPath;
+            var course = new Course
+            {
+                Title = title,
+                Description = desc,
+                Price = price,
+                ImgPath = imgPath
+            };
 
             await dbContext.Courses.AddAsync(course);
             await dbContext.SaveChangesAsync();
@@ -29,7 +35,7 @@ namespace DataAccess.Repositories
             throw new NotImplementedException();
         }
 
-        public async Task<Course> GetById(int id)
+        public async Task<Course?> GetById(int id)
         {
             return await dbContext.Courses.Where(c => c.Id == id).FirstOrDefaultAsync();
         }

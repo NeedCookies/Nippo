@@ -51,12 +51,14 @@ namespace Application.Services
 
         public async Task<Course> GetById(int id)
         {
-            if (id < 0)
+            var course = await courseRepository.GetById(id);
+
+            if (course == null)
             {
-                throw new ArgumentOutOfRangeException("id should be more than 0");
+                throw new Exception("Course with such id was not found");
             }
 
-            return await courseRepository.GetById(id);
+            return course;
         }
     }
 }
