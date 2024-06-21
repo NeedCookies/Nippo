@@ -11,7 +11,7 @@ namespace DataAccess.Extensions
         {
             return serviceCollection.AddDbContext<AppDbContext>(builder =>
             {
-                builder.UseNpgsql(configuration["Database:ConnectionString"]);
+                builder.UseNpgsql(configuration["ConnectionString:Database"]);
             });
         }
     }

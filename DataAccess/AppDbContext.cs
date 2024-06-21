@@ -1,9 +1,12 @@
-﻿using Domain.Entities;
+﻿using DataAccess.Configurations;
+using Domain.Entities;
+using Domain.Entities.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace DataAccess
 {
-    public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(options)
+    public class AppDbContext(DbContextOptions<AppDbContext> options) : IdentityDbContext<ApplicationUser, AppRole, string>(options)
     {
         public DbSet<Answer> Answers => Set<Answer>();
         public DbSet<Block> Blocks => Set<Block>();
@@ -11,7 +14,32 @@ namespace DataAccess
         public DbSet<Lesson> Lessons => Set<Lesson>();
         public DbSet<Question> Questions => Set<Question>();
         public DbSet<Quiz> Quizzes => Set<Quiz>();
-        public DbSet<QuizResult> QuizResult => Set<QuizResult>();
+        public DbSet<QuizResult> QuizResults => Set<QuizResult>();
         public DbSet<UserAnswer> UserAnswers => Set<UserAnswer>();
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.ApplyConfiguration(new AnswerEntityConfiguration());
+            modelBuilder.ApplyConfiguration(new BlockEntityConfiguration());
+            modelBuilder.ApplyConfiguration(new CourseEntityConfiguration());
+            modelBuilder.ApplyConfiguration(new LessonEntityConfiguration());
+            modelBuilder.ApplyConfiguration(new QuestionEntityConfiguration());
+            modelBuilder.ApplyConfiguration(new QuizEntityConfiguration());
+            modelBuilder.ApplyConfiguration(new QuizResultEntityConfiguration());
+            modelBuilder.ApplyConfiguration(new UserAnswerEntityConfiguration());
+
+            SeedRoles(modelBuilder);
+
+            base.OnModelCreating(modelBuilder);
+        }
+
+        private static void SeedRoles(ModelBuilder builder)
+        {
+            builder.Entity<AppRole>().HasData(
+                new AppRole("user") { Id = "1" },
+                new AppRole("author") { Id = "2" },
+                new AppRole("admin") { Id = "3" }
+            );
+        }
     }
 }
