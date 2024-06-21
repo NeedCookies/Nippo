@@ -12,6 +12,6 @@ namespace Domain.Entities
         public ApplicationUser Author { get; set; } = null!;
         public string? ImgPath { get; set; }
         public ICollection<Lesson>? Lessons { get; set; } 
-        public ICollection<Quiz>? Quizes { get; set; } 
+        public ICollection<Quiz>? Quizes { get; set; }
     }
 }
