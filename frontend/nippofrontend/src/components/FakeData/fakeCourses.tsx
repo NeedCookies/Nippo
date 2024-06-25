@@ -1,4 +1,4 @@
-import CourseCardProps from "../courseComponents/courseCard";
+import CourseCardProps from "../courseComponents/Interfaces/courseCardProps";
 
 const courses: CourseCardProps[] = [
   {

@@ -1,4 +1,4 @@
-import CourseCardProps from "./Interfaces/CourseCardProps";
+import CourseCardProps from "./Interfaces/courseCardProps";
 
 function CourseCard({ title, description, price }: CourseCardProps) {
   return (
