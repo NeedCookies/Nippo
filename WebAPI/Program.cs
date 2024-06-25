@@ -27,6 +27,9 @@ await using (var scope = app.Services.CreateAsyncScope())
     }
 }
 
+app.UseSwagger();
+app.UseSwaggerUI();
+
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
