@@ -31,6 +31,7 @@ namespace WebAPI.Controllers
             return Ok(course);
         }
 
+        [Authorize(Roles = "admin")]
         [HttpPost("create-course")]
         public async Task<IActionResult> Create([FromBody] CreateCourseRequest request)
         {
