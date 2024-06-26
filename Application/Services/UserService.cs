@@ -4,7 +4,10 @@ using Domain.Entities.Identity;
 
 namespace Application.Services
 {
-    public class UserService(IPasswordHasher passwordHasher, IUserRepository userRepository, IJwtProvider jwtProvider) : IUserService
+    public class UserService(
+        IPasswordHasher passwordHasher, 
+        IUserRepository userRepository, 
+        IJwtProvider jwtProvider) : IUserService
     {
         public async Task<string> Login(string userName, string password)
         {
@@ -27,6 +30,12 @@ namespace Application.Services
             var hashedPassword = passwordHasher.Generate(password);
         
             var user = userRepository.Add(userName, email, hashedPassword);
+
+            var registeredUser = await userRepository.GetByUserName(userName);
+
+            var defaultRole = await userRepository.GetDefaultUserRole();
+
+            await userRepository.AssignRole(registeredUser, defaultRole.Id);
 
             return await user;
         }
