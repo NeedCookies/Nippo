@@ -1,7 +1,11 @@
 using DataAccess.Extensions;
 using Application.Extensions;
+using Infrastructure.Extensions;
 using DataAccess;
 using Microsoft.EntityFrameworkCore;
+using Infrastructure;
+using WebAPI.Extensions;
+using Microsoft.Extensions.Options;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -9,9 +13,16 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+builder.Services.Configure<JwtOptions>(builder.Configuration.GetSection(nameof(JwtOptions)));
+
+var jwtOptions = builder.Services.BuildServiceProvider().GetRequiredService<IOptions<JwtOptions>>();
+
 builder.Services.AddDbContext(builder.Configuration);
 builder.Services.AddAppRepositories();
+builder.Services.AddInfrastructureServices();
 builder.Services.AddAppServices();
+
+builder.Services.AddApiAuthentication(jwtOptions);
 
 var app = builder.Build();
 
@@ -37,6 +48,9 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+app.UseAuthentication();
+app.UseAuthorization();
 
 app.UseAuthorization();
 

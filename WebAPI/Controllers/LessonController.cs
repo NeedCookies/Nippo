@@ -1,9 +1,11 @@
 ﻿using Application.Abstractions.Services;
 using Application.Contracts;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace WebAPI.Controllers
 {
+    [Authorize]
     [ApiController]
     [Route("lesson")]
     public class LessonController(ILessonsService lessonsService) : ControllerBase

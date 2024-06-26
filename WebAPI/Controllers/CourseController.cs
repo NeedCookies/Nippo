@@ -1,9 +1,11 @@
 ﻿using Application.Abstractions.Services;
 using Application.Contracts;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace WebAPI.Controllers
 {
+    [Authorize]
     [ApiController]
     [Route("course")]
     public class CourseController(ICoursesService coursesService): ControllerBase
@@ -19,7 +21,7 @@ namespace WebAPI.Controllers
         [HttpGet("get-course")]
         public async Task<IActionResult> GetById(int id)
         {
-            var course = coursesService.GetById(id);
+            var course = await coursesService.GetById(id);
             
             if (course == null)
             {
@@ -35,5 +37,8 @@ namespace WebAPI.Controllers
             var course = await coursesService.Create(request);
             return Ok(course);
         }
+
+        [HttpGet("test-query")]
+        public async Task<IActionResult> TestQuery() => Ok("Aboba");
     }
 }

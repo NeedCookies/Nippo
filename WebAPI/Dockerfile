@@ -11,6 +11,7 @@ COPY ["WebAPI/WebAPI.csproj", "WebAPI/"]
 COPY ["Application/Application.csproj", "Application/"]
 COPY ["Domain/Domain.csproj", "Domain/"]
 COPY ["DataAccess/DataAccess.csproj", "DataAccess/"]
+COPY ["Infrastructure/Infrastructure.csproj", "Infrastructure/"]
 RUN dotnet restore "./WebAPI/./WebAPI.csproj"
 COPY . .
 WORKDIR "/src/WebAPI"

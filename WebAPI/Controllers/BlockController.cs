@@ -1,9 +1,11 @@
 ﻿using Application.Abstractions.Services;
 using Application.Contracts;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace WebAPI.Controllers
 {
+    [Authorize]
     [ApiController]
     [Route("block")]
     public class BlockController(IBlockService blockService) : ControllerBase
@@ -11,7 +13,7 @@ namespace WebAPI.Controllers
         [HttpGet("get-blocks-by-lesson")]
         public async Task<IActionResult> GetByLesson(int lessonId)
         {
-            var blocks = blockService.GetByLesson(lessonId);
+            var blocks = await blockService.GetByLesson(lessonId);
 
             if (blocks == null)
             {
@@ -24,7 +26,7 @@ namespace WebAPI.Controllers
         [HttpGet("get-block-by-id")]
         public async Task<IActionResult> GetById(int lessonId, int id)
         {
-            var block = blockService.GetById(lessonId, id);
+            var block = await blockService.GetById(lessonId, id);
 
             if (block == null)
             {
