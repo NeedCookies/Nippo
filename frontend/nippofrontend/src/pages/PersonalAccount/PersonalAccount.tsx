@@ -104,30 +104,30 @@ export const PersonalAccount = () => {
                     </div>
                 )}
                 <div className="profile-navigation">
-                    <Link to={"/profile/stats"} className="nav-link">
+                    <Link to={"/profile/stats"} className="profile-nav-link">
                         <button className="nav-button">
                             ЛИЧНАЯ СТАТИСТИКА
                         </button>
                     </Link>
-                    <Link to={"/courses/favourite"} className="nav-link">
+                    <Link to={"/courses/favourite"} className="profile-nav-link">
                         <button className="nav-button">
                             ИЗБРАННЫЕ КУРСЫ
                         </button>
                     </Link>
-                    <Link to={"/courses/bought"} className="nav-link">
+                    <Link to={"/courses/bought"} className="profile-nav-link">
                         <button className="nav-button">
                             КУПЛЕННЫЕ КУРСЫ
                         </button>
                     </Link>
                     { userInfo && (userInfo.role == 'author' || userInfo.role == 'admin') && (
-                        <Link to={"/author/courses"} className="nav-link">
+                        <Link to={"/author/courses"} className="profile-nav-link">
                             <button className="nav-button">
                                 {"СТАСТИСТИКА\n МОИХ КУРСОВ"}
                             </button>
                         </Link>
                     )}
                     { userInfo && userInfo.role == 'admin' && (
-                        <Link to={"/admin/courses"} className="nav-link">
+                        <Link to={"/admin/courses"} className="profile-nav-link">
                             <button className="nav-button">
                                 МОДЕРАЦИЯ КУРСОВ
                             </button>
