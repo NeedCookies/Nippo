@@ -3,6 +3,7 @@ import LikedCoursesList from "./pages/likedCoursesGroup";
 import courses from "./components/FakeData/fakeCourses";
 import NippoNavbar from "./components/navbar/navbarMain";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { PersonalAccount } from "./pages/PersonalAccount/PersonalAccount";
 
 function App() {
   return (
@@ -14,6 +15,7 @@ function App() {
           path="/courses/liked"
           element={<LikedCoursesList cards={courses} />}
         />
+        <Route path="/profile" element={<PersonalAccount/>}/>
       </Routes>
     </BrowserRouter>
   );
