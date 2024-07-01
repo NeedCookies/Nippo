@@ -1,6 +1,7 @@
 ﻿using Application.Abstractions.Repositories;
 using Application.Abstractions.Services;
 using Domain.Entities.Identity;
+using System.Text.RegularExpressions;
 
 namespace Application.Services
 {
@@ -27,6 +28,16 @@ namespace Application.Services
 
         public async Task<ApplicationUser> Register(string userName, string email, string password)
         {
+            if(IsValidEmail(email) == false) 
+            {
+                throw new ArgumentException("Invalid email address.");
+            }
+
+            if(IsValidPassword(password) == false)
+            {
+                throw new ArgumentException("Password does not meet the requirements.");
+            }
+
             var hashedPassword = passwordHasher.Generate(password);
         
             var user = userRepository.Add(userName, email, hashedPassword);
@@ -39,5 +50,19 @@ namespace Application.Services
 
             return await user;
         }
+
+        private bool IsValidEmail(string email)
+        {
+            var emailRegex = new Regex(@"^[^@\s]+@[^@\s]+\.[^@\s]+$");
+            return emailRegex.IsMatch(email);
+        }
+
+        private bool IsValidPassword(string password)
+        {
+            var passwordRegex = new Regex(@"^(?=.*[a-zА-Я])(?=.*[A-ZА-Я])(?=.*\d)[A-Za-zА-Яа-я\d]{8,}$");
+
+            return passwordRegex.IsMatch(password);
+        }
     }
 }
+    
