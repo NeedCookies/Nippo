@@ -1,6 +1,6 @@
 ﻿using Application.Abstractions.Services;
 
-namespace Infrastructure
+namespace Infrastructure.Services
 {
     public class PasswordHasher : IPasswordHasher
     {
