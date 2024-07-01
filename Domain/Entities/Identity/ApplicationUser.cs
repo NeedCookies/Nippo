@@ -9,3 +9,4 @@ namespace Domain.Entities.Identity
         public ICollection<UserAnswer>? UserAnswers { get; set; }
     }
 }
+ 
