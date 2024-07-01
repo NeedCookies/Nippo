@@ -21,7 +21,14 @@ namespace WebAPI.Controllers
         {
             var token = await userService.Login(request.UserName, request.Password);
 
-            HttpContext.Response.Cookies.Append("jwt-token-cookie", token);
+            var cookieOptions = new CookieOptions
+            {
+                HttpOnly = true,
+                Secure = true,
+                SameSite = SameSiteMode.Strict
+            };
+
+            HttpContext.Response.Cookies.Append("jwt-token-cookie", token, cookieOptions);
             
             return Ok(token);
         }
