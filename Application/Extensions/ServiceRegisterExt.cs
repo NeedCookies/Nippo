@@ -14,6 +14,7 @@ namespace Application.Extensions
             services.AddScoped<IBlockService, BlockService>(); 
             services.AddScoped<IQuizService, QuizService>();
             services.AddScoped<IQuestionService, QuestionService>();
+            services.AddScoped<IAnswerService, AnswerService>();
             return services;
         }
     }
