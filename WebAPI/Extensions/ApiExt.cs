@@ -10,7 +10,7 @@ namespace WebAPI.Extensions
     {
         public static void AddApiAuthentication(
             this IServiceCollection services, 
-            IOptions<JwtOptions> jwtOptions)
+            IConfiguration configuration)
         {
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .AddJwtBearer(JwtBearerDefaults.AuthenticationScheme, options =>
@@ -21,7 +21,7 @@ namespace WebAPI.Extensions
                         ValidateAudience = false,
                         ValidateLifetime = true,
                         ValidateIssuerSigningKey = true,
-                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtOptions.Value.SecretKey))
+                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["JwtOptions:SecretKey"]!))
                     };
 
                     options.Events = new JwtBearerEvents
