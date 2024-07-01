@@ -4,15 +4,16 @@ import { useEffect, useState } from "react"
 import axios from "axios"
 import { PointsModal } from "./PointsModal";
 import { Link } from "react-router-dom";
+import { EditUserInfoModal, UserInfoEdit } from "./EditUserInfoModal";
 
 interface UserInfo {
-    firstName: string;
-    lastName: string;
+    firstName: string | null;
+    lastName: string | null;
     userName: string;
-    phoneNumber: string;
+    phoneNumber: string | null;
     email: string;
     pictureUrl: string | null;
-    birthDate: string;
+    birthDate: string | null;
     points: number;
     role: string;
 }
@@ -20,9 +21,33 @@ interface UserInfo {
 export const PersonalAccount = () => {
     const [userInfo, setUserInfo] = useState<UserInfo | null>(null);
 
-    const [isModalOpen, setModalOpen] = useState<boolean>(false);
-    const handleOpenModal = () => setModalOpen(true);
-    const handleCloseModal = () => setModalOpen(false);
+    const [isPointsModalOpen, setPointsModalOpen] = useState<boolean>(false);
+    const handleOpenPointsModal = () => setPointsModalOpen(true);
+    const handleClosePointsModal = () => setPointsModalOpen(false);
+
+    const [isEditOpen, setEditOpen] = useState<boolean>(false);
+    const handleOpenEdit = () => setEditOpen(true);
+    const handleCloseEdit = () => setEditOpen(false);
+
+    const handleUserInfoUpdate = (updatedUserInfo: UserInfoEdit) => {
+        setUserInfo((prev) => ({
+            ...prev!,
+            firstName: updatedUserInfo.firstName,
+            lastName: updatedUserInfo.lastName,
+            phoneNumber: updatedUserInfo.phoneNumber,
+            birthDate: updatedUserInfo.birthDate,
+        }));
+    };
+
+    const userInfoEdit: UserInfoEdit | null = userInfo
+        ? {
+              firstName: userInfo.firstName ?? "",
+              lastName: userInfo.lastName ?? "",
+              phoneNumber: userInfo.phoneNumber ?? "",
+              pictureUrl: userInfo.pictureUrl,
+              birthDate: userInfo.birthDate,
+          }
+        : null;
 
     useEffect(() => {
         const getUserInfo = async() => {
@@ -66,35 +91,41 @@ export const PersonalAccount = () => {
                         <div className="avatar-wrapper">
                             <Avatar src={userInfo?.pictureUrl || undefined} sx={{ width: "230px", height: "230px"}}/>
                             <div className="username-wrapper">
-                                {userInfo?.userName}
+                                {userInfo.userName}
                             </div>
                         </div>
                         <div className="personal-info-wrapper">
                             <div className="fullname">
-                                {userInfo?.firstName + " " + userInfo?.lastName}
+                                { (userInfo.firstName && userInfo.lastName) 
+                                    ? userInfo.firstName + " " + userInfo.lastName
+                                    : "Не заполнено" }
                             </div>
-                            
                             <div className="info-item">
                                 <span className="info-label">Дата рождения:</span>
-                                <span className="info-value">{userInfo?.birthDate}</span>
+                                <span className="info-value">{userInfo.birthDate ?? "Не заполнено"}</span>
                             </div>
                             <div className="info-item">
                                 <span className="info-label">Телефон:</span>
-                                <span className="info-value">{userInfo?.phoneNumber}</span>
+                                <span className="info-value">{userInfo.phoneNumber ?? "Не заполнено"}</span>
                             </div>
                             <div className="info-item">
                                 <span className="info-label">Почта:</span>
-                                <span className="info-value">{userInfo?.email}</span>
+                                <span className="info-value">{userInfo.email}</span>
+                            </div>
+                            <div>
+                                <Button variant="contained" onClick={handleOpenEdit}>
+                                    Редактировать
+                                </Button>
                             </div>
                         </div>
                         <div className="points-wrapper">
                             <div className="points">
-                                {userInfo?.points}
+                                {userInfo.points}
                             </div>
                             {userInfo.role == "admin" && (
                                 <div> 
                                     <Button variant="contained" 
-                                        onClick={handleOpenModal}
+                                        onClick={handleOpenPointsModal}
                                         sx={{marginTop: "1rem", padding: "0.8rem"}}>
                                             Выдать поинты
                                     </Button>
@@ -136,7 +167,10 @@ export const PersonalAccount = () => {
                 </div>
             </div>
             <div>
-                <PointsModal open={isModalOpen} onClose={handleCloseModal} />
+                <PointsModal open={isPointsModalOpen} onClose={handleClosePointsModal} />
+            </div>
+            <div>
+                <EditUserInfoModal open={isEditOpen} onClose={handleCloseEdit} userInfo={userInfoEdit} onUserInfoUpdate={handleUserInfoUpdate} />
             </div>
         </>
     )

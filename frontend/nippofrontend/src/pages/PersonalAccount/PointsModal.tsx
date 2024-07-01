@@ -49,8 +49,9 @@ export const PointsModal = ({open, onClose} : PointModalProps) => {
                 console.error('Ошибка:', (error as Error).message);
             }
         }
-        
-        setIsLoading(false);
+        finally {
+            setIsLoading(false);
+        }
     };
 
     return (
