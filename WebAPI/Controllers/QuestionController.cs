@@ -29,7 +29,7 @@ namespace WebAPI.Controllers
             return Ok(question);
         }
 
-        [HttpPost("delete")]
+        [HttpDelete("delete")]
         public async Task<IActionResult> Delete(int questionId)
         {
             var question = await questionService.Delete(questionId);
