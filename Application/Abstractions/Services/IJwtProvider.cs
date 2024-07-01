@@ -4,6 +4,6 @@ namespace Application.Abstractions.Services
 {
     public interface IJwtProvider
     {
-        string Generate(ApplicationUser user);
+        Task<string> GenerateAsync(ApplicationUser user);
     }
 }
