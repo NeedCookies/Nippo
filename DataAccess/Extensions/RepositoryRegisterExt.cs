@@ -11,7 +11,7 @@ namespace DataAccess.Extensions
             services.AddScoped<ICourseRepository, CourseRepository>();
             services.AddScoped<ILessonRepository, LessonRepository>();
             services.AddScoped<IBlockRepository, BlockRepository>();
-
+            services.AddScoped<IQuizRepository, QuizRepository>();
             return services;
         }
     }
