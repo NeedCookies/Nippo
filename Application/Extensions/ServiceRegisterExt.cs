@@ -13,6 +13,7 @@ namespace Application.Extensions
             services.AddScoped<ILessonsService, LessonsService>();
             services.AddScoped<IBlockService, BlockService>(); 
             services.AddScoped<IQuizService, QuizService>();
+            services.AddScoped<IQuestionService, QuestionService>();
             return services;
         }
     }
