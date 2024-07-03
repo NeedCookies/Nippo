@@ -21,7 +21,7 @@ namespace Application.Services
                 throw new Exception("Failed to login");
             }
 
-            var token = jwtProvider.Generate(user);
+            var token = await jwtProvider.Generate(user);
 
             return token;
         }

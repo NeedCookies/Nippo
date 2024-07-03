@@ -2,6 +2,8 @@
 using Application.Abstractions.Services;
 using Application.Contracts;
 using Domain.Entities;
+using Domain.Entities.Identity;
+using Microsoft.AspNetCore.Identity;
 using System.Text;
 
 namespace Application.Services
@@ -14,6 +16,7 @@ namespace Application.Services
             string descript = request.Description;
             decimal price = request.Price;
             string imgPath = request.ImgPath;
+            var authorId = "123";
 
             StringBuilder error = new StringBuilder("");
             if (title.Length == 0)
@@ -34,7 +37,7 @@ namespace Application.Services
                 throw new ArgumentException(error.ToString());
             }
 
-            return await courseRepository.Create(title, descript, price, imgPath);
+            return await courseRepository.Create(title, descript, price, imgPath, authorId);
         }
 
         public async Task<List<Course>> GetAllCourses()

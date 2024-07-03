@@ -1,6 +1,5 @@
 ﻿using Application.Abstractions.Services;
 using Application.Contracts;
-using Application.Services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace WebAPI.Controllers

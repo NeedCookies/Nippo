@@ -20,9 +20,14 @@ var jwtOptions = builder.Services.BuildServiceProvider().GetRequiredService<IOpt
 builder.Services.AddDbContext(builder.Configuration);
 builder.Services.AddAppRepositories();
 builder.Services.AddInfrastructureServices();
+builder.Services.AddIdentityServices();
 builder.Services.AddAppServices();
 
 builder.Services.AddApiAuthentication(jwtOptions);
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("RequireAdminRole", policy => policy.RequireRole("admin"));
+});
 
 var app = builder.Build();
 

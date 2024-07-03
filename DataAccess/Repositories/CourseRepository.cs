@@ -35,5 +35,10 @@ namespace DataAccess.Repositories
         {
             return await dbContext.Courses.FindAsync(id);
         }
+
+        public Task<Course> Create(string title, string desc, decimal price, string imgPath, string authorId)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

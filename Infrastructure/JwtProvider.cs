@@ -1,5 +1,6 @@
 ﻿using Application.Abstractions.Services;
 using Domain.Entities.Identity;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
@@ -8,13 +9,21 @@ using System.Text;
 
 namespace Infrastructure
 {
-    public class JwtProvider(IOptions<JwtOptions> options) : IJwtProvider
+    public class JwtProvider(IOptions<JwtOptions> options, UserManager<ApplicationUser> userManager) : IJwtProvider
     {
         private readonly JwtOptions _options = options.Value;
 
-        public string Generate(ApplicationUser user)
+        public async Task<string> Generate(ApplicationUser user)
         {
-            Claim[] claims = [new("userId", user.Id)];
+            var userRoles = await userManager.GetRolesAsync(user);
+
+            //Claim[] claims = [new("userId", user.Id)];
+            var claims = new List<Claim>
+            {
+                new Claim("userId", user.Id)
+            };
+
+            claims.AddRange(userRoles.Select(role => new Claim(ClaimTypes.Role, role)));
 
             var signingCredentials = new SigningCredentials(
                 new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_options.SecretKey)), 
