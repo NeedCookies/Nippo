@@ -30,6 +30,8 @@ export const TaskModal = ({ type, isOpen, handleClose, quizId }: TaskProps) => {
     answers: [] as Answer[],
   });
 
+  const [questionId, setQuestionId] = useState<number>();
+
   const handleAnswerChange = (id: number, value: any) => {
     setTask((prev) => ({
       ...prev,
@@ -80,10 +82,29 @@ export const TaskModal = ({ type, isOpen, handleClose, quizId }: TaskProps) => {
         }
       );
       if (response.status === 200) {
+        setQuestionId(response.data.id);
       }
     } catch (error) {
       console.error(error);
     }
+
+    task.answers.map(async (ans) => {
+      try {
+        const response = await axios.post(
+          "https://localhost:8080/answer/create",
+          {
+            QuestionId: questionId,
+            Text: ans.text,
+            IsCOrrect: ans.isCorrect,
+          }
+        );
+
+        if (response.status === 200) {
+        }
+      } catch (error) {
+        console.error(error);
+      }
+    });
   };
 
   return (

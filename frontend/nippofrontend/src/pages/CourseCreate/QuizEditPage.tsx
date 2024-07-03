@@ -64,29 +64,27 @@ function QuizEditPage() {
   });
 
   useEffect(() => {
-    if (isTaskModalOpen) {
-      axios
-        .get(`/Question/get-by-quiz?quizId=${quizId}`)
-        .then(async (response) => {
-          const questions = response.data;
+    axios
+      .get(`/Question/get-by-quiz?quizId=${quizId}`)
+      .then(async (response) => {
+        const questions = response.data;
 
-          const questionsWithAnswers = await Promise.all(
-            questions.map(async (question: Question) => {
-              const answerResponse = await axios.get(
-                `https://localhost:8080/answer/get-by-question?questionId=${question.id}`
-              );
-              return { ...question, answers: answerResponse.data };
-            })
-          );
+        const questionsWithAnswers = await Promise.all(
+          questions.map(async (question: Question) => {
+            const answerResponse = await axios.get(
+              `https://localhost:8080/answer/get-by-question?questionId=${question.id}`
+            );
+            return { ...question, answers: answerResponse.data };
+          })
+        );
 
-          questionsWithAnswers.sort((a, b) => a.order - b.order);
+        questionsWithAnswers.sort((a, b) => a.order - b.order);
 
-          setQuestions(questionsWithAnswers);
-        })
-        .catch((error) => {
-          console.error(error);
-        });
-    }
+        setQuestions(questionsWithAnswers);
+      })
+      .catch((error) => {
+        console.error(error);
+      });
   }, [isTaskModalOpen, quizId]);
 
   return (
