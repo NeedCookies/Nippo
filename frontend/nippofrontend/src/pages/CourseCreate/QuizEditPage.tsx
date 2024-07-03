@@ -4,23 +4,42 @@ import Typography from "@mui/material/Typography";
 import Button from "@mui/material/Button";
 import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
+import { TaskModal } from "./TaskModal";
+import axios from "axios";
+
+interface Answer {
+  id: number;
+  text: string;
+  isCorrect: boolean;
+}
+
+interface Question {
+  id: number;
+  text: string;
+  type: string;
+  order: number;
+  answers: Answer[];
+}
 
 function QuizEditPage() {
   const { courseId, quizId } = useParams<{
     courseId: string;
     quizId: string;
   }>();
-  const [questions, setQuestions] = useState([]);
+  const [questions, setQuestions] = useState<Question[]>([]);
   const [quizTitle, setQuizTitle] = useState("");
+  const [isTaskModalOpen, setTaskModalOpen] = useState<boolean>(false);
 
-  const handleAddQuestion = (typeNum: number) => {
-    const newQuestion = {
-      id: questions.length == 0 ? 1 : questions.length + 1,
-      title: "Unnamed question",
-      answer: "No answer",
-      type: typeNum,
-    };
-    setQuestions([...questions, newQuestion]);
+  const [newQuestionType, setNewQuestionType] = useState<string>("Written");
+
+  const handleTaskModalClose = () => {
+    setTaskModalOpen(false);
+  };
+
+  const handleAddQuestion = (type: string) => {
+    setNewQuestionType(type);
+    setTaskModalOpen(true);
+    //setQuestions([...questions, newQuestion]);
   };
 
   const handleDeleteQuestion = (id: number) => {};
@@ -30,7 +49,7 @@ function QuizEditPage() {
     /*async () => {
       try {
         const response = await axios.get(
-          "https://localhost:8080/quiz/get-quiz"
+          `https://localhost:8080/quiz/get-quiz?quizId=${quizId}`
         );
         if (response.status === 200) {
           setQuizTitle(response.data.Title);
@@ -43,6 +62,32 @@ function QuizEditPage() {
     };*/
     setQuizTitle("afaf");
   });
+
+  useEffect(() => {
+    if (isTaskModalOpen) {
+      axios
+        .get(`/Question/get-by-quiz?quizId=${quizId}`)
+        .then(async (response) => {
+          const questions = response.data;
+
+          const questionsWithAnswers = await Promise.all(
+            questions.map(async (question: Question) => {
+              const answerResponse = await axios.get(
+                `https://localhost:8080/answer/get-by-question?questionId=${question.id}`
+              );
+              return { ...question, answers: answerResponse.data };
+            })
+          );
+
+          questionsWithAnswers.sort((a, b) => a.order - b.order);
+
+          setQuestions(questionsWithAnswers);
+        })
+        .catch((error) => {
+          console.error(error);
+        });
+    }
+  }, [isTaskModalOpen, quizId]);
 
   return (
     <Container>
@@ -86,8 +131,9 @@ function QuizEditPage() {
             margin: 1,
             borderRadius: "6px",
           }}>
-          {questions.map((question: any) => (
+          {questions.map((question) => (
             <Box
+              key={question.order}
               sx={{
                 backgroundColor: "#bfbfbf",
                 marginY: 1,
@@ -100,11 +146,18 @@ function QuizEditPage() {
                 key={question.id}
                 textAlign={"start"}
                 sx={{ width: "50%" }}>
-                {question.id}. {question.name}
+                {question.order}. {question.text}
               </Typography>
               <Typography textAlign={"end"} sx={{ width: "50%" }}>
                 тип: {question.type}
               </Typography>
+              <Box sx={{ width: "100%" }}>
+                {question.answers.map((answer) => (
+                  <Typography key={answer.id} sx={{ marginLeft: "1rem" }}>
+                    {answer.text}
+                  </Typography>
+                ))}
+              </Box>
               <Button
                 variant="contained"
                 size="small"
@@ -136,24 +189,29 @@ function QuizEditPage() {
             variant="contained"
             size="large"
             sx={{ margin: 2 }}
-            onClick={() => handleAddQuestion(1)}>
+            onClick={() => handleAddQuestion("Written")}>
             Добавить вопрос с текстовым ответом
           </Button>
           <Button
             variant="contained"
             size="large"
             sx={{ margin: 2 }}
-            onClick={() => handleAddQuestion(2)}>
+            onClick={() => handleAddQuestion("SingleChoice")}>
             Добавить вопрос с одним вариантом ответа
           </Button>
           <Button
             variant="contained"
             size="large"
             sx={{ margin: 2 }}
-            onClick={() => handleAddQuestion(3)}>
+            onClick={() => handleAddQuestion("MultipleChoice")}>
             Добавить вопрос с несколькими вариантами ответа
           </Button>
         </Box>
+        <TaskModal
+          isOpen={isTaskModalOpen}
+          handleClose={handleTaskModalClose}
+          type={newQuestionType}
+          quizId={Number(quizId)}></TaskModal>
       </Container>
     </Container>
   );

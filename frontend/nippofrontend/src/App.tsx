@@ -3,7 +3,8 @@ import LikedCoursesList from "./pages/likedCoursesGroup";
 import courses from "./components/FakeData/fakeCourses";
 import NippoNavbar from "./components/navbar/navbarMain";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import CreateCourse from "./pages/createCoursePage";
+import CreateCourse from "./pages/CourseCreate/createCoursePage";
+import QuizEditPage from "./pages/CourseCreate/QuizEditPage";
 
 function App() {
   return (
@@ -16,6 +17,10 @@ function App() {
           element={<LikedCoursesList cards={courses} />}
         />
         <Route path="course/create" element={<CreateCourse />} />
+        <Route
+          path="/course/:courseId/quiz/:quizId/edit"
+          element={<QuizEditPage />}
+        />
       </Routes>
     </BrowserRouter>
   );
