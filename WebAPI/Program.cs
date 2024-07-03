@@ -1,7 +1,12 @@
 using DataAccess.Extensions;
 using Application.Extensions;
+using Infrastructure.Extensions;
 using DataAccess;
 using Microsoft.EntityFrameworkCore;
+using WebAPI.Extensions;
+using Infrastructure.Options;
+using Microsoft.AspNetCore.Identity;
+using Domain.Entities.Identity;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -9,9 +14,18 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+builder.Services.Configure<JwtOptions>(builder.Configuration.GetSection(nameof(JwtOptions)));
+
+builder.Services.AddIdentity<ApplicationUser, AppRole>()
+    .AddEntityFrameworkStores<AppDbContext>()
+    .AddDefaultTokenProviders();
+
 builder.Services.AddDbContext(builder.Configuration);
 builder.Services.AddAppRepositories();
+builder.Services.AddInfrastructureServices();
 builder.Services.AddAppServices();
+
+builder.Services.AddApiAuthentication(builder.Configuration);
 
 var app = builder.Build();
 
@@ -27,6 +41,9 @@ await using (var scope = app.Services.CreateAsyncScope())
     }
 }
 
+app.UseSwagger();
+app.UseSwaggerUI();
+
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -34,6 +51,9 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+app.UseAuthentication();
+app.UseAuthorization();
 
 app.UseAuthorization();
 

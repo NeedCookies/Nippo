@@ -5,6 +5,7 @@ import NippoNavbar from "./components/navbar/navbarMain";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import CreateCourse from "./pages/CourseCreate/createCoursePage";
 import QuizEditPage from "./pages/CourseCreate/QuizEditPage";
+import { PersonalAccount } from "./pages/PersonalAccount/PersonalAccount";
 
 function App() {
   return (
@@ -21,6 +22,7 @@ function App() {
           path="/course/:courseId/quiz/:quizId/edit"
           element={<QuizEditPage />}
         />
+        <Route path="/profile" element={<PersonalAccount/>}/>
       </Routes>
     </BrowserRouter>
   );

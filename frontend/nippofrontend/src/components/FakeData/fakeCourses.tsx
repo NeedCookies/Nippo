@@ -1,4 +1,4 @@
-import CourseCardProps from "../courseComponents/courseCard";
+import CourseCardProps from "../courseComponents/Interfaces/courseCardProps";
 import myLogo from "../Images/courseLogos.jpg";
 
 const courses: CourseCardProps[] = [

@@ -10,10 +10,16 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DataAccess", "DataAccess\DataAccess.csproj", "{35BCF4A0-57E8-4F89-8A91-DBF0DBA8E691}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebAPI", "WebAPI\WebAPI.csproj", "{2EB82EAF-8738-4710-B63C-B61C1A10FEAE}"
+	ProjectSection(ProjectDependencies) = postProject
+		{B1BFE956-59C7-4F20-ACD8-A3FEF0603E5F} = {B1BFE956-59C7-4F20-ACD8-A3FEF0603E5F}
+	EndProjectSection
 EndProject
 Project("{E53339B2-1760-4266-BCC7-CA923CBCF16C}") = "docker-compose", "docker-compose.dcproj", "{DAF59A24-207E-4E1B-AD2E-74C43EB82127}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Infrastructure", "Infrastructure\Infrastructure.csproj", "{B1BFE956-59C7-4F20-ACD8-A3FEF0603E5F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Infrastructure", "Infrastructure\Infrastructure.csproj", "{B1BFE956-59C7-4F20-ACD8-A3FEF0603E5F}"
+	ProjectSection(ProjectDependencies) = postProject
+		{35BCF4A0-57E8-4F89-8A91-DBF0DBA8E691} = {35BCF4A0-57E8-4F89-8A91-DBF0DBA8E691}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
