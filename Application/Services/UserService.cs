@@ -41,7 +41,7 @@ namespace Application.Services
 
             var hashedPassword = passwordHasher.Generate(password);
         
-            var user = userRepository.Add(userName, email, hashedPassword);
+            var user = await userRepository.Add(userName, email, hashedPassword);
 
             var registeredUser = await userRepository.GetUserByUserName(userName);
 
@@ -49,7 +49,7 @@ namespace Application.Services
 
             await userRepository.AssignRole(registeredUser, defaultRole.Id);
 
-            return await user;
+            return user;
         }
 
         private bool IsValidEmail(string email)

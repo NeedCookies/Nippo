@@ -8,9 +8,10 @@ namespace DataAccess.Repositories
 {
     public class CourseRepository(AppDbContext appDbContext, IUserRepository userRepository) : ICourseRepository
     {
+        private readonly AppDbContext _appDbContext = appDbContext;
         public async Task<List<Course>> GetAllCourses()
         {
-            return await appDbContext.Courses.ToListAsync();
+            return await _appDbContext.Courses.ToListAsync();
         }
 
         public async Task<Course> Create(string title, string desc, decimal price, string imgPath, string authorId)
@@ -24,8 +25,8 @@ namespace DataAccess.Repositories
                 ImgPath = imgPath
             };
 
-            await appDbContext.Courses.AddAsync(course);
-            await appDbContext.SaveChangesAsync();
+            await _appDbContext.Courses.AddAsync(course);
+            await _appDbContext.SaveChangesAsync();
 
             return course;
         }
@@ -36,13 +37,13 @@ namespace DataAccess.Repositories
 
         public async Task<Course?> GetById(int id)
         {
-            return await appDbContext.Courses.FindAsync(id);
+            return await _appDbContext.Courses.FindAsync(id);
         }
 
         public async Task<ApplicationUser> PurchaseCourse(int courseId, string userId)
         {
             var user = await userRepository.GetUserById(userId);
-            Course course = await appDbContext.Courses.FirstOrDefaultAsync(u => u.Id == courseId);
+            Course course = await _appDbContext.Courses.FirstOrDefaultAsync(u => u.Id == courseId);
             decimal coursePrice = course.Price;
 
             if (coursePrice > user.Money)
@@ -52,8 +53,13 @@ namespace DataAccess.Repositories
 
             user.Money -= coursePrice;
 
+            if (user.Courses == null)
+            {
+                user.Courses = new List<Course>();
+            }
+
             user.Courses.Add(course);
-            await appDbContext.SaveChangesAsync();
+            await _appDbContext.SaveChangesAsync();
 
             return user;
         }

@@ -8,6 +8,8 @@ namespace DataAccess.Repositories
 {
     public class UserRepository(AppDbContext appDbContext) : IUserRepository
     {
+        private readonly AppDbContext _appDbContext = appDbContext;
+
         public async Task<ApplicationUser> Add(string userName, string email, string password)
         {
             var id = Guid.NewGuid().ToString();
@@ -21,8 +23,8 @@ namespace DataAccess.Repositories
                 Money = 1500
             };
 
-            await appDbContext.Users.AddAsync(user);
-            await appDbContext.SaveChangesAsync();
+            await _appDbContext.Users.AddAsync(user);
+            await _appDbContext.SaveChangesAsync();
 
             return user;
         }
@@ -35,13 +37,13 @@ namespace DataAccess.Repositories
                 RoleId = roleId
             };
 
-            appDbContext.UserRoles.Add(userRole);
-            await appDbContext.SaveChangesAsync();
+            _appDbContext.UserRoles.Add(userRole);
+            await _appDbContext.SaveChangesAsync();
         }
 
         public async Task<ApplicationUser> GetUserById(string id)
         {
-            var userEntity = await appDbContext.Users.FirstOrDefaultAsync(u => u.Id == id)
+            var userEntity = await _appDbContext.Users.FirstOrDefaultAsync(u => u.Id == id)
                 ?? throw new Exception();
 
             return userEntity;
@@ -49,7 +51,7 @@ namespace DataAccess.Repositories
 
         public async Task<ApplicationUser> GetUserByUserName(string userName)
         {
-            var userEntity = await appDbContext.Users
+            var userEntity = await _appDbContext.Users
                 .AsNoTracking()
                 .FirstOrDefaultAsync(u => u.UserName == userName)
                 ?? throw new Exception();
@@ -60,7 +62,7 @@ namespace DataAccess.Repositories
         public async Task<AppRole> GetDefaultUserRole()
         {
             const string userRoleName = "admin";
-            var userRole = await appDbContext.Roles
+            var userRole = await _appDbContext.Roles
                 .AsNoTracking()
                 .FirstOrDefaultAsync(r => r.Name == userRoleName)
                 ?? throw new Exception();
@@ -70,7 +72,7 @@ namespace DataAccess.Repositories
 
         public async Task<List<Course>> GetUserCourses(string userId)
         {
-            var user = await appDbContext.Users
+            var user = await _appDbContext.Users
                 .Include(u => u.Courses)
                 .FirstOrDefaultAsync(u => u.Id == userId);
 
