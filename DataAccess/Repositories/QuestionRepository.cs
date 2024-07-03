@@ -6,10 +6,9 @@ namespace DataAccess.Repositories
 {
     public class QuestionRepository(AppDbContext dbContext) : IQuestionRepository
     {
-        public async Task<Question> Create(int order, int quizId, string Text, QuestionType type)
+        public async Task<Question> Create(int quizId, string Text, QuestionType type)
         {
             var question = new Question();
-            question.Order = order;
             question.QuizId = quizId;
             question.Text = Text;
             question.Type = type;

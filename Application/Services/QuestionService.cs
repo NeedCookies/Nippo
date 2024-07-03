@@ -10,13 +10,11 @@ namespace Application.Services
     {
         public async Task<Question> Create(CreateQuestionRequest request)
         {
-            int order = request.Order;
             int quizId = request.QuizId;
             string text = request.Text;
             var type = request.Type;
             
             StringBuilder error = new StringBuilder();
-            if (order < 0) error.AppendLine("Bad order num");
             if (quizId < 0) error.AppendLine("wrong quiz Id");
             if (text == null || text.Length == 0)
                 error.AppendLine("Question text shouldn't be empty");
@@ -25,6 +23,8 @@ namespace Application.Services
 
             if (error.Length > 0)
                 throw new ArgumentException(error.ToString());
+
+            int order = (await questionRepository.GetByQuiz(quizId)).Count() + 1;
 
             return await questionRepository.Create(order, quizId, text, type);
         }
