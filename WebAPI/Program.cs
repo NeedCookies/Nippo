@@ -3,9 +3,10 @@ using Application.Extensions;
 using Infrastructure.Extensions;
 using DataAccess;
 using Microsoft.EntityFrameworkCore;
-using Infrastructure;
 using WebAPI.Extensions;
-using Microsoft.Extensions.Options;
+using Infrastructure.Options;
+using Microsoft.AspNetCore.Identity;
+using Domain.Entities.Identity;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -15,14 +16,16 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.Configure<JwtOptions>(builder.Configuration.GetSection(nameof(JwtOptions)));
 
-var jwtOptions = builder.Services.BuildServiceProvider().GetRequiredService<IOptions<JwtOptions>>();
+builder.Services.AddIdentity<ApplicationUser, AppRole>()
+    .AddEntityFrameworkStores<AppDbContext>()
+    .AddDefaultTokenProviders();
 
 builder.Services.AddDbContext(builder.Configuration);
 builder.Services.AddAppRepositories();
 builder.Services.AddInfrastructureServices();
 builder.Services.AddAppServices();
 
-builder.Services.AddApiAuthentication(jwtOptions);
+builder.Services.AddApiAuthentication(builder.Configuration);
 
 var app = builder.Build();
 

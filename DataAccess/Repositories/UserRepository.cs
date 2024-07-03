@@ -2,11 +2,6 @@
 using Domain.Entities.Identity;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace DataAccess.Repositories
 {
@@ -40,6 +35,13 @@ namespace DataAccess.Repositories
 
             appDbContext.UserRoles.Add(userRole);
             await appDbContext.SaveChangesAsync();
+        }
+
+        public async Task<ApplicationUser?> GetByUserId(string userId)
+        {
+            var user = await appDbContext.Users.FindAsync(userId);
+
+            return user;
         }
 
         public async Task<ApplicationUser> GetByUserName(string userName)

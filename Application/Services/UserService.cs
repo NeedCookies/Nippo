@@ -1,6 +1,8 @@
 ﻿using Application.Abstractions.Repositories;
 using Application.Abstractions.Services;
+using Application.Contracts;
 using Domain.Entities.Identity;
+using Microsoft.AspNetCore.Identity;
 using System.Text.RegularExpressions;
 
 namespace Application.Services
@@ -8,20 +10,45 @@ namespace Application.Services
     public class UserService(
         IPasswordHasher passwordHasher, 
         IUserRepository userRepository, 
-        IJwtProvider jwtProvider) : IUserService
+        IJwtProvider jwtProvider,
+        UserManager<ApplicationUser> userManager) : IUserService
     {
+        public async Task<PersonalInfoDto> GetUserInfoById(string userId)
+        {
+            var user = await userRepository.GetByUserId(userId);
+
+            if (user == null)
+            {
+                throw new ArgumentException("User with such Id was not found");
+            }
+
+            var userRoles = await userManager.GetRolesAsync(user);
+
+            return new PersonalInfoDto()
+            {
+                FirstName = user.FirstName,
+                LastName = user.LastName,
+                BirthDate = user.BirthDate,
+                Email = user.Email,
+                PictureUrl = user.PictureUrl,
+                Points = user.Points,
+                Role = userRoles.First(),
+                UserName = user.UserName
+            };
+        }
+
         public async Task<string> Login(string userName, string password)
         {
             var user = await userRepository.GetByUserName(userName);
 
-            var result = passwordHasher.Verify(password, user.PasswordHash);
+            var result = passwordHasher.Verify(password, user.PasswordHash!);
 
             if(result == false)
             {
                 throw new Exception("Failed to login");
             }
 
-            var token = jwtProvider.Generate(user);
+            var token = await jwtProvider.GenerateAsync(user);
 
             return token;
         }
