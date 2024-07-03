@@ -10,13 +10,12 @@ namespace Application.Services
 {
     public class CoursesService(ICourseRepository courseRepository) : ICoursesService
     {
-        public async Task<Course> Create(CreateCourseRequest request)
+        public async Task<Course> Create(CreateCourseRequest request, string authorId)
         {
             string title = request.Title;
             string descript = request.Description;
             decimal price = request.Price;
             string imgPath = request.ImgPath;
-            var authorId = "123";
 
             StringBuilder error = new StringBuilder("");
             if (title.Length == 0)
@@ -44,11 +43,6 @@ namespace Application.Services
         {
             var allCourses = courseRepository.GetAllCourses();
 
-            /*if (allCourses == null)
-            {
-                throw new Exception();
-            }*/
-
             return await allCourses;
         }
 
@@ -62,6 +56,11 @@ namespace Application.Services
             }
 
             return course;
+        }
+
+        public async Task<ApplicationUser> PurchaseCourse(int courseId, string userId)
+        {
+            return await courseRepository.PurchaseCourse(courseId, userId);
         }
     }
 }

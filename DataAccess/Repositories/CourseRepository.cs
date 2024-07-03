@@ -1,28 +1,31 @@
 ﻿using Application.Abstractions.Repositories;
 using Domain.Entities;
+using Domain.Entities.Identity;
 using Microsoft.EntityFrameworkCore;
+using System;
 
 namespace DataAccess.Repositories
 {
-    public class CourseRepository(AppDbContext dbContext) : ICourseRepository
+    public class CourseRepository(AppDbContext appDbContext, IUserRepository userRepository) : ICourseRepository
     {
         public async Task<List<Course>> GetAllCourses()
         {
-            return await dbContext.Courses.ToListAsync();
+            return await appDbContext.Courses.ToListAsync();
         }
 
-        public async Task<Course> Create(string title, string desc, decimal price, string imgPath)
+        public async Task<Course> Create(string title, string desc, decimal price, string imgPath, string authorId)
         {
             var course = new Course
             {
                 Title = title,
                 Description = desc,
                 Price = price,
+                AuthorId = authorId,
                 ImgPath = imgPath
             };
 
-            await dbContext.Courses.AddAsync(course);
-            await dbContext.SaveChangesAsync();
+            await appDbContext.Courses.AddAsync(course);
+            await appDbContext.SaveChangesAsync();
 
             return course;
         }
@@ -33,12 +36,26 @@ namespace DataAccess.Repositories
 
         public async Task<Course?> GetById(int id)
         {
-            return await dbContext.Courses.FindAsync(id);
+            return await appDbContext.Courses.FindAsync(id);
         }
 
-        public Task<Course> Create(string title, string desc, decimal price, string imgPath, string authorId)
+        public async Task<ApplicationUser> PurchaseCourse(int courseId, string userId)
         {
-            throw new NotImplementedException();
+            var user = await userRepository.GetUserById(userId);
+            Course course = await appDbContext.Courses.FirstOrDefaultAsync(u => u.Id == courseId);
+            decimal coursePrice = course.Price;
+
+            if (coursePrice > user.Money)
+            {
+                throw new Exception("Not enough money");
+            }
+
+            user.Money -= coursePrice;
+
+            user.Courses.Add(course);
+            await appDbContext.SaveChangesAsync();
+
+            return user;
         }
     }
 }

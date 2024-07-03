@@ -1,5 +1,6 @@
 ﻿using Application.Abstractions.Repositories;
 using Application.Abstractions.Services;
+using Domain.Entities;
 using Domain.Entities.Identity;
 using System.Text.RegularExpressions;
 
@@ -12,7 +13,7 @@ namespace Application.Services
     {
         public async Task<string> Login(string userName, string password)
         {
-            var user = await userRepository.GetByUserName(userName);
+            var user = await userRepository.GetUserByUserName(userName);
 
             var result = passwordHasher.Verify(password, user.PasswordHash);
 
@@ -42,7 +43,7 @@ namespace Application.Services
         
             var user = userRepository.Add(userName, email, hashedPassword);
 
-            var registeredUser = await userRepository.GetByUserName(userName);
+            var registeredUser = await userRepository.GetUserByUserName(userName);
 
             var defaultRole = await userRepository.GetDefaultUserRole();
 
@@ -62,6 +63,11 @@ namespace Application.Services
             var passwordRegex = new Regex(@"^(?=.*[a-zА-Я])(?=.*[A-ZА-Я])(?=.*\d)[A-Za-zА-Яа-я\d]{8,}$");
 
             return passwordRegex.IsMatch(password);
+        }
+
+        public Task<List<Course>> GetUserCourses(string userId)
+        {
+            return userRepository.GetUserCourses(userId);
         }
     }
 }
