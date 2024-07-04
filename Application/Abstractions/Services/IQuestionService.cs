@@ -9,5 +9,6 @@ namespace Application.Abstractions.Services
         Task<Question> GetById(int questionId);
         Task<Question> Create(CreateQuestionRequest request);
         Task<Question> Delete(int questionId);
+        Task<Question> Update(int questionId, string text);
     }
 }

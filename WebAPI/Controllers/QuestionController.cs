@@ -35,5 +35,12 @@ namespace WebAPI.Controllers
             var question = await questionService.Delete(questionId);
             return Ok(question);
         }
+
+        [HttpPost("update")]
+        public async Task<IActionResult> Update(int questionId, string text)
+        {
+            var question = await questionService.Update(questionId, text);
+            return Ok(question);
+        }
     }
 }

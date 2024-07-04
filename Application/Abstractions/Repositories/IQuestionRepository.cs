@@ -8,5 +8,6 @@ namespace Application.Abstractions.Repositories
         Task<Question> GetById(int questionId);
         Task<Question> Create(int order, int quizId, string Text, QuestionType type);
         Task<Question> Delete(int questionId);
+        Task<Question> Update(int questionId, string text);
     }
 }

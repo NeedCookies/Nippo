@@ -52,5 +52,19 @@ namespace Application.Services
 
             return await questionRepository.GetByQuiz(quizId);
         }
+
+        public async Task<Question> Update(int questionId, string text)
+        {
+            StringBuilder error = new StringBuilder();
+            if (questionId < 0)
+                error.AppendLine("Wrong question Id");
+            if (text == null || text.Length == 0)
+                error.AppendLine("Question text shouldn't be empty");
+
+            if (error.Length > 0)
+                throw new ArgumentException(error.ToString());
+
+            return await questionRepository.Update(questionId, text);
+        }
     }
 }

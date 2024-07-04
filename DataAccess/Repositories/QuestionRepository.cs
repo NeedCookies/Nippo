@@ -19,6 +19,11 @@ namespace DataAccess.Repositories
             return question;
         }
 
+        public Task<Question> Create(int order, int quizId, string Text, QuestionType type)
+        {
+            throw new NotImplementedException();
+        }
+
         public async Task<Question> Delete(int questionId)
         {
             var question = await dbContext.Questions.Where(q => q.Id == questionId).FirstOrDefaultAsync();
@@ -53,6 +58,19 @@ namespace DataAccess.Repositories
             return await dbContext.Questions.
                 Where(q => q.QuizId == quizId).
                 ToListAsync();
+        }
+
+        public async Task<Question> Update(int questionId, string text)
+        {
+            await dbContext.Questions.
+                Where(q => q.Id == questionId).ExecuteUpdateAsync(q =>
+                q.SetProperty(x => x.Text, x => text));
+
+            await dbContext.SaveChangesAsync();
+
+            return await dbContext.Questions.
+                Where(q => q.Id == questionId).
+                FirstAsync();
         }
     }
 }
