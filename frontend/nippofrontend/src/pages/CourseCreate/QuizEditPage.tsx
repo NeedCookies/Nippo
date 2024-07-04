@@ -42,26 +42,53 @@ function QuizEditPage() {
     //setQuestions([...questions, newQuestion]);
   };
 
-  const handleDeleteQuestion = (id: number) => {};
-  const handleEditQuestion = (question: any) => {};
+  const handleEditQuestion = (questionId: number) => {
+    setTaskModalOpen(true);
+  };
+
+  const handleDeleteQuestion = async (questionId: number) => {
+    try {
+      const response = await axios.delete(
+        `https://localhost:8080/answer/delete?questionId=${questionId}`
+      );
+
+      if (response.status === 200) {
+        fetchQuestions();
+      } else {
+        console.log(response.status);
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const fetchQuestions = async () => {
+    try {
+      const response = await axios.get(
+        `/Question/get-by-quiz?quizId=${quizId}`
+      );
+      const questions = response.data;
+
+      const questionsWithAnswers = await Promise.all(
+        questions.map(async (question: Question) => {
+          const answerResponse = await axios.get(
+            `https://localhost:8080/answer/get-by-question?questionId=${question.id}`
+          );
+          return { ...question, answers: answerResponse.data };
+        })
+      );
+
+      questionsWithAnswers.sort((a, b) => a.order - b.order);
+
+      setQuestions(questionsWithAnswers);
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   useEffect(() => {
-    /*async () => {
-      try {
-        const response = await axios.get(
-          `https://localhost:8080/quiz/get-quiz?quizId=${quizId}`
-        );
-        if (response.status === 200) {
-          setQuizTitle(response.data.Title);
-        } else {
-          console.log(response.status);
-        }
-      } catch (error) {
-        console.error(error);
-      }
-    };*/
-    setQuizTitle("afaf");
-  });
+    fetchQuestions();
+  }, [isTaskModalOpen, quizId]);
 
   useEffect(() => {
     axios
@@ -167,7 +194,7 @@ function QuizEditPage() {
                 variant="contained"
                 size="small"
                 sx={{ marginY: 1 }}
-                onClick={() => handleEditQuestion(question)}>
+                onClick={() => handleEditQuestion(question.id)}>
                 Редактировать
               </Button>
             </Box>
