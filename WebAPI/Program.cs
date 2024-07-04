@@ -8,6 +8,7 @@ using Infrastructure.Options;
 using Microsoft.AspNetCore.Identity;
 using Domain.Entities.Identity;
 using Microsoft.Extensions.Options;
+using WebAPI.Middlewares;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -35,6 +36,8 @@ builder.Services.AddAuthorization(options =>
     options.AddPolicy("RequireAdminRole", policy => policy.RequireRole("admin"));
 });
 
+builder.Services.AddCorsWithFrontendPolicy();
+
 var app = builder.Build();
 
 //В случае если приложение запускается в первый раз, и база данных не создана - будут выполнены миграции
@@ -58,11 +61,14 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+app.UseCors("Frontend");
+
 app.UseHttpsRedirection();
+
+app.UseMiddleware<AuthorizationMiddleware>();
 
 app.UseAuthentication();
 app.UseAuthorization();
-
 app.MapControllers();
 
 app.Run();

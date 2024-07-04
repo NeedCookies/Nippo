@@ -1,4 +1,3 @@
-﻿using Infrastructure;
 using Infrastructure.Options;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.Options;
@@ -13,7 +12,12 @@ namespace WebAPI.Extensions
             this IServiceCollection services,
             IOptions<JwtOptions> jwtOptions)
         {
-            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+            services.AddAuthentication(options =>
+                {
+                    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+                    options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+                })
                 .AddJwtBearer(JwtBearerDefaults.AuthenticationScheme, options =>
                 {
                     options.TokenValidationParameters = new()
@@ -23,15 +27,6 @@ namespace WebAPI.Extensions
                         ValidateLifetime = true,
                         ValidateIssuerSigningKey = true,
                         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtOptions.Value.SecretKey))
-                    };
-
-                    options.Events = new JwtBearerEvents
-                    {
-                        OnMessageReceived = context =>
-                        {
-                            context.Token = context.Request.Cookies["jwt-token-cookie"];
-                            return Task.CompletedTask;
-                        }
                     };
                 });
 

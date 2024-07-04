@@ -10,7 +10,8 @@ namespace Application.Services
 {
     public class UserService(
         IPasswordHasher passwordHasher, 
-        IUserRepository userRepository, 
+        IUserRepository userRepository,
+        IUnitOfWork unitOfWork,
         IJwtProvider jwtProvider,
         IUserCoursesRepository userCoursesRepository,
         ICourseRepository courseRepository,
@@ -31,13 +32,32 @@ namespace Application.Services
             {
                 FirstName = user.FirstName,
                 LastName = user.LastName,
-                BirthDate = user.BirthDate,
+                BirthDate = user.BirthDate.HasValue
+                    ? user.BirthDate.Value.ToString("yyyy-MM-dd")
+                    : null,
                 Email = user.Email,
+                PhoneNumber = user.PhoneNumber,
                 PictureUrl = user.PictureUrl,
                 Points = user.Points,
                 Role = userRoles.First(),
                 UserName = user.UserName
             };
+        }
+
+        public async Task<PersonalInfoDto> GivePointsToUser(string userId, int points)
+        {
+            var user = await userRepository.GetByUserId(userId);
+
+            if (user == null)
+            {
+                throw new ArgumentException("User with such Id was not found");
+            }
+
+            user.Points += points;
+
+            await unitOfWork.SaveChangesAsync();
+            
+            return await GetUserInfoById(userId);
         }
 
         public async Task<string> Login(string userName, string password)
@@ -97,6 +117,27 @@ namespace Application.Services
             }
 
             return userCourses;
+        }
+
+        public async Task<PersonalInfoDto> UpdateUserInfo(string userId, UserInfoUpdateRequest updateRequest, Stream pictureStream)
+        {
+            var user = await userRepository.GetByUserId(userId);
+            
+            if(user == null)
+            {
+                throw new ArgumentException("User with such Id was not found");
+            }
+
+            user.FirstName = updateRequest.FirstName;
+            user.LastName = updateRequest.LastName;
+            user.PhoneNumber = updateRequest.PhoneNumber;
+            user.BirthDate = updateRequest.BirthDate == null 
+                ? null 
+                : DateOnly.ParseExact(updateRequest.BirthDate, "yyyy-MM-dd");
+
+            await unitOfWork.SaveChangesAsync();
+
+            return await GetUserInfoById(user.Id);
         }
 
         private bool IsValidEmail(string email)
