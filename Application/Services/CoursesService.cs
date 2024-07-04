@@ -2,13 +2,17 @@
 using Application.Abstractions.Services;
 using Application.Contracts;
 using Domain.Entities;
+using Domain.Entities.Identity;
+using Microsoft.AspNetCore.Identity;
 using System.Text;
 
 namespace Application.Services
 {
-    public class CoursesService(ICourseRepository courseRepository) : ICoursesService
+    public class CoursesService(
+        ICourseRepository courseRepository, 
+        IUserCoursesRepository userCoursesRepository) : ICoursesService
     {
-        public async Task<Course> Create(CreateCourseRequest request)
+        public async Task<Course> Create(CreateCourseRequest request, string authorId)
         {
             string title = request.Title;
             string descript = request.Description;
@@ -34,17 +38,25 @@ namespace Application.Services
                 throw new ArgumentException(error.ToString());
             }
 
-            return await courseRepository.Create(title, descript, price, imgPath);
+            return await courseRepository.Create(title, descript, price, imgPath, authorId);
         }
+
+        public async Task<Course> Update(UpdateCourseRequest request)
+        {
+            int id = request.id;
+            string title = request.Title;
+            string descript = request.Description;
+            decimal price = request.Price;
+            string imgPath = request.ImgPath;
+
+            return await courseRepository.Update(id, title, descript, price, imgPath);
+        }
+
+        public async Task<Course> Delete(int courseId) => await courseRepository.Delete(courseId);
 
         public async Task<List<Course>> GetAllCourses()
         {
             var allCourses = courseRepository.GetAllCourses();
-
-            /*if (allCourses == null)
-            {
-                throw new Exception();
-            }*/
 
             return await allCourses;
         }
@@ -59,6 +71,11 @@ namespace Application.Services
             }
 
             return course;
+        }
+
+        public async Task<UserCourses> PurchaseCourse(int courseId, string userId)
+        {
+            return await userCoursesRepository.Add(courseId, userId);
         }
     }
 }

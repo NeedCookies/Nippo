@@ -1,7 +1,11 @@
 ﻿using Application.Abstractions.Services;
 using Application.Contracts;
-using Application.Services;
+using Infrastructure;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
+using Microsoft.IdentityModel.Tokens;
+using System.IdentityModel.Tokens.Jwt;
+using System.Text;
 
 namespace WebAPI.Controllers
 {
@@ -29,8 +33,16 @@ namespace WebAPI.Controllers
             };
 
             HttpContext.Response.Cookies.Append("jwt-token-cookie", token, cookieOptions);
-            
+
             return Ok(token);
+        }
+
+        [HttpPost("logout")]
+        public IActionResult Logout()
+        {
+            HttpContext.Response.Cookies.Delete("jwt-token-cookie");
+
+            return Ok(new { message = "Logged out successfully" });
         }
     }
 }

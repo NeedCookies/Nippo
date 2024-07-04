@@ -1,16 +1,20 @@
 ﻿using Application.Abstractions.Repositories;
 using Application.Abstractions.Services;
+using Domain.Entities;
 using Application.Contracts;
 using Domain.Entities.Identity;
-using Microsoft.AspNetCore.Identity;
 using System.Text.RegularExpressions;
+using Microsoft.AspNetCore.Identity;
 
 namespace Application.Services
 {
     public class UserService(
         IPasswordHasher passwordHasher, 
-        IUserRepository userRepository, 
+        IUserRepository userRepository,
+        IUnitOfWork unitOfWork,
         IJwtProvider jwtProvider,
+        IUserCoursesRepository userCoursesRepository,
+        ICourseRepository courseRepository,
         UserManager<ApplicationUser> userManager) : IUserService
     {
         public async Task<PersonalInfoDto> GetUserInfoById(string userId)
@@ -28,13 +32,32 @@ namespace Application.Services
             {
                 FirstName = user.FirstName,
                 LastName = user.LastName,
-                BirthDate = user.BirthDate,
+                BirthDate = user.BirthDate.HasValue
+                    ? user.BirthDate.Value.ToString("yyyy-MM-dd")
+                    : null,
                 Email = user.Email,
+                PhoneNumber = user.PhoneNumber,
                 PictureUrl = user.PictureUrl,
                 Points = user.Points,
                 Role = userRoles.First(),
                 UserName = user.UserName
             };
+        }
+
+        public async Task<PersonalInfoDto> GivePointsToUser(string userId, int points)
+        {
+            var user = await userRepository.GetByUserId(userId);
+
+            if (user == null)
+            {
+                throw new ArgumentException("User with such Id was not found");
+            }
+
+            user.Points += points;
+
+            await unitOfWork.SaveChangesAsync();
+            
+            return await GetUserInfoById(userId);
         }
 
         public async Task<string> Login(string userName, string password)
@@ -67,7 +90,7 @@ namespace Application.Services
 
             var hashedPassword = passwordHasher.Generate(password);
         
-            var user = userRepository.Add(userName, email, hashedPassword);
+            var user = await userRepository.Add(userName, email, hashedPassword);
 
             var registeredUser = await userRepository.GetByUserName(userName);
 
@@ -75,7 +98,46 @@ namespace Application.Services
 
             await userRepository.AssignRole(registeredUser, defaultRole.Id);
 
-            return await user;
+            return user;
+        }
+
+        public async Task<List<Course>> GetUserCourses(string userId)
+        {
+            List<Course> userCourses = new List<Course>();
+            var coursesId = await userCoursesRepository.GetUserCourses(userId);
+
+            foreach(var courseId in coursesId) 
+            {
+                var course = await courseRepository.GetById(courseId);
+
+                if(course != null)
+                {
+                    userCourses.Add(course);
+                }
+            }
+
+            return userCourses;
+        }
+
+        public async Task<PersonalInfoDto> UpdateUserInfo(string userId, UserInfoUpdateRequest updateRequest, Stream pictureStream)
+        {
+            var user = await userRepository.GetByUserId(userId);
+            
+            if(user == null)
+            {
+                throw new ArgumentException("User with such Id was not found");
+            }
+
+            user.FirstName = updateRequest.FirstName;
+            user.LastName = updateRequest.LastName;
+            user.PhoneNumber = updateRequest.PhoneNumber;
+            user.BirthDate = updateRequest.BirthDate == null 
+                ? null 
+                : DateOnly.ParseExact(updateRequest.BirthDate, "yyyy-MM-dd");
+
+            await unitOfWork.SaveChangesAsync();
+
+            return await GetUserInfoById(user.Id);
         }
 
         private bool IsValidEmail(string email)

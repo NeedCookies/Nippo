@@ -1,4 +1,5 @@
 ﻿using Domain.Entities.Identity;
+using System.Text.Json.Serialization;
 
 namespace Domain.Entities
 {
@@ -13,5 +14,7 @@ namespace Domain.Entities
         public string? ImgPath { get; set; }
         public ICollection<Lesson>? Lessons { get; set; } 
         public ICollection<Quiz>? Quizes { get; set; }
+        [JsonIgnore]
+        public ICollection<UserCourses>? UserCourses { get; set; }
     }
 }

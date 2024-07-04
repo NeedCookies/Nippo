@@ -16,6 +16,7 @@ namespace DataAccess
         public DbSet<Quiz> Quizzes => Set<Quiz>();
         public DbSet<QuizResult> QuizResults => Set<QuizResult>();
         public DbSet<UserAnswer> UserAnswers => Set<UserAnswer>();
+        public DbSet<UserCourses> UserCourses => Set<UserCourses>();
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -27,6 +28,7 @@ namespace DataAccess
             modelBuilder.ApplyConfiguration(new QuizEntityConfiguration());
             modelBuilder.ApplyConfiguration(new QuizResultEntityConfiguration());
             modelBuilder.ApplyConfiguration(new UserAnswerEntityConfiguration());
+            modelBuilder.ApplyConfiguration(new UserCoursesConfiguration());
 
             SeedRoles(modelBuilder);
 

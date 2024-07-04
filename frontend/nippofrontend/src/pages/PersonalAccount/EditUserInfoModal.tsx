@@ -44,12 +44,12 @@ export const EditUserInfoModal = ({ open, onClose, userInfo, onUserInfoUpdate }:
         try {
             if (updatedUserInfo) {
                 const formData = new FormData();
-                formData.append("firstName", updatedUserInfo.firstName || "");
-                formData.append("lastName", updatedUserInfo.lastName || "");
-                formData.append("phoneNumber", updatedUserInfo.phoneNumber || "");
-                formData.append("birthDate", updatedUserInfo.birthDate || "");
+                formData.append("FirstName", updatedUserInfo.firstName || "");
+                formData.append("LastName", updatedUserInfo.lastName || "");
+                formData.append("PhoneNumber", updatedUserInfo.phoneNumber || "");
+                formData.append("BirthDate", updatedUserInfo.birthDate || "");
                 if (selectedFile) {
-                    formData.append("picture", selectedFile);
+                    formData.append("userPicture", selectedFile);
                 }
 
                 const response = await axios.post("user/update-personal-info", formData, {

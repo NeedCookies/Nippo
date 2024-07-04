@@ -18,7 +18,14 @@ namespace Infrastructure.Services
         public async Task<string> GenerateAsync(ApplicationUser user)
         {
             var userRoles = await userManager.GetRolesAsync(user);
-            Claim[] claims = [new("userId", user.Id), new(ClaimTypes.Role, userRoles.First())];
+            //Claim[] claims = [new("userId", user.Id), new(ClaimTypes.Role, userRoles.First())];
+
+            var claims = new List<Claim>
+            {
+                new Claim("userId", user.Id)
+            };
+
+            claims.AddRange(userRoles.Select(role => new Claim(ClaimTypes.Role, role)));
 
             var signingCredentials = new SigningCredentials(
                 new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_options.SecretKey)),
@@ -32,6 +39,26 @@ namespace Infrastructure.Services
             var tokenValue = new JwtSecurityTokenHandler().WriteToken(token);
 
             return tokenValue;
+        }
+
+        public async Task<string> GetUserId(string token)
+        {
+            var tokenHandler = new JwtSecurityTokenHandler();
+            var key = Encoding.UTF8.GetBytes(options.Value.SecretKey);
+
+            var principal = tokenHandler.ValidateToken(token, new TokenValidationParameters
+            {
+                ValidateIssuer = false,
+                ValidateAudience = false,
+                ValidateLifetime = true,
+                ValidateIssuerSigningKey = true,
+                IssuerSigningKey = new SymmetricSecurityKey(key),
+                ValidateTokenReplay = false
+            }, out SecurityToken validatedToken);
+
+            var userIdClaim = principal.Claims.FirstOrDefault(c => c.Type == "userId");
+
+            return userIdClaim.Value;
         }
     }
 }

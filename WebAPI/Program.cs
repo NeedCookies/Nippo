@@ -7,6 +7,8 @@ using WebAPI.Extensions;
 using Infrastructure.Options;
 using Microsoft.AspNetCore.Identity;
 using Domain.Entities.Identity;
+using Microsoft.Extensions.Options;
+using WebAPI.Middlewares;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -16,6 +18,8 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.Configure<JwtOptions>(builder.Configuration.GetSection(nameof(JwtOptions)));
 
+var jwtOptions = builder.Services.BuildServiceProvider().GetRequiredService<IOptions<JwtOptions>>();
+
 builder.Services.AddIdentity<ApplicationUser, AppRole>()
     .AddEntityFrameworkStores<AppDbContext>()
     .AddDefaultTokenProviders();
@@ -23,9 +27,16 @@ builder.Services.AddIdentity<ApplicationUser, AppRole>()
 builder.Services.AddDbContext(builder.Configuration);
 builder.Services.AddAppRepositories();
 builder.Services.AddInfrastructureServices();
+builder.Services.AddIdentityServices();
 builder.Services.AddAppServices();
 
-builder.Services.AddApiAuthentication(builder.Configuration);
+builder.Services.AddApiAuthentication(jwtOptions);
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("RequireAdminRole", policy => policy.RequireRole("admin"));
+});
+
+builder.Services.AddCorsWithFrontendPolicy();
 
 var app = builder.Build();
 
@@ -50,13 +61,14 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+app.UseCors("Frontend");
+
 app.UseHttpsRedirection();
+
+app.UseMiddleware<AuthorizationMiddleware>();
 
 app.UseAuthentication();
 app.UseAuthorization();
-
-app.UseAuthorization();
-
 app.MapControllers();
 
 app.Run();

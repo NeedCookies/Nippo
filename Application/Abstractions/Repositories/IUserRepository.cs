@@ -1,4 +1,6 @@
-﻿using Domain.Entities.Identity;
+﻿using Domain.Entities;
+using Domain.Entities.Identity;
+
 
 namespace Application.Abstractions.Repositories
 {
@@ -9,5 +11,6 @@ namespace Application.Abstractions.Repositories
         Task<ApplicationUser?> GetByUserId(string userId);
         Task<AppRole> GetDefaultUserRole();
         Task AssignRole(ApplicationUser user, string roleId);
+        Task<List<Course>> GetUserCourses(string userId);
     }
 }
