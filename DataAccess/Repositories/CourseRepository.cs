@@ -2,7 +2,6 @@
 using Domain.Entities;
 using Domain.Entities.Identity;
 using Microsoft.EntityFrameworkCore;
-using System;
 
 namespace DataAccess.Repositories
 {
@@ -30,6 +29,35 @@ namespace DataAccess.Repositories
 
             return course;
         }
+
+        public async Task<Course> Update(int id, string title, string desc, decimal price, string imgPath)
+        {
+            var course = await _appDbContext.Courses.FindAsync(id);
+
+            course.Title = title;
+            course.Description = desc;
+            course.Price = price;
+            course.ImgPath = imgPath;
+
+            _appDbContext.Update(course);
+            await _appDbContext.SaveChangesAsync();
+
+            return course;
+        }
+
+        public async Task<Course> Delete(int courseId)
+        {
+            var course = await _appDbContext.Courses.FindAsync(courseId);
+
+            if(course != null)
+            {
+                _appDbContext.Courses.Remove(course);
+                await _appDbContext.SaveChangesAsync();
+            }
+
+            return course;
+        }
+
         public Task<List<Course>> GetCoursesByAuthorAsync(int authorId)
         {
             throw new NotImplementedException();

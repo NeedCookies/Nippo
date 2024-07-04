@@ -63,6 +63,23 @@ namespace WebAPI.Controllers
             return Ok(result);
         }
 
+        [Authorize(Roles = "admin")]
+        [HttpPost("edit-course")]
+        public async Task<IActionResult> Update([FromBody] UpdateCourseRequest request)
+        {
+            var course = await coursesService.Update(request);
+            return Ok(course);
+        }
+
+        [Authorize(Roles = "admin")]
+        [HttpDelete("delete-course")]
+        public async Task<IActionResult> Delete(int courseId)
+        {
+            var course = await coursesService.Delete(courseId);
+            return Ok(course);
+        }
+
+
         [HttpGet("test-query")]
         public async Task<IActionResult> TestQuery() => Ok("Aboba");
     }

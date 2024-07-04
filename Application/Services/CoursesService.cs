@@ -8,7 +8,9 @@ using System.Text;
 
 namespace Application.Services
 {
-    public class CoursesService(ICourseRepository courseRepository) : ICoursesService
+    public class CoursesService(
+        ICourseRepository courseRepository, 
+        IUserCoursesRepository userCoursesRepository) : ICoursesService
     {
         public async Task<Course> Create(CreateCourseRequest request, string authorId)
         {
@@ -39,6 +41,19 @@ namespace Application.Services
             return await courseRepository.Create(title, descript, price, imgPath, authorId);
         }
 
+        public async Task<Course> Update(UpdateCourseRequest request)
+        {
+            int id = request.id;
+            string title = request.Title;
+            string descript = request.Description;
+            decimal price = request.Price;
+            string imgPath = request.ImgPath;
+
+            return await courseRepository.Update(id, title, descript, price, imgPath);
+        }
+
+        public async Task<Course> Delete(int courseId) => await courseRepository.Delete(courseId);
+
         public async Task<List<Course>> GetAllCourses()
         {
             var allCourses = courseRepository.GetAllCourses();
@@ -58,9 +73,9 @@ namespace Application.Services
             return course;
         }
 
-        public async Task<ApplicationUser> PurchaseCourse(int courseId, string userId)
+        public async Task<UserCourses> PurchaseCourse(int courseId, string userId)
         {
-            return await courseRepository.PurchaseCourse(courseId, userId);
+            return await userCoursesRepository.Add(courseId, userId);
         }
     }
 }
