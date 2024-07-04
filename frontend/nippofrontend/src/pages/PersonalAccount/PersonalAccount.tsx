@@ -36,6 +36,7 @@ export const PersonalAccount = () => {
             lastName: updatedUserInfo.lastName,
             phoneNumber: updatedUserInfo.phoneNumber,
             birthDate: updatedUserInfo.birthDate,
+            pictureUrl: updatedUserInfo.pictureUrl
         }));
     };
 

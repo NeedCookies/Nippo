@@ -12,6 +12,7 @@ namespace DataAccess.Extensions
             services.AddScoped<ILessonRepository, LessonRepository>();
             services.AddScoped<IBlockRepository, BlockRepository>();
             services.AddScoped<IUserRepository, UserRepository>();
+            services.AddScoped<IUnitOfWork, UnitOfWork>();
 
             return services;
         }
