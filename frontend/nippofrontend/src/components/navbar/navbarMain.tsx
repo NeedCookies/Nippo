@@ -1,7 +1,6 @@
 import Container from "react-bootstrap/Container";
 import Nav from "react-bootstrap/Nav";
 import Navbar from "react-bootstrap/Navbar";
-import NavDropdown from "react-bootstrap/NavDropdown";
 import Image from "react-bootstrap/Image";
 import AppUser from "../Interfaces.js";
 import NavbarPages from "./navbarPages.js";
@@ -19,7 +18,7 @@ function NippoNavbar({ nick, points }: AppUser) {
         className="d-flex justify-content-between align-items-center">
         <div className="d-flex align-items-center">
           <Nav.Item className="justify-content-end">
-            <Navbar.Brand href="#home">
+            <Navbar.Brand href="/courses">
               <Image
                 src={logo}
                 className="d-inline-block align-center"
@@ -31,7 +30,7 @@ function NippoNavbar({ nick, points }: AppUser) {
             </Navbar.Brand>
           </Nav.Item>
           <Nav.Item>
-            <Nav.Link eventKey={"#home"} className="text-light">
+            <Nav.Link eventKey={"/courses"} className="text-light">
               <h2 className="text-uppercase">Nippo</h2>
             </Nav.Link>
           </Nav.Item>

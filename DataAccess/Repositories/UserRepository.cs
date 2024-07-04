@@ -20,7 +20,7 @@ namespace DataAccess.Repositories
                 UserName = userName,
                 Email = email,
                 PasswordHash = password,
-                Money = 1500
+                Points = 1500
             };
 
             await _appDbContext.Users.AddAsync(user);
@@ -41,15 +41,14 @@ namespace DataAccess.Repositories
             await _appDbContext.SaveChangesAsync();
         }
 
-        public async Task<ApplicationUser> GetUserById(string id)
+        public async Task<ApplicationUser?> GetByUserId(string userId)
         {
-            var userEntity = await _appDbContext.Users.FirstOrDefaultAsync(u => u.Id == id)
-                ?? throw new Exception();
+            var user = await appDbContext.Users.FindAsync(userId);
 
-            return userEntity;
+            return user;
         }
 
-        public async Task<ApplicationUser> GetUserByUserName(string userName)
+        public async Task<ApplicationUser> GetByUserName(string userName)
         {
             var userEntity = await _appDbContext.Users
                 .AsNoTracking()

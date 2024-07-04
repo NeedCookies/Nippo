@@ -1,8 +1,10 @@
 ﻿using Application.Abstractions.Repositories;
 using Application.Abstractions.Services;
 using Domain.Entities;
+using Application.Contracts;
 using Domain.Entities.Identity;
 using System.Text.RegularExpressions;
+using Microsoft.AspNetCore.Identity;
 
 namespace Application.Services
 {
@@ -11,20 +13,45 @@ namespace Application.Services
         IUserRepository userRepository, 
         IJwtProvider jwtProvider,
         IUserCoursesRepository userCoursesRepository,
-        ICourseRepository courseRepository) : IUserService
+        ICourseRepository courseRepository,
+        UserManager<ApplicationUser> userManager) : IUserService
     {
+        public async Task<PersonalInfoDto> GetUserInfoById(string userId)
+        {
+            var user = await userRepository.GetByUserId(userId);
+
+            if (user == null)
+            {
+                throw new ArgumentException("User with such Id was not found");
+            }
+
+            var userRoles = await userManager.GetRolesAsync(user);
+
+            return new PersonalInfoDto()
+            {
+                FirstName = user.FirstName,
+                LastName = user.LastName,
+                BirthDate = user.BirthDate,
+                Email = user.Email,
+                PictureUrl = user.PictureUrl,
+                Points = user.Points,
+                Role = userRoles.First(),
+                UserName = user.UserName
+            };
+        }
+
         public async Task<string> Login(string userName, string password)
         {
-            var user = await userRepository.GetUserByUserName(userName);
+            var user = await userRepository.GetByUserName(userName);
 
-            var result = passwordHasher.Verify(password, user.PasswordHash);
+            var result = passwordHasher.Verify(password, user.PasswordHash!);
 
             if(result == false)
             {
                 throw new Exception("Failed to login");
             }
 
-            var token = await jwtProvider.Generate(user);
+            var token = await jwtProvider.GenerateAsync(user);
 
             return token;
         }
@@ -45,7 +72,7 @@ namespace Application.Services
         
             var user = await userRepository.Add(userName, email, hashedPassword);
 
-            var registeredUser = await userRepository.GetUserByUserName(userName);
+            var registeredUser = await userRepository.GetByUserName(userName);
 
             var defaultRole = await userRepository.GetDefaultUserRole();
 

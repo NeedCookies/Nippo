@@ -1,0 +1,99 @@
+.profile-page-container {
+    padding: 3rem 12rem;
+}
+
+.user-info-container{
+    display: flex;
+    flex-direction: row;
+}
+
+.username-wrapper{
+    padding-top: 1rem;
+    text-align: center;
+    font-size: 2rem;
+    font-weight: 400;
+}
+
+.personal-info-wrapper{
+    padding-left: 5rem;
+    max-height: 230px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    font-size: 20px;
+    margin-right: 10px;
+}
+
+.fullname{
+    font-size: 40px;
+    font-weight: 800;
+}
+
+.info-item {
+    display: flex;
+    align-items: center;
+    font-size: 1.1rem;
+    word-break: keep-all;
+}
+
+.info-label {
+    font-weight: 600;
+    margin-left: 5px;
+}
+
+.info-value {
+    font-weight: 400;
+    margin-left: 10px;
+}
+
+.points-wrapper {
+    margin-left: auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 230px;
+    height: 230px;
+    min-width: 230px;
+    padding: 2.5rem 1rem;
+}
+
+.points {
+    background-color: #ffcc00;
+    height: 60%;
+    width: 100%;
+    border-radius: 30%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    font-size: 40px;
+}
+
+.profile-navigation{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    margin-top: 3rem;
+    flex-wrap: wrap;
+}
+
+.nav-button{
+    padding: 1rem;
+    border: none;
+    width: 250px;
+    height: 90px;
+    font-size: 20px;
+    border-radius: 1.5rem;
+    overflow-wrap: break-word;
+    white-space: pre-line;
+}
+
+.profile-nav-link{
+    margin-top: 5px;
+    border-radius: 1.5rem;
+}
+
+.nav-button:hover{
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.4);
+}

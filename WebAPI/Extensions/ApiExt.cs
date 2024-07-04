@@ -1,4 +1,5 @@
 ﻿using Infrastructure;
+using Infrastructure.Options;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
@@ -9,7 +10,7 @@ namespace WebAPI.Extensions
     public static class ApiExt
     {
         public static void AddApiAuthentication(
-            this IServiceCollection services, 
+            this IServiceCollection services,
             IOptions<JwtOptions> jwtOptions)
         {
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)

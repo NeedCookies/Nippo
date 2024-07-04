@@ -4,7 +4,7 @@ namespace Application.Abstractions.Services
 {
     public interface IJwtProvider
     {
-        Task<string> Generate(ApplicationUser user);
         Task<string> GetUserId(string token);
+        Task<string> GenerateAsync(ApplicationUser user);
     }
 }

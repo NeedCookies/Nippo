@@ -70,16 +70,16 @@ namespace DataAccess.Repositories
 
         public async Task<ApplicationUser> PurchaseCourse(int courseId, string userId)
         {
-            var user = await userRepository.GetUserById(userId);
+            var user = await userRepository.GetByUserId(userId);
             Course course = await _appDbContext.Courses.FirstOrDefaultAsync(u => u.Id == courseId);
             decimal coursePrice = course.Price;
 
-            if (coursePrice > user.Money)
+            if (coursePrice > user.Points)
             {
                 throw new Exception("Not enough money");
             }
 
-            user.Money -= coursePrice;
+            user.Points -= (int)coursePrice;
 
             if (user.Courses == null)
             {

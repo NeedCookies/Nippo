@@ -1,4 +1,4 @@
-import CourseCardProps from "./CourseCardProps";
+import CourseCardProps from "./courseCardProps";
 
 interface CourseListGroupProps {
   cards: CourseCardProps[];
