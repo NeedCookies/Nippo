@@ -7,6 +7,7 @@ using WebAPI.Extensions;
 using Infrastructure.Options;
 using Microsoft.AspNetCore.Identity;
 using Domain.Entities.Identity;
+using WebAPI.Middlewares;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -26,6 +27,8 @@ builder.Services.AddInfrastructureServices();
 builder.Services.AddAppServices();
 
 builder.Services.AddApiAuthentication(builder.Configuration);
+
+builder.Services.AddCorsWithFrontendPolicy();
 
 var app = builder.Build();
 
@@ -50,11 +53,13 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+app.UseCors("Frontend");
+
 app.UseHttpsRedirection();
 
-app.UseAuthentication();
-app.UseAuthorization();
+app.UseMiddleware<AuthorizationMiddleware>();
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
