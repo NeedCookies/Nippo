@@ -6,8 +6,12 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import CreateCourse from "./pages/CourseCreate/createCoursePage";
 import QuizEditPage from "./pages/CourseCreate/QuizEditPage";
 import { PersonalAccount } from "./pages/PersonalAccount/PersonalAccount";
+import Userfront from "@userfront/toolkit/react";
+import { RegisterPage } from "./pages/RegisterPage";
+import { LoginPage } from "./pages/LoginPage";
 
 function App() {
+  Userfront.init("demo1234");
   return (
     <BrowserRouter>
       <NippoNavbar nick="Cookie" points={1500} userName="Emil" />
@@ -22,7 +26,9 @@ function App() {
           path="/course/:courseId/quiz/:quizId/edit"
           element={<QuizEditPage />}
         />
-        <Route path="/profile" element={<PersonalAccount/>}/>
+        <Route path="/profile" element={<PersonalAccount />} />
+        <Route path="/register" element={<RegisterPage />} />
+        <Route path="/login" element={<LoginPage />} />
       </Routes>
     </BrowserRouter>
   );
