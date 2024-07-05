@@ -38,7 +38,7 @@ function NippoNavbar({ nick, points }: AppUser) {
         <NavbarPages />
         <Navbar.Text>
           <a
-            href="#login"
+            href="/profile"
             className="text-uppercase font-weight-bold text-light mr-2 d-flex align-items-center">
             {nick}
           </a>

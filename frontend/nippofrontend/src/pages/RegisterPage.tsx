@@ -4,9 +4,9 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 export const RegisterPage = () => {
-  const [userName, setUserName] = useState<string>("Emil");
-  const [userEmail, setUserEmail] = useState<string>("emilkalim@gmail.com");
-  const [userPassword, setUserPassword] = useState<string>("Qwerty210");
+  const [userName, setUserName] = useState<string>("");
+  const [userEmail, setUserEmail] = useState<string>("");
+  const [userPassword, setUserPassword] = useState<string>("");
   const navigate = useNavigate();
 
   const handleRegister = () => {
@@ -18,7 +18,7 @@ export const RegisterPage = () => {
       const response = await axios.post("/auth/register", {
         userName: userName,
         Email: userEmail,
-        userPassword: userPassword,
+        Password: userPassword,
       });
 
       if (response.status === 200) {
