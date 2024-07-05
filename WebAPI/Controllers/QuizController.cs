@@ -8,7 +8,7 @@ namespace WebAPI.Controllers
     [Route("[controller]")]
     public class QuizController(IQuizService quizService) : ControllerBase
     {
-        [HttpGet]
+        [HttpGet("get-by-course")]
         public async Task<IActionResult> GetByCourse(int courseId)
         {
             var quizes = await quizService.GetByCourseId(courseId);

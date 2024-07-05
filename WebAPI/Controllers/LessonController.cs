@@ -10,7 +10,7 @@ namespace WebAPI.Controllers
     [Route("lesson")]
     public class LessonController(ILessonsService lessonsService) : ControllerBase
     {
-        [HttpGet("get-lessons-by-course")]
+        [HttpGet("get-by-course")]
         public async Task<IActionResult> GetLessonsByCourse(int courseId)
         {
             var lessons = await lessonsService.GetByCourseId(courseId);
