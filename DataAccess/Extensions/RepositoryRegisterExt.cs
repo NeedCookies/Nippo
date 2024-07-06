@@ -17,6 +17,7 @@ namespace DataAccess.Extensions
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<IUserCoursesRepository, UserCoursesRepository>();
             services.AddScoped<IUnitOfWork, UnitOfWork>();
+            services.AddScoped<IUserRolesRepository, UserRolesRepository>();
 
             return services;
         }

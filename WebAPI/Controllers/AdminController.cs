@@ -17,5 +17,29 @@ namespace WebAPI.Controllers
 
             return Ok(newUserInfo);
         }
+
+        [HttpGet("get-users-roles")]
+        public async Task<IActionResult> GetUserRoles()
+        {
+            var usersAndRoles = await userService.GetUsersAndRoles(); 
+            return Ok(usersAndRoles);
+        }
+
+        [HttpPost("generate-new-users")]
+        public async Task<IActionResult> GenerateUsers()
+        {
+            var users = await userService.GenerateUsers();
+            return Ok(users);
+        }
+
+        [HttpPost("assign-role")]
+        public async Task<IActionResult> AssignRole(string userId, string roleId)
+        {
+            await userService.AssignRole(userId, roleId);
+            var updatedUser = await userService.GetUserInfoById(userId);
+            return Ok(updatedUser);
+        }
+
+
     }
 }
