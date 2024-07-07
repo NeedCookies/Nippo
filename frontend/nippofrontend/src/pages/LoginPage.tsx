@@ -17,6 +17,7 @@ export const LoginPage = () => {
         Password: userPassword,
       });
       if (response.status === 200) {
+        sessionStorage.setItem("accessToken", response.data);
         navigate("/courses");
       } else {
         console.log(response.status);
