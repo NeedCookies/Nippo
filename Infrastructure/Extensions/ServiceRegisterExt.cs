@@ -10,6 +10,7 @@ namespace Infrastructure.Extensions
         {
             services.AddScoped<IPasswordHasher, PasswordHasher>();
             services.AddScoped<IJwtProvider, JwtProvider>();
+            services.AddScoped<IStorageService, MinIOStorageService>();
             return services;
         }
     }
