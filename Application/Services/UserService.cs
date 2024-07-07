@@ -5,17 +5,20 @@ using Application.Contracts;
 using Domain.Entities.Identity;
 using System.Text.RegularExpressions;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 
 namespace Application.Services
 {
     public class UserService(
-        IPasswordHasher passwordHasher, 
+        IPasswordHasher passwordHasher,
         IUserRepository userRepository,
         IUnitOfWork unitOfWork,
         IJwtProvider jwtProvider,
         IUserCoursesRepository userCoursesRepository,
+        IUserRolesRepository userRolesRepository,
         ICourseRepository courseRepository,
-        UserManager<ApplicationUser> userManager) : IUserService
+        UserManager<ApplicationUser> userManager,
+        RoleManager<AppRole> roleManager) : IUserService
     {
         public async Task<PersonalInfoDto> GetUserInfoById(string userId)
         {
@@ -56,7 +59,7 @@ namespace Application.Services
             user.Points += points;
 
             await unitOfWork.SaveChangesAsync();
-            
+
             return await GetUserInfoById(userId);
         }
 
@@ -66,7 +69,7 @@ namespace Application.Services
 
             var result = passwordHasher.Verify(password, user.PasswordHash!);
 
-            if(result == false)
+            if (result == false)
             {
                 throw new Exception("Failed to login");
             }
@@ -78,25 +81,25 @@ namespace Application.Services
 
         public async Task<ApplicationUser> Register(string userName, string email, string password)
         {
-            if(IsValidEmail(email) == false) 
+            if (IsValidEmail(email) == false)
             {
                 throw new ArgumentException("Invalid email address.");
             }
 
-            if(IsValidPassword(password) == false)
+            if (IsValidPassword(password) == false)
             {
                 throw new ArgumentException("Password does not meet the requirements.");
             }
 
             var hashedPassword = passwordHasher.Generate(password);
-        
+
             var user = await userRepository.Add(userName, email, hashedPassword);
 
             var registeredUser = await userRepository.GetByUserName(userName);
 
             var defaultRole = await userRepository.GetDefaultUserRole();
 
-            await userRepository.AssignRole(registeredUser, defaultRole.Id);
+            await userRolesRepository.AssignRole(registeredUser.Id, defaultRole.Id);
 
             return user;
         }
@@ -106,11 +109,11 @@ namespace Application.Services
             List<Course> userCourses = new List<Course>();
             var coursesId = await userCoursesRepository.GetUserCourses(userId);
 
-            foreach(var courseId in coursesId) 
+            foreach (var courseId in coursesId)
             {
                 var course = await courseRepository.GetById(courseId);
 
-                if(course != null)
+                if (course != null)
                 {
                     userCourses.Add(course);
                 }
@@ -122,8 +125,8 @@ namespace Application.Services
         public async Task<PersonalInfoDto> UpdateUserInfo(string userId, UserInfoUpdateRequest updateRequest, Stream pictureStream)
         {
             var user = await userRepository.GetByUserId(userId);
-            
-            if(user == null)
+
+            if (user == null)
             {
                 throw new ArgumentException("User with such Id was not found");
             }
@@ -131,13 +134,68 @@ namespace Application.Services
             user.FirstName = updateRequest.FirstName;
             user.LastName = updateRequest.LastName;
             user.PhoneNumber = updateRequest.PhoneNumber;
-            user.BirthDate = updateRequest.BirthDate == null 
-                ? null 
+            user.BirthDate = updateRequest.BirthDate == null
+                ? null
                 : DateOnly.ParseExact(updateRequest.BirthDate, "yyyy-MM-dd");
 
             await unitOfWork.SaveChangesAsync();
 
             return await GetUserInfoById(user.Id);
+        }
+
+        public async Task<List<GetUsersAndRolesRequest>> GetUsersAndRoles()
+        {
+            var users = await userRepository.GetAllUsers();
+            var roles = await roleManager.Roles.ToListAsync();
+            var userRoles = await userRolesRepository.GetUsersAndRoles();
+
+            var userDict = users.ToDictionary(u => u.Id, u => u.UserName);
+            var roleDict = roles.ToDictionary(r => r.Id, r => r.Name);
+
+            List<GetUsersAndRolesRequest> usersAndRoles = new List<GetUsersAndRolesRequest>();
+
+            foreach (var userRole in userRoles)
+            {
+                if (userDict.TryGetValue(userRole.UserId, out var userName) &&
+                    roleDict.TryGetValue(userRole.RoleId, out var roleName))
+                {
+                    usersAndRoles.Add(new GetUsersAndRolesRequest(
+                        userRole.UserId, 
+                        userName, 
+                        roleName));
+                }
+            }
+
+            return usersAndRoles;
+        }
+
+        public async Task<List<ApplicationUser>> GenerateUsers()
+        {
+            const int numberOfNewUsers = 5;
+            List<ApplicationUser> users = new List<ApplicationUser>();
+
+            for (int i = 0; i < numberOfNewUsers; i++)
+            {
+                string userName = $"user{i}_{Guid.NewGuid().ToString().Substring(0, 4)}";
+                string email = $"{userName}@example.com";
+                string defaultPassword = "Password123";
+
+                await Register(userName, email, defaultPassword);
+
+                users.Add(await userRepository.GetByUserName(userName));
+            }
+
+            return users;
+        }
+
+        public async Task AssignRole(string userId, string roleId)
+        {
+            if(await userRolesRepository.GetByUserId(userId) != null)
+            {
+                await userRolesRepository.RemoveRole(userId);
+            }
+
+            await userRolesRepository.AssignRole(userId, roleId);
         }
 
         private bool IsValidEmail(string email)
@@ -148,7 +206,7 @@ namespace Application.Services
 
         private bool IsValidPassword(string password)
         {
-            var passwordRegex = new Regex(@"^(?=.*[a-zА-Я])(?=.*[A-ZА-Я])(?=.*\d)[A-Za-zА-Яа-я\d]{8,}$");
+            var passwordRegex = new Regex(@"^(?=.*[a-zа-я])(?=.*[A-ZА-Я])(?=.*\d)[A-Za-zА-Яа-я\d]{8,}$");
 
             return passwordRegex.IsMatch(password);
         }
