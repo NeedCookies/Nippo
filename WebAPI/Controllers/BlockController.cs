@@ -43,5 +43,37 @@ namespace WebAPI.Controllers
             var block = await blockService.Create(request);
             return Ok(block); 
         }
+
+        [Authorize(Roles = "admin")]
+        [HttpPost("update-block")]
+        public async Task<IActionResult> Update([FromBody] UpdateBlockRequest request)
+        {
+            var block = await blockService.UpdateContent(request);
+            return Ok(block);
+        }
+
+        [Authorize(Roles = "admin")]
+        [HttpPost("delete-block")]
+        public async Task<IActionResult> Delete(int id)
+        {
+            var block = await blockService.Delete(id);
+            return Ok(block);
+        }
+
+        [Authorize(Roles = "admin")]
+        [HttpPost("move-up")]
+        public async Task<IActionResult> RaiseBlockUp(int id)
+        {
+            var block = await blockService.RaiseBlockUp(id);
+            return Ok(block);
+        }
+
+        [Authorize(Roles = "admin")]
+        [HttpPost("move-down")]
+        public async Task<IActionResult> LowerBlockDown(int id)
+        {
+            var block = await blockService.LowerBlockDown(id);
+            return Ok(block);
+        }
     }
 }

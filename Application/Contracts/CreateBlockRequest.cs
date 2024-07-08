@@ -1,4 +1,6 @@
-﻿namespace Application.Contracts
+﻿using Domain.Entities;
+
+namespace Application.Contracts
 {
     public record CreateBlockRequest
         (
