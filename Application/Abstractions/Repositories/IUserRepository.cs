@@ -9,8 +9,8 @@ namespace Application.Abstractions.Repositories
         Task<ApplicationUser> Add(string userName, string email, string password);
         Task<ApplicationUser> GetByUserName(string userName);
         Task<ApplicationUser?> GetByUserId(string userId);
+        Task<List<ApplicationUser>> GetAllUsers();
         Task<AppRole> GetDefaultUserRole();
-        Task AssignRole(ApplicationUser user, string roleId);
         Task<List<Course>> GetUserCourses(string userId);
     }
 }

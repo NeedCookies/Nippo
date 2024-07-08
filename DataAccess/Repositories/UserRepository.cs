@@ -29,18 +29,6 @@ namespace DataAccess.Repositories
             return user;
         }
 
-        public async Task AssignRole(ApplicationUser user, string roleId)
-        {
-            var userRole = new IdentityUserRole<string>
-            {
-                UserId = user.Id,
-                RoleId = roleId
-            };
-
-            _appDbContext.UserRoles.Add(userRole);
-            await _appDbContext.SaveChangesAsync();
-        }
-
         public async Task<ApplicationUser?> GetByUserId(string userId)
         {
             var user = await appDbContext.Users.FindAsync(userId);
@@ -76,6 +64,11 @@ namespace DataAccess.Repositories
                 .FirstOrDefaultAsync(u => u.Id == userId);
 
             return user.Courses.ToList();
+        }
+
+        public async Task<List<ApplicationUser>> GetAllUsers()
+        {
+            return await _appDbContext.Users.ToListAsync();
         }
     }
 }
