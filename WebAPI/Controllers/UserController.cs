@@ -15,7 +15,7 @@ namespace WebAPI.Controllers
         public async Task<IActionResult> GetUserCourses()
         {
             string token = HttpContext.Request.Cookies["jwt-token-cookie"];
-            string userId = await jwtProvider.GetUserId(token);
+            string userId = GetUserId();
             if(userId == null)
             {
                 throw new Exception("userId is null");
