@@ -18,14 +18,7 @@ namespace Infrastructure.Services
         public async Task<string> GenerateAsync(ApplicationUser user)
         {
             var userRoles = await userManager.GetRolesAsync(user);
-            //Claim[] claims = [new("userId", user.Id), new(ClaimTypes.Role, userRoles.First())];
-
-            var claims = new List<Claim>
-            {
-                new Claim("userId", user.Id)
-            };
-
-            claims.AddRange(userRoles.Select(role => new Claim(ClaimTypes.Role, role)));
+            Claim[] claims = [new("userId", user.Id), new(ClaimTypes.Role, userRoles.First())];
 
             var signingCredentials = new SigningCredentials(
                 new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_options.SecretKey)),

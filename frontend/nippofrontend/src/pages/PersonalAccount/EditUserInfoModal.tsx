@@ -49,7 +49,7 @@ export const EditUserInfoModal = ({ open, onClose, userInfo, onUserInfoUpdate }:
                 formData.append("PhoneNumber", updatedUserInfo.phoneNumber || "");
                 formData.append("BirthDate", updatedUserInfo.birthDate || "");
                 if (selectedFile) {
-                    formData.append("userPicture", selectedFile);
+                    formData.append("UserPictureFile", selectedFile);
                 }
 
                 const response = await axios.post("user/update-personal-info", formData, {
