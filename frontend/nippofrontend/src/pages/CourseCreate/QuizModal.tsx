@@ -25,8 +25,8 @@ export const QuizModal = ({
   const [title, setTitle] = useState("");
 
   const handleAddQuiz = async () => {
-    /*try {
-      const response = await axios.post("https://localhost:8080/quiz/create", {
+    try {
+      const response = await axios.post("/quiz/create", {
         courseId: courseId,
         Title: title,
       });
@@ -36,9 +36,7 @@ export const QuizModal = ({
       }
     } catch (error) {
       console.error("Can't create quiz ", error);
-    }*/
-    quizId = 1;
-    navigate(`/course/${courseId}/quiz/${quizId}/edit`);
+    }
   };
 
   return (

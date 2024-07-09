@@ -24,10 +24,15 @@ interface Answer {
   text: string;
 }
 
-export const TaskModal = ({ type, isOpen, handleClose, quizId }: TaskProps) => {
+export const TaskCreateModal = ({
+  type,
+  isOpen,
+  handleClose,
+  quizId,
+}: TaskProps) => {
   const [task, setTask] = useState({
     question: "",
-    answers: [] as Answer[],
+    answers: [{ id: 1, text: "Ответ", isCorrect: true }] as Answer[],
   });
 
   const [questionId, setQuestionId] = useState<number>();
@@ -73,16 +78,16 @@ export const TaskModal = ({ type, isOpen, handleClose, quizId }: TaskProps) => {
 
   const handleAddTask = async () => {
     try {
-      const response = await axios.post(
-        "https://localhost:8080/queston/create",
-        {
-          QuizId: quizId,
-          Text: task.question,
-          Type: type,
-        }
-      );
+      const response = await axios.post("/question/create", {
+        quizId: quizId,
+        text: task.question,
+        type: type,
+      });
       if (response.status === 200) {
         setQuestionId(response.data.id);
+      } else {
+        console.log("Another response status");
+        console.log(response.status);
       }
     } catch (error) {
       console.error(error);
@@ -90,14 +95,11 @@ export const TaskModal = ({ type, isOpen, handleClose, quizId }: TaskProps) => {
 
     task.answers.map(async (ans) => {
       try {
-        const response = await axios.post(
-          "https://localhost:8080/answer/create",
-          {
-            QuestionId: questionId,
-            Text: ans.text,
-            IsCOrrect: ans.isCorrect,
-          }
-        );
+        const response = await axios.post("/answer/create", {
+          QuestionId: questionId,
+          Text: ans.text,
+          IsCorrect: ans.isCorrect,
+        });
 
         if (response.status === 200) {
         }
@@ -140,12 +142,17 @@ export const TaskModal = ({ type, isOpen, handleClose, quizId }: TaskProps) => {
           }}>
           <Typography marginTop={1}>Варианты ответа:</Typography>
           {type === "Written" && (
-            <TextField
-              id="written-answer"
-              label="Ответ"
-              variant="filled"
-              sx={{ width: "100%", marginTop: 2 }}
-            />
+            <>
+              {task.answers.map((ans) => (
+                <TextField
+                  id="written-answer"
+                  variant="filled"
+                  sx={{ width: "100%", marginTop: 2 }}
+                  value={ans.text}
+                  onChange={(e) => handleAnswerChange(ans.id, e.target.value)}
+                />
+              ))}
+            </>
           )}
           {type === "MultipleChoice" && (
             <>
@@ -219,7 +226,12 @@ export const TaskModal = ({ type, isOpen, handleClose, quizId }: TaskProps) => {
             sx={{ margin: 2 }}
             onClick={() => {
               handleClose();
-              setTask({ question: "", answers: [] as Answer[] });
+              setTask({
+                question: "",
+                answers: [
+                  { id: 1, text: "Ответ", isCorrect: true },
+                ] as Answer[],
+              });
             }}>
             Отмена
           </Button>

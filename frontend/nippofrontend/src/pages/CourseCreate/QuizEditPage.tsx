@@ -4,7 +4,7 @@ import Typography from "@mui/material/Typography";
 import Button from "@mui/material/Button";
 import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
-import { TaskModal } from "./TaskModal";
+import { TaskCreateModal } from "./TaskCreateModal";
 import axios from "axios";
 
 interface Answer {
@@ -27,7 +27,8 @@ function QuizEditPage() {
     quizId: string;
   }>();
   const [questions, setQuestions] = useState<Question[]>([]);
-  const [quizTitle, setQuizTitle] = useState("");
+  const [courseName, setCourseName] = useState<string>("");
+  const [quizTitle, setQuizTitle] = useState<string>("");
   const [isTaskModalOpen, setTaskModalOpen] = useState<boolean>(false);
 
   const [newQuestionType, setNewQuestionType] = useState<string>("Written");
@@ -42,14 +43,14 @@ function QuizEditPage() {
     //setQuestions([...questions, newQuestion]);
   };
 
-  const handleEditQuestion = (questionId: number) => {
+  const handleEditQuestion = () => {
     setTaskModalOpen(true);
   };
 
   const handleDeleteQuestion = async (questionId: number) => {
     try {
       const response = await axios.delete(
-        `https://localhost:8080/answer/delete?questionId=${questionId}`
+        `/question/delete?qustionId=${questionId}`
       );
 
       if (response.status === 200) {
@@ -72,7 +73,7 @@ function QuizEditPage() {
       const questionsWithAnswers = await Promise.all(
         questions.map(async (question: Question) => {
           const answerResponse = await axios.get(
-            `https://localhost:8080/answer/get-by-question?questionId=${question.id}`
+            `/answer/get-by-question?questionId=${question.id}`
           );
           return { ...question, answers: answerResponse.data };
         })
@@ -87,6 +88,39 @@ function QuizEditPage() {
   };
 
   useEffect(() => {
+    const getCourseName = async () => {
+      try {
+        const response = await axios.get(`/course/get-course?id=${courseId}`);
+        if (response.status === 200) {
+          setCourseName(response.data.title);
+        } else {
+          console.log("Another response status");
+          console.log(response.status);
+        }
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
+    const getQuizTitle = async () => {
+      try {
+        const response = await axios.get(`/quiz/get-quiz?quizId=${quizId}`);
+        if (response.status === 200) {
+          setQuizTitle(response.data.title);
+        } else {
+          console.log("Another response status");
+          console.log(response.status);
+        }
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
+    getCourseName();
+    getQuizTitle();
+  }, []);
+
+  useEffect(() => {
     fetchQuestions();
   }, [isTaskModalOpen, quizId]);
 
@@ -99,7 +133,7 @@ function QuizEditPage() {
         const questionsWithAnswers = await Promise.all(
           questions.map(async (question: Question) => {
             const answerResponse = await axios.get(
-              `https://localhost:8080/answer/get-by-question?questionId=${question.id}`
+              `/answer/get-by-question?questionId=${question.id}`
             );
             return { ...question, answers: answerResponse.data };
           })
@@ -143,7 +177,7 @@ function QuizEditPage() {
             borderRadius: "6px",
           }}>
           <Typography sx={{ fontStyle: "italic" }}>
-            Здесь будет название курса
+            Курс: {courseName}
           </Typography>
           <Typography sx={{ fontStyle: "italic" }}>
             Тест: {quizTitle}
@@ -194,7 +228,7 @@ function QuizEditPage() {
                 variant="contained"
                 size="small"
                 sx={{ marginY: 1 }}
-                onClick={() => handleEditQuestion(question.id)}>
+                onClick={() => handleEditQuestion()}>
                 Редактировать
               </Button>
             </Box>
@@ -232,11 +266,11 @@ function QuizEditPage() {
             Добавить вопрос с несколькими вариантами ответа
           </Button>
         </Box>
-        <TaskModal
+        <TaskCreateModal
           isOpen={isTaskModalOpen}
           handleClose={handleTaskModalClose}
           type={newQuestionType}
-          quizId={Number(quizId)}></TaskModal>
+          quizId={Number(quizId)}></TaskCreateModal>
       </Container>
     </Container>
   );

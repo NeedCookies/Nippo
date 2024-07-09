@@ -2,7 +2,7 @@ import Container from "@mui/material/Container";
 import Box from "@mui/material/Container";
 import Typography from "@mui/material/Typography";
 import TextField from "@mui/material/TextField";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import Input from "@mui/material/Input";
 import Button from "@mui/material/Button";
 import { useNavigate } from "react-router-dom";
@@ -37,17 +37,13 @@ function createCourse() {
   };
 
   const addModules = async (type: any) => {
-    const formData = new FormData();
-    formData.append("Title", courseData.Title);
-    formData.append("Description", courseData.Description);
-    formData.append("Price", courseData.Price);
-    formData.append("ImgPath", logo.raw);
-
-    /*try {
-      const response = await axios.post(
-        "https://localhost:8080/course/create-course",
-        formData
-      );
+    try {
+      const response = await axios.post("/course/create-course", {
+        title: courseData.Title,
+        description: courseData.Description,
+        price: courseData.Price,
+        imgPath: "c://dataStorage",
+      });
       if (response.status === 200) {
         courseId = response.data.id;
         if (type === "lesson") {
@@ -60,10 +56,6 @@ function createCourse() {
       }
     } catch (error) {
       console.error("Can't create course", error);
-    }*/
-    if (type === "lesson") {
-    } else {
-      setQuizModalOpen(true);
     }
   };
 
