@@ -10,12 +10,14 @@ namespace Infrastructure.Services
     {
         private readonly IMinioClient _minioClient;
         private string _bucketName;
+        private string _externalEndpoint;
 
         public MinIOStorageService(IOptionsMonitor<MinIoOptions> optionsMonitor) 
         {
             var minioOptions = optionsMonitor.CurrentValue;
             
             _bucketName = minioOptions.BucketName;
+            _externalEndpoint = minioOptions.ExternalEndpoint;
 
             _minioClient = new MinioClient()
                 .WithEndpoint(minioOptions.Endpoint)
@@ -25,12 +27,20 @@ namespace Infrastructure.Services
 
         public async Task<string> GetUrlAsync(string objectName)
         {
+            var found = await _minioClient.BucketExistsAsync(new BucketExistsArgs().WithBucket(_bucketName));
+            if (!found)
+            {
+                await _minioClient.MakeBucketAsync(new MakeBucketArgs().WithBucket(_bucketName));
+            }
+
             var presignedUrlArgs = new PresignedGetObjectArgs()
                 .WithBucket(_bucketName)
                 .WithObject(objectName)
-                .WithExpiry(60 * 60 * 24);
+                .WithExpiry(60 * 60 * 12);
 
             var url = await _minioClient.PresignedGetObjectAsync(presignedUrlArgs);
+            url = url.Replace("http://minio:9000", _externalEndpoint);
+
             return url;
         }
 
