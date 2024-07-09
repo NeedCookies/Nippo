@@ -59,7 +59,7 @@ const NippoNavbar = () => {
       }
     };
     getUserInfo();
-  });
+  }, []);
   return (
     <Navbar
       bg="dark"
