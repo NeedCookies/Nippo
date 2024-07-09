@@ -1,6 +1,4 @@
-using Infrastructure.Options;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 
@@ -10,7 +8,7 @@ namespace WebAPI.Extensions
     {
         public static void AddApiAuthentication(
             this IServiceCollection services,
-            IOptions<JwtOptions> jwtOptions)
+            IConfiguration configuration)
         {
             services.AddAuthentication(options =>
                 {
@@ -26,7 +24,7 @@ namespace WebAPI.Extensions
                         ValidateAudience = false,
                         ValidateLifetime = true,
                         ValidateIssuerSigningKey = true,
-                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtOptions.Value.SecretKey))
+                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["JwtOptions:SecretKey"]!))
                     };
                 });
 
