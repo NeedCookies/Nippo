@@ -8,12 +8,10 @@ namespace WebAPI.Extensions
     {
         public static IServiceCollection AddIdentityServices(this IServiceCollection services)
         {
-            services.AddIdentityCore<ApplicationUser>(options => { })
-                .AddRoles<AppRole>()
-                .AddEntityFrameworkStores<AppDbContext>();
+            services.AddIdentity<ApplicationUser, AppRole>()
+                .AddEntityFrameworkStores<AppDbContext>()
+                .AddDefaultTokenProviders();
 
-            services.AddScoped<UserManager<ApplicationUser>>();
-            services.AddScoped<RoleManager<AppRole>>();
             return services;
         }
     }

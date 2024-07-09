@@ -39,7 +39,7 @@ namespace WebAPI.Controllers
         public async Task<IActionResult> Create([FromBody] CreateCourseRequest request)
         {
             string token = HttpContext.Request.Cookies["jwt-token-cookie"];
-            string userId = await jwtProvider.GetUserId(token);
+            string userId = GetUserId();
 
             var user = await userManager.FindByIdAsync(userId);
             if (user == null)
@@ -57,7 +57,7 @@ namespace WebAPI.Controllers
         public async Task<IActionResult> PurchaseCourse(int courseId)
         {
             string token = HttpContext.Request.Cookies["jwt-token-cookie"];
-            string userId = await jwtProvider.GetUserId(token);
+            string userId = GetUserId();
 
             var result = await coursesService.PurchaseCourse(courseId, userId);
             return Ok(result);
@@ -82,5 +82,10 @@ namespace WebAPI.Controllers
 
         [HttpGet("test-query")]
         public async Task<IActionResult> TestQuery() => Ok("Aboba");
+
+        private string GetUserId()
+        {
+            return HttpContext.User.FindFirst("userId")!.Value;
+        }
     }
 }

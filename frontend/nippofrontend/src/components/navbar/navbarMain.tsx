@@ -2,11 +2,64 @@ import Container from "react-bootstrap/Container";
 import Nav from "react-bootstrap/Nav";
 import Navbar from "react-bootstrap/Navbar";
 import Image from "react-bootstrap/Image";
-import AppUser from "../Interfaces.js";
 import NavbarPages from "./navbarPages.js";
 import logo from "../Images/logo.jpg";
+import { useEffect, useState } from "react";
+import axios from "axios";
 
-function NippoNavbar({ nick, points }: AppUser) {
+interface UserInfo {
+  firstName: string | "undefined";
+  lastName: string | null;
+  userName: string;
+  phoneNumber: string | null;
+  email: string;
+  pictureUrl: string | null;
+  birthDate: string | null;
+  points: number;
+  role: string;
+}
+
+const NippoNavbar = () => {
+  const [userInfo, setUserInfo] = useState<UserInfo>({
+    firstName: "Error",
+    lastName: "empty",
+    userName: "error",
+    phoneNumber: "+-1 -1 -1 -1 -1",
+    email: "testUser@mail.ru",
+    pictureUrl: null,
+    birthDate: "2004-06-09",
+    points: 0,
+    role: "user",
+  });
+
+  useEffect(() => {
+    const getUserInfo = async () => {
+      try {
+        const response = await axios.get("/user/get-personal-info");
+        if (response.status == 200) {
+          setUserInfo(response.data);
+        } else {
+          console.log("Different response status");
+          console.log(response.status);
+        }
+      } catch (error) {
+        setUserInfo({
+          firstName: "Error",
+          lastName: "empty",
+          userName: "error",
+          phoneNumber: "+-1 -1 -1 -1 -1",
+          email: "testUser@mail.ru",
+          pictureUrl: null,
+          birthDate: "2004-06-09",
+          points: 0,
+          role: "user",
+        });
+        console.log("Fali to get data");
+        console.error(error);
+      }
+    };
+    getUserInfo();
+  });
   return (
     <Navbar
       bg="dark"
@@ -40,13 +93,13 @@ function NippoNavbar({ nick, points }: AppUser) {
           <a
             href="/profile"
             className="text-uppercase font-weight-bold text-light mr-2 d-flex align-items-center">
-            {nick}
+            {userInfo.userName}
           </a>
-          <div className="font-weight-bold">{points}</div>
+          <div className="font-weight-bold">{userInfo?.points}</div>
         </Navbar.Text>
       </Container>
     </Navbar>
   );
-}
+};
 
 export default NippoNavbar;

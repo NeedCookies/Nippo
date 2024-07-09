@@ -18,7 +18,8 @@ namespace Application.Services
         IUserRolesRepository userRolesRepository,
         ICourseRepository courseRepository,
         UserManager<ApplicationUser> userManager,
-        RoleManager<AppRole> roleManager) : IUserService
+        RoleManager<AppRole> roleManager,
+        IStorageService storageService) : IUserService
     {
         public async Task<PersonalInfoDto> GetUserInfoById(string userId)
         {
@@ -30,6 +31,9 @@ namespace Application.Services
             }
 
             var userRoles = await userManager.GetRolesAsync(user);
+            var pictureUrl = user.PictureUrl != null
+                ? await storageService.GetUrlAsync(user.PictureUrl)
+                : null;
 
             return new PersonalInfoDto()
             {
@@ -40,7 +44,7 @@ namespace Application.Services
                     : null,
                 Email = user.Email,
                 PhoneNumber = user.PhoneNumber,
-                PictureUrl = user.PictureUrl,
+                PictureUrl = pictureUrl,
                 Points = user.Points,
                 Role = userRoles.First(),
                 UserName = user.UserName
@@ -122,7 +126,7 @@ namespace Application.Services
             return userCourses;
         }
 
-        public async Task<PersonalInfoDto> UpdateUserInfo(string userId, UserInfoUpdateRequest updateRequest, Stream pictureStream)
+        public async Task<PersonalInfoDto> UpdateUserInfo(string userId, UserInfoUpdateRequest updateRequest)
         {
             var user = await userRepository.GetByUserId(userId);
 
@@ -137,6 +141,16 @@ namespace Application.Services
             user.BirthDate = updateRequest.BirthDate == null
                 ? null
                 : DateOnly.ParseExact(updateRequest.BirthDate, "yyyy-MM-dd");
+
+            if (updateRequest.UserPictureFile != null)
+            {
+                var pictureStream = updateRequest.UserPictureFile.OpenReadStream();
+                var fileName = Guid.NewGuid().ToString();
+
+                await storageService.PutAsync(fileName, pictureStream, updateRequest.UserPictureFile.ContentType);
+
+                user.PictureUrl = fileName;
+            }
 
             await unitOfWork.SaveChangesAsync();
 

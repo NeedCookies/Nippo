@@ -7,19 +7,14 @@ namespace WebAPI.Controllers
 {
     [Authorize]
     [ApiController]
-    [Authorize]
     [Route("user")]
-    public class UserController(IUserService userService, IJwtProvider jwtProvider) : ControllerBase
+    public class UserController(IUserService userService) : ControllerBase
     {
         [HttpPost("get-courses")]
         public async Task<IActionResult> GetUserCourses()
         {
-            string token = HttpContext.Request.Cookies["jwt-token-cookie"];
-            string userId = await jwtProvider.GetUserId(token);
-            if(userId == null)
-            {
-                throw new Exception("userId is null");
-            }
+            string userId = GetUserId();
+
             var courses = await userService.GetUserCourses(userId);
             return Ok(courses);
         }
@@ -35,12 +30,11 @@ namespace WebAPI.Controllers
 
         [HttpPost("update-personal-info")]
         public async Task<IActionResult> UpdateUserInfo(
-            [FromForm] UserInfoUpdateRequest infoUpdateRequest,
-            IFormFile? userPicture)
+            [FromForm] UserInfoUpdateRequest infoUpdateRequest)
         {
             var userId = GetUserId();
 
-            var newUserInfo = await userService.UpdateUserInfo(userId, infoUpdateRequest, null);
+            var newUserInfo = await userService.UpdateUserInfo(userId, infoUpdateRequest);
 
             return Ok(newUserInfo);
         }
