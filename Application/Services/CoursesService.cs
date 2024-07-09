@@ -43,7 +43,7 @@ namespace Application.Services
 
         public async Task<Course> Update(UpdateCourseRequest request)
         {
-            int id = request.id;
+            int id = request.Id;
             string title = request.Title;
             string descript = request.Description;
             decimal price = request.Price;
