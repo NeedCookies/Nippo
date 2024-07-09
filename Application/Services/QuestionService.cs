@@ -12,7 +12,8 @@ namespace Application.Services
         {
             int quizId = request.QuizId;
             string text = request.Text;
-            var type = request.Type;
+            QuestionType type;
+            Enum.TryParse(request.Type, true, out type);
             
             StringBuilder error = new StringBuilder();
             if (quizId < 0) error.AppendLine("wrong quiz Id");
