@@ -14,6 +14,7 @@ namespace WebAPI.Controllers
         public async Task<IActionResult> GetUserCourses()
         {
             string userId = GetUserId();
+
             var courses = await userService.GetUserCourses(userId);
             return Ok(courses);
         }

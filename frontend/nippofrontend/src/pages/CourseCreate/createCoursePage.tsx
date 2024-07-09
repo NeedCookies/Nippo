@@ -37,11 +37,6 @@ function createCourse() {
   };
 
   const addModules = async (type: any) => {
-    const newModule = {
-      id: modules.length === 0 ? 1 : modules[modules.length - 1].id + 1,
-      name: type === "lesson" ? "Unnamed lesson" : "Unnamed test",
-      type: type == "lesson" ? " lesson" : "quiz",
-    };
     const formData = new FormData();
     formData.append("Title", courseData.Title);
     formData.append("Description", courseData.Description);
@@ -59,11 +54,13 @@ function createCourse() {
         } else {
           setQuizModalOpen(true);
         }
+      } else {
+        console.log(response.status);
+        console.log(response);
       }
     } catch (error) {
       console.error("Can't create course", error);
     }*/
-
     if (type === "lesson") {
     } else {
       setQuizModalOpen(true);

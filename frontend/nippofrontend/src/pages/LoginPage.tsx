@@ -3,12 +3,16 @@ import axios from "axios";
 import { useState } from "react";
 import { Button } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
+import { jwtDecode } from "jwt-decode";
 
 export const LoginPage = () => {
   const [userName, setUserName] = useState<string>("");
   const [userPassword, setUserPassword] = useState<string>("");
 
   const navigate = useNavigate();
+  const handleNoAccount = () => {
+    navigate("/register");
+  };
 
   const handleLogin = async () => {
     try {
@@ -17,6 +21,8 @@ export const LoginPage = () => {
         Password: userPassword,
       });
       if (response.status === 200) {
+        sessionStorage.setItem("accessToken", response.data);
+        console.log(jwtDecode(response.data));
         navigate("/courses");
       } else {
         console.log(response.status);
@@ -31,6 +37,7 @@ export const LoginPage = () => {
       <Box textAlign={"center"}>
         <Typography>Авторизация</Typography>
       </Box>
+      <Button onClick={handleNoAccount}>Ещё нет аккаунта?</Button>
       <Container sx={{ justifyContent: "center" }}>
         <Box marginY={1}>
           <Typography>Введите ваше имя</Typography>
