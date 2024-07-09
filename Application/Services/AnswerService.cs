@@ -1,6 +1,7 @@
 ﻿using Application.Abstractions.Repositories;
 using Application.Abstractions.Services;
 using Application.Contracts;
+using Application.Contracts.Update;
 using Domain.Entities;
 using System.Text;
 
@@ -12,7 +13,7 @@ namespace Application.Services
         {
             int questionId = request.QuestionId;
             string text = request.Text;
-            bool isCorrect = request.isCorrect;
+            bool isCorrect = request.IsCorrect;
 
             StringBuilder error = new StringBuilder();
             if (questionId < 0) error.AppendLine("Wrong question Id");
@@ -46,6 +47,23 @@ namespace Application.Services
                 throw new ArgumentException($"Wrong question Id: {questionId}");
 
             return await answerRepository.GetByQuestion(questionId);
+        }
+
+        public async Task<Answer> Update(UpdateAnswerRequest request)
+        {
+            StringBuilder error = new StringBuilder();
+            if (request.answerId < 0)
+                error.AppendLine("Wrong answerId");
+            if (request.text == null || request.text.Length == 0)
+                error.AppendLine("Answer text shouldn't be empty");
+            
+            if (error.Length > 0)
+                throw new ArgumentException(error.ToString());
+
+            return await answerRepository.Update(
+                request.answerId,
+                request.text,
+                request.isCorrect);
         }
     }
 }

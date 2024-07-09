@@ -1,5 +1,6 @@
 ﻿using Application.Abstractions.Services;
 using Application.Contracts;
+using Application.Contracts.Update;
 using Microsoft.AspNetCore.Mvc;
 
 namespace WebAPI.Controllers
@@ -33,6 +34,13 @@ namespace WebAPI.Controllers
         public async Task<IActionResult> Delete(int answerId)
         {
             var answer = await answerService.Delete(answerId);
+            return Ok(answer);
+        }
+
+        [HttpPost("update")]
+        public async Task<IActionResult> Update(UpdateAnswerRequest request)
+        {
+            var answer = await answerService.Update(request);
             return Ok(answer);
         }
     }
