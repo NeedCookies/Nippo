@@ -1,7 +1,7 @@
 ﻿namespace Application.Contracts
 {
     public record CreateQuizRequest(
-        int courseId,
+        int CourseId,
         string Title
         );
 }

@@ -3,6 +3,6 @@
     public record CreateAnswerRequest(
         int QuestionId,
         string Text,
-        bool isCorrect
+        bool IsCorrect
         );
 }

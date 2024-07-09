@@ -2,8 +2,8 @@
 {
     public record GetUsersAndRolesRequest
     (
-        string userId,
-        string userName,
-        string role
+        string UserId,
+        string UserName,
+        string Role
     );
 }
