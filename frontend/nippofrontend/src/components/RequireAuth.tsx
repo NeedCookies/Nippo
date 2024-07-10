@@ -1,5 +1,4 @@
 import React, { FC, useEffect } from "react";
-import { LoginPage } from "../pages/LoginPage";
 import { useNavigate } from "react-router-dom";
 
 const useLoginStatus = () => {

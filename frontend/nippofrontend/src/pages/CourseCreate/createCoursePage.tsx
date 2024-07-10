@@ -2,21 +2,29 @@ import Container from "@mui/material/Container";
 import Box from "@mui/material/Container";
 import Typography from "@mui/material/Typography";
 import TextField from "@mui/material/TextField";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Input from "@mui/material/Input";
 import Button from "@mui/material/Button";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { QuizModal } from "./QuizModal";
 import axios from "axios";
 
+interface Module {
+  id: number;
+  title: string;
+  type: string;
+}
+
 function createCourse() {
+  const { courseId } = useParams<{ courseId?: string }>();
   const [logo, setLogo] = useState({
     preview: "",
     raw: "",
   });
 
-  var courseId = -1;
-  const [modules, setModules] = useState([]);
+  const [courseIdState, setCourseIdState] = useState<number>(-1);
+  const [isCourseSaved, setCourseSaved] = useState<boolean>(false);
+  const [modules, setModules] = useState<Module[]>([]);
   const [isQuizModalOpen, setQuizModalOpen] = useState<boolean>(false);
   const [courseData, setCourseData] = useState({
     Title: "",
@@ -36,7 +44,7 @@ function createCourse() {
     }
   };
 
-  const addModules = async (type: any) => {
+  const handleSaveCourse = async () => {
     try {
       const response = await axios.post("/course/create-course", {
         title: courseData.Title,
@@ -45,17 +53,44 @@ function createCourse() {
         imgPath: "c://dataStorage",
       });
       if (response.status === 200) {
-        courseId = response.data.id;
-        if (type === "lesson") {
-        } else {
-          setQuizModalOpen(true);
-        }
+        setCourseSaved(true);
+        setCourseIdState(response.data.id);
+        getCourseData();
       } else {
         console.log(response.status);
         console.log(response);
       }
     } catch (error) {
       console.error("Can't create course", error);
+    }
+  };
+  const handleSaveCourseChanges = async () => {
+    try {
+      const response = await axios.post("/course/edit-course", {
+        id: courseId,
+        title: courseData.Title,
+        description: courseData.Description,
+        price: courseData.Price,
+        imgPath: "c://dataStorage",
+      });
+      if (response.status === 200) {
+        setCourseSaved(false);
+        setCourseSaved(true);
+        setCourseIdState(response.data.id);
+        getCourseData();
+      } else {
+        console.log(response.status);
+        console.log(response);
+      }
+    } catch (error) {
+      console.error("Can't update course", error);
+    }
+  };
+
+  const handleAddModules = (type: string) => {
+    if (type === "lesson") {
+    } else {
+      setQuizModalOpen(true);
     }
   };
 
@@ -68,6 +103,71 @@ function createCourse() {
     const moduleType = module.type === "lesson" ? "lesson" : "quiz";
     navigate("/edit-" + moduleType + "/id=" + module.id);
   };
+
+  useEffect(() => {
+    if (courseId) {
+      getCourseData();
+      setCourseIdState(Number(courseId));
+    }
+  }, [courseId]);
+
+  async function getCourseData() {
+    try {
+      const response = await axios.get(`course/get-course?id=${courseId}`);
+      if (response.status === 200) {
+        courseData.Title = response.data.title;
+        courseData.Description = response.data.description;
+        courseData.Price = response.data.price;
+        logo.raw = response.data.imgPath;
+        getLessons();
+        getQuizzes();
+        setCourseSaved(true);
+      } else {
+        console.log("Another response status");
+        console.log(response.status);
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  }
+  async function getLessons() {
+    try {
+      const response = await axios.get(
+        `/lesson/get-by-course?courseId=${courseId}`
+      );
+      if (response.status === 200) {
+        const lessonsWithType = response.data.map((lesson: any) => ({
+          ...lesson,
+          type: "lesson",
+        }));
+        setModules(lessonsWithType);
+      } else {
+        console.log("Another response status");
+        console.log(response.status);
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  }
+  async function getQuizzes() {
+    try {
+      const response = await axios.get(
+        `/quiz/get-by-course?courseId=${courseId}`
+      );
+      if (response.status === 200) {
+        const quizzesWithType = response.data.map((quiz: any) => ({
+          ...quiz,
+          type: "lesson",
+        }));
+        setModules((prevModules) => [...prevModules, ...quizzesWithType]);
+      } else {
+        console.log("Another response status");
+        console.log(response.status);
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  }
 
   return (
     <Container>
@@ -163,6 +263,14 @@ function createCourse() {
               />
             </Box>
           )}
+          {!isCourseSaved && (
+            <Button onClick={handleSaveCourse}>Сохранить</Button>
+          )}
+          {isCourseSaved && (
+            <Button onClick={handleSaveCourseChanges}>
+              Сохранить изменения
+            </Button>
+          )}
         </Box>
         <Box
           sx={{
@@ -185,7 +293,7 @@ function createCourse() {
                 key={module.id}
                 textAlign={"start"}
                 sx={{ width: "50%" }}>
-                {module.id}. {module.name}
+                {module.id}. {module.title}
               </Typography>
               <Typography textAlign={"end"} sx={{ width: "50%" }}>
                 тип: {module.type}
@@ -221,18 +329,25 @@ function createCourse() {
             variant="contained"
             size="large"
             sx={{ margin: 2 }}
-            onClick={() => addModules("lesson")}>
+            onClick={() => handleAddModules("lesson")}
+            disabled={!isCourseSaved}>
             Создать урок
           </Button>
           <Button
             variant="contained"
             size="large"
             sx={{ margin: 2 }}
-            onClick={() => addModules("test")}>
+            onClick={() => handleAddModules("test")}
+            disabled={!isCourseSaved}>
             Создать тест
           </Button>
+          {!isCourseSaved && (
+            <Typography sx={{ fontFamily: "cursive", fontStyle: "italic" }}>
+              Сохраните курс, чтобы создать тесты и уроки
+            </Typography>
+          )}
           <QuizModal
-            courseId={courseId > 0 ? courseId : 1}
+            courseId={courseIdState}
             isOpen={isQuizModalOpen}
             handleClose={haldleCloseModal}></QuizModal>
         </Box>

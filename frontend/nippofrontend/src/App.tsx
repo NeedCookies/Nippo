@@ -32,6 +32,14 @@ function App() {
           }
         />
         <Route
+          path="course/:courseId/create"
+          element={
+            <RequireAuth>
+              <CreateCourse />
+            </RequireAuth>
+          }
+        />
+        <Route
           path="/course/:courseId/quiz/:quizId/edit"
           element={<QuizEditPage />}
         />
