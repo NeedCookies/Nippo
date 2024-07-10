@@ -31,6 +31,12 @@ namespace Application.Services
             return await lessonRepository.Create(title, courseId, date);
         }
 
+        public async Task<Lesson> Update(int lessonId, string title) =>
+            await lessonRepository.Update(title, lessonId);
+
+        public async Task<Lesson> Delete(int lessonId) =>
+            await lessonRepository.Delete(lessonId);
+
         public async Task<Lesson> GetById(int lessonId, string userId)
         {
             StringBuilder error = new StringBuilder("");

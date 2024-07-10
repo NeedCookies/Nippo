@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace DataAccess.Repositories
 {
-    public class LessonRepository(AppDbContext dbContext) : ILessonRepository
+    public class LessonRepository(AppDbContext appDbContext) : ILessonRepository
     {
         public async Task<Lesson> Create(string title, int courseId, DateTime date)
         {
@@ -15,22 +15,44 @@ namespace DataAccess.Repositories
                 CreateDate = date
             };
 
-            await dbContext.Lessons.AddAsync(lesson);
-            await dbContext.SaveChangesAsync();
+            await appDbContext.Lessons.AddAsync(lesson);
+            await appDbContext.SaveChangesAsync();
+
+            return lesson;
+        }
+
+        public async Task<Lesson> Update(string title, int lessonId)
+        {
+            var lesson = await GetById(lessonId);
+
+            lesson.Title = title;
+
+            appDbContext.Lessons.Update(lesson);
+            await appDbContext.SaveChangesAsync();
+
+            return lesson;
+        }
+
+        public async Task<Lesson> Delete(int lessonId)
+        {
+            var lesson = await GetById(lessonId);
+
+            appDbContext.Lessons.Remove(lesson);
+            await appDbContext.SaveChangesAsync();
 
             return lesson;
         }
 
         public async Task<Lesson> GetById(int lessonId)
         {
-            return await dbContext.Lessons.Where(
+            return await appDbContext.Lessons.Where(
                 l => l.Id == lessonId)
                 .FirstAsync();
         }
 
         public async Task<List<Lesson>> GetLessonsByCourseAsync(int courseId)
         {
-            return await dbContext.Lessons.Where(l => l.CourseId == courseId).ToListAsync();
+            return await appDbContext.Lessons.Where(l => l.CourseId == courseId).ToListAsync();
         }
     }
 }

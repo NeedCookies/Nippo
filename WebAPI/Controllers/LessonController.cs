@@ -19,10 +19,28 @@ namespace WebAPI.Controllers
         }
 
         [Authorize(Roles = "admin")]
-        [HttpPost("create-lesson")]
+        [HttpPost("create")]
         public async Task<IActionResult> Create([FromBody] CreateLessonRequest request)
         {
             var lesson = await lessonsService.Create(request);
+
+            return Ok(lesson);
+        }
+
+        [Authorize(Roles = "admin")]
+        [HttpPost("update")]
+        public async Task<IActionResult> Update(int lessonId, string title)
+        {
+            var lesson = await lessonsService.Update(lessonId, title);
+
+            return Ok(lesson);
+        }
+
+        [Authorize(Roles = "admin")]
+        [HttpDelete("delete")]
+        public async Task<IActionResult> Delete(int lessonId)
+        {
+            var lesson = await lessonsService.Delete(lessonId);
 
             return Ok(lesson);
         }
