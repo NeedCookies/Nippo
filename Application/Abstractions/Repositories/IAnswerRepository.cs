@@ -6,7 +6,8 @@ namespace Application.Abstractions.Repositories
     {
         Task<List<Answer>> GetByQuestion(int questionId);
         Task<Answer> GetById(int answerId);
-        Task<Answer> Create(int QuestionId, string Text, bool isCorrect);
+        Task<Answer> Create(int questionId, string text, bool isCorrect);
         Task<Answer> Delete(int answerId);
+        Task<Answer> Update(int answerId, string text, bool isCorrect);
     }
 }

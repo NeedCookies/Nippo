@@ -38,7 +38,6 @@ namespace WebAPI.Controllers
         [HttpPost("create-course")]
         public async Task<IActionResult> Create([FromBody] CreateCourseRequest request)
         {
-            string token = HttpContext.Request.Cookies["jwt-token-cookie"];
             string userId = GetUserId();
 
             var user = await userManager.FindByIdAsync(userId);

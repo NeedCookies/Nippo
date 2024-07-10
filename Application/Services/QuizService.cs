@@ -10,7 +10,7 @@ namespace Application.Services
     {
         public async Task<Quiz> Create(CreateQuizRequest request)
         {
-            int courseId = request.courseId;
+            int courseId = request.CourseId;
             string title = request.Title;
             
             StringBuilder error = new StringBuilder();

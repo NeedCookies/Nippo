@@ -2,7 +2,7 @@
 {
     public record UpdateCourseRequest
         (
-        int id,
+        int Id,
         string Title,
         string Description,
         decimal Price,

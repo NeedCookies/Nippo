@@ -16,9 +16,9 @@ namespace WebAPI.Controllers
         }
 
         [HttpGet("get-by-id")]
-        public async Task<IActionResult> GetById(int quizId)
+        public async Task<IActionResult> GetById(int questionId)
         {
-            var question = await questionService.GetById(quizId);
+            var question = await questionService.GetById(questionId);
             return Ok(question);
         }
 

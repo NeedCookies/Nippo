@@ -46,5 +46,19 @@ namespace DataAccess.Repositories
         {
             return await dbContext.Answers.Where(a => a.QuestionId == questionId).ToListAsync();
         }
+
+        public async Task<Answer> Update(int answerId, string text, bool isCorrect)
+        {
+            await dbContext.Answers.
+                Where(a => a.Id == answerId).ExecuteUpdateAsync(a =>
+                a.SetProperty(x => x.Text, x => text).
+                SetProperty(x => x.IsCorrect, x => isCorrect));
+
+            await dbContext.SaveChangesAsync();
+
+            return await dbContext.Answers.
+                Where(a => a.Id == answerId).
+                FirstAsync();
+        }
     }
 }

@@ -5,6 +5,6 @@ namespace Application.Contracts
     public record CreateQuestionRequest(
         int QuizId,
         string Text,
-        QuestionType Type
+        string Type
         );
 }
