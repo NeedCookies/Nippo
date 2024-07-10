@@ -13,7 +13,7 @@ namespace Application.Abstractions.Services
         Task<PersonalInfoDto> GivePointsToUser(string userId, int points);
         Task<PersonalInfoDto> GetUserInfoById(string userId);
         Task<List<GetUsersAndRolesRequest>> GetUsersAndRoles();
-        Task<PersonalInfoDto> UpdateUserInfo(string userId, UserInfoUpdateRequest updateRequest, Stream pictureStream);
+        Task<PersonalInfoDto> UpdateUserInfo(string userId, UserInfoUpdateRequest updateRequest);
         Task<List<ApplicationUser>> GenerateUsers();
         Task AssignRole(string userId, string roleId);
     }
