@@ -6,7 +6,6 @@ namespace Application.Contracts
         (
         int LessonId,
         int Type,
-        string Content,
-        int Order
+        string Content
         );
 }

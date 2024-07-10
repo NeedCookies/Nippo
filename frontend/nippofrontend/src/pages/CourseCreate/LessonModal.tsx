@@ -19,24 +19,24 @@ export const LessonModal = ({
     handleClose,
     courseId,
 }: PointModalProps) => {
-
     var lessonId = -1;
     const navigate = useNavigate();
+
     const [title, setTitle] = useState("");
 
     const handleAddLesson = async () => {
-        // const response = await axios.post("/lesson/create-lesson", {
-        //     courseId: courseId,
-        //     title: title,
-        // });
-        // if (response.status === 200) {
-        //     lessonId = response.data.id;
-        //     navigate(`/course/${courseId}/lesson/${lessonId}/edit`);
-        // }
-        
-        lessonId = 1;
-        navigate(`/course/${courseId}/lesson/${lessonId}/edit`);
-
+        try{
+            const response = await axios.post("/lesson/create-lesson", {
+                courseId: courseId,
+                title: title
+            });
+            if (response.status === 200) {
+                lessonId = response.data.id;
+                navigate(`/course/${courseId}/lesson/${lessonId}/edit`);
+            }
+        } catch (error) {
+            console.error("Can't create lesson ", error);
+        }
     }
 
     return (

@@ -8,10 +8,8 @@ namespace DataAccess.Repositories
     public class CourseRepository(AppDbContext appDbContext, IUserRepository userRepository) : ICourseRepository
     {
         private readonly AppDbContext _appDbContext = appDbContext;
-        public async Task<List<Course>> GetAllCourses()
-        {
-            return await _appDbContext.Courses.ToListAsync();
-        }
+        public async Task<List<Course>> GetAllCourses() =>
+            await _appDbContext.Courses.ToListAsync();
 
         public async Task<Course> Create(string title, string desc, decimal price, string imgPath, string authorId)
         {
@@ -58,15 +56,20 @@ namespace DataAccess.Repositories
             return course;
         }
 
-        public Task<List<Course>> GetCoursesByAuthorAsync(int authorId)
-        {
-            throw new NotImplementedException();
-        }
+        public async Task<List<Course>> GetCoursesByAuthorAsync(string authorId) => 
+            await _appDbContext.Courses
+            .Where(c => c.AuthorId == authorId)
+            .ToListAsync();
 
-        public async Task<Course?> GetById(int id)
-        {
-            return await _appDbContext.Courses.FindAsync(id);
-        }
+        public async Task<Course?> GetById(int id) => 
+            await _appDbContext.Courses
+            .FindAsync(id);
+
+        public async Task<string> GetAuthorById(int id) => 
+            await _appDbContext.Courses
+            .Where(a => a.Id == id)
+            .Select(a => a.AuthorId)
+            .FirstOrDefaultAsync();
 
         public async Task<ApplicationUser> PurchaseCourse(int courseId, string userId)
         {

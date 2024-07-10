@@ -11,6 +11,7 @@ namespace Application.Abstractions.Services
         public Task<Course> Update(UpdateCourseRequest request);
         public Task<Course> Delete(int id);
         public Task<Course> GetById(int id);
+        public Task<string> GetAuthorById(int id);
         public Task<UserCourses> PurchaseCourse(int courseId, string userId);
     }
 }

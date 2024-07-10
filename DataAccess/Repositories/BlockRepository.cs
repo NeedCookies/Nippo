@@ -6,14 +6,16 @@ namespace DataAccess.Repositories
 {
     public class BlockRepository(AppDbContext appDbContext) : IBlockRepository
     {
-        public async Task<Block> Create(int lessonId, int type, string content, int order)
+        public async Task<Block> Create(int lessonId, int type, string content)
         {
+            var maxOrder = await GetMaxOrderByLessonId(lessonId);
+
             Block block = new Block
             {
                 LessonId = lessonId,
                 Type = (BlockType)type,
                 Content = content,
-                Order = order
+                Order = maxOrder + 1
             };
 
             await appDbContext.Blocks.AddAsync(block);
@@ -57,23 +59,27 @@ namespace DataAccess.Repositories
             return block;
         }
 
-        public async Task<List<Block>> GetBlocksByLessonAsync(int lessonId)
-        {
-            return await appDbContext.Blocks
+        public async Task<List<Block>> GetBlocksByLessonAsync(int lessonId) =>
+            await appDbContext.Blocks
                 .Where(b => b.LessonId == lessonId)
                 .ToListAsync();
-        }
 
         public async Task<Block> GetByIdAsync(int id)
         {
-            if (BlockExists(id) == false)
-            {
+            if (IsBlockExists(id) == false)
                 throw new Exception("Block not exitsts");
-            }
 
             return await appDbContext.Blocks.FindAsync(id);
         }
 
-        private bool BlockExists(int id) => appDbContext.Blocks.Any(e => e.Id == id);
+        private bool IsBlockExists(int id) => 
+            appDbContext.Blocks
+            .Any(e => e.Id == id);
+
+        private async Task<int> GetMaxOrderByLessonId(int lessonId) =>
+            await appDbContext.Blocks
+            .Where(b => b.LessonId == lessonId)
+            .MaxAsync(b => (int?)b.Order) 
+            ?? 0;
     }
 }

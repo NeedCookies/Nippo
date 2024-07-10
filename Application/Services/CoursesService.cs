@@ -73,6 +73,11 @@ namespace Application.Services
             return course;
         }
 
+        public async Task<string> GetAuthorById(int id)
+        {
+            return await courseRepository.GetAuthorById(id);
+        }
+
         public async Task<UserCourses> PurchaseCourse(int courseId, string userId)
         {
             return await userCoursesRepository.Add(courseId, userId);

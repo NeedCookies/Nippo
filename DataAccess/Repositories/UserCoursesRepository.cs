@@ -60,5 +60,15 @@ namespace DataAccess.Repositories
 
             return coursesId;
         }
+
+        public async Task<bool> IsCoursePurchased(string userId, int courseId)
+        {
+            bool isPurchased = await appDbContext.UserCourses
+                .AnyAsync(uc => 
+                uc.UserId == userId && 
+                uc.CourseId == courseId);
+
+            return isPurchased;
+        }
     }
 }

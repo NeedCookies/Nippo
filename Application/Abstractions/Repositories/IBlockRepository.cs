@@ -7,7 +7,7 @@ namespace Application.Abstractions.Repositories
     {
         Task<List<Block>> GetBlocksByLessonAsync(int lessonId);
         Task<Block> GetByIdAsync(int id);
-        Task<Block> Create(int lessonId, int type, string content, int order);
+        Task<Block> Create(int lessonId, int type, string content);
         Task<Block> UpdateContent(int id, int type, string content);
         Task<Block> UpdateOrder(int id, int order);
         Task<Block> Delete (int id);

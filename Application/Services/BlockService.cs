@@ -14,7 +14,6 @@ namespace Application.Services
             int lessonId = request.LessonId;
             int type = request.Type;
             string content = request.Content;
-            int order = request.Order;
 
             StringBuilder error = new StringBuilder();
             if (lessonId < 0) { error.AppendLine("Wrong lesson id"); }
@@ -23,7 +22,7 @@ namespace Application.Services
             
             if (error.Length > 0) { throw new ArgumentException(error.ToString()); }
 
-            return blockRepository.Create(lessonId, type, content, order);
+            return blockRepository.Create(lessonId, type, content);
         }
 
         public async Task<Block> Delete(int id)

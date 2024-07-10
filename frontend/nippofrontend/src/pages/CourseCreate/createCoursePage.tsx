@@ -162,7 +162,7 @@ function createCourse() {
       if (response.status === 200) {
         const quizzesWithType = response.data.map((quiz: any) => ({
           ...quiz,
-          type: "lesson",
+          type: "quiz",
         }));
         setModules((prevModules) => [...prevModules, ...quizzesWithType]);
       } else {
@@ -356,7 +356,7 @@ function createCourse() {
             isOpen={isQuizModalOpen}
             handleClose={haldleCloseModal}></QuizModal>
           <LessonModal
-            courseId={courseId > 0 ? courseId : 1}
+            courseId={courseIdState}
             isOpen={isLessonModalOpen}
             handleClose={haldleCloseModal}></LessonModal>
         </Box>

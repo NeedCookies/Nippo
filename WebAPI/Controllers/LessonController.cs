@@ -13,7 +13,8 @@ namespace WebAPI.Controllers
         [HttpGet("get-by-course")]
         public async Task<IActionResult> GetLessonsByCourse(int courseId)
         {
-            var lessons = await lessonsService.GetByCourseId(courseId);
+            var lessons = await lessonsService.GetByCourseId(courseId, GetUserId());
+
             return Ok(lessons);
         }
 
@@ -25,5 +26,16 @@ namespace WebAPI.Controllers
 
             return Ok(lesson);
         }
+
+        [HttpGet("get-by-id")]
+        public async Task<IActionResult> GetLessonById(int id)
+        {
+            var lesson = await lessonsService.GetById(id, GetUserId());
+
+            return Ok(lesson);
+        }
+
+        private string GetUserId() =>
+            HttpContext.User.FindFirst("userId")!.Value;
     }
 }

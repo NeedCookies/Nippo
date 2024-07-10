@@ -6,7 +6,7 @@ namespace DataAccess.Repositories
 {
     public class LessonRepository(AppDbContext dbContext) : ILessonRepository
     {
-        public async Task<Lesson> Create(string title, int courseId, string authorId, DateTime date)
+        public async Task<Lesson> Create(string title, int courseId, DateTime date)
         {
             var lesson = new Lesson
             {
@@ -21,11 +21,10 @@ namespace DataAccess.Repositories
             return lesson;
         }
 
-        public async Task<Lesson> GetById(int courseId, int lessonId)
+        public async Task<Lesson> GetById(int lessonId)
         {
             return await dbContext.Lessons.Where(
-                l => l.CourseId == courseId &&
-                l.Id == lessonId)
+                l => l.Id == lessonId)
                 .FirstAsync();
         }
 
