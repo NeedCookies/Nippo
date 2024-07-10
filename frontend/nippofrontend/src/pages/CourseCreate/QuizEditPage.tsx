@@ -3,9 +3,10 @@ import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import Button from "@mui/material/Button";
 import { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { TaskCreateModal } from "./TaskCreateModal";
 import axios from "axios";
+import { TaskEditModal } from "./TaskEditModal";
 
 interface Answer {
   id: number;
@@ -29,12 +30,18 @@ function QuizEditPage() {
   const [questions, setQuestions] = useState<Question[]>([]);
   const [courseName, setCourseName] = useState<string>("");
   const [quizTitle, setQuizTitle] = useState<string>("");
+
   const [isTaskModalOpen, setTaskModalOpen] = useState<boolean>(false);
+  const [isEditTaskModal, setEditTaskModal] = useState<boolean>(false);
 
   const [newQuestionType, setNewQuestionType] = useState<string>("Written");
+  const [editQuestionId, setEditQuestionId] = useState<number>(-1);
+
+  const navigate = useNavigate();
 
   const handleTaskModalClose = () => {
     setTaskModalOpen(false);
+    setEditTaskModal(false);
   };
 
   const handleAddQuestion = (type: string) => {
@@ -43,8 +50,9 @@ function QuizEditPage() {
     //setQuestions([...questions, newQuestion]);
   };
 
-  const handleEditQuestion = () => {
-    setTaskModalOpen(true);
+  const handleEditQuestion = (questionId: number) => {
+    setEditQuestionId(questionId);
+    setEditTaskModal(true);
   };
 
   const handleDeleteQuestion = async (questionId: number) => {
@@ -61,6 +69,10 @@ function QuizEditPage() {
     } catch (error) {
       console.error(error);
     }
+  };
+
+  const handleQuizDone = () => {
+    navigate(`/course/${courseId}/create`);
   };
 
   const fetchQuestions = async () => {
@@ -212,8 +224,20 @@ function QuizEditPage() {
               </Typography>
               <Box sx={{ width: "100%" }}>
                 {question.answers.map((answer) => (
-                  <Typography key={answer.id} sx={{ marginLeft: "1rem" }}>
+                  <Typography
+                    key={answer.id}
+                    sx={{
+                      marginLeft: "1rem",
+                      display: "flex",
+                      alignItems: "space-between",
+                    }}>
                     {answer.text}
+                    {"   "}
+                    {answer.isCorrect && (
+                      <Typography sx={{ color: "green", fontWeight: 900 }}>
+                        +
+                      </Typography>
+                    )}
                   </Typography>
                 ))}
               </Box>
@@ -228,7 +252,7 @@ function QuizEditPage() {
                 variant="contained"
                 size="small"
                 sx={{ marginY: 1 }}
-                onClick={() => handleEditQuestion()}>
+                onClick={() => handleEditQuestion(question.id)}>
                 Редактировать
               </Button>
             </Box>
@@ -271,7 +295,16 @@ function QuizEditPage() {
           handleClose={handleTaskModalClose}
           type={newQuestionType}
           quizId={Number(quizId)}></TaskCreateModal>
+        <TaskEditModal
+          isOpen={isEditTaskModal}
+          handleClose={handleTaskModalClose}
+          questionId={editQuestionId}></TaskEditModal>
       </Container>
+      <Box justifyContent={"end"} width={"100%"} color={"green"}>
+        <Button variant="contained" onClick={handleQuizDone}>
+          Готово
+        </Button>
+      </Box>
     </Container>
   );
 }

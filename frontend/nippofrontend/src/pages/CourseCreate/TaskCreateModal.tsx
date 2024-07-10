@@ -84,7 +84,27 @@ export const TaskCreateModal = ({
         type: type,
       });
       if (response.status === 200) {
-        setQuestionId(response.data.id);
+        const Id = response.data.id;
+        setQuestionId(Id);
+        for (const ans of task.answers) {
+          try {
+            const response = await axios.post("/answer/create", {
+              questionId: Id,
+              text: ans.text,
+              isCorrect: ans.isCorrect,
+            });
+
+            if (response.status === 200) {
+            }
+          } catch (error) {
+            console.error(error);
+          }
+        }
+        setTask({
+          question: "",
+          answers: [{ id: 1, text: "Ответ", isCorrect: true }] as Answer[],
+        });
+        handleClose();
       } else {
         console.log("Another response status");
         console.log(response.status);
@@ -92,21 +112,6 @@ export const TaskCreateModal = ({
     } catch (error) {
       console.error(error);
     }
-
-    task.answers.map(async (ans) => {
-      try {
-        const response = await axios.post("/answer/create", {
-          QuestionId: questionId,
-          Text: ans.text,
-          IsCorrect: ans.isCorrect,
-        });
-
-        if (response.status === 200) {
-        }
-      } catch (error) {
-        console.error(error);
-      }
-    });
   };
 
   return (
