@@ -3,7 +3,7 @@ import axios from "axios";
 import { useState } from "react";
 import { Button } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
-import { jwtDecode } from "jwt-decode";
+// import { jwtDecode } from "jwt-decode";
 
 export const LoginPage = () => {
   const [userName, setUserName] = useState<string>("");
@@ -22,7 +22,7 @@ export const LoginPage = () => {
       });
       if (response.status === 200) {
         sessionStorage.setItem("accessToken", response.data);
-        console.log(jwtDecode(response.data));
+        // console.log(jwtDecode(response.data));
         navigate("/courses");
       } else {
         console.log(response.status);

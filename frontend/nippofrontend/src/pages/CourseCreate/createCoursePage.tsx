@@ -7,6 +7,7 @@ import Input from "@mui/material/Input";
 import Button from "@mui/material/Button";
 import { useNavigate } from "react-router-dom";
 import { QuizModal } from "./QuizModal";
+import { LessonModal } from "./LessonModal";
 import axios from "axios";
 
 function createCourse() {
@@ -18,6 +19,7 @@ function createCourse() {
   var courseId = -1;
   const [modules, setModules] = useState([]);
   const [isQuizModalOpen, setQuizModalOpen] = useState<boolean>(false);
+  const [isLessonModalOpen, setLessonModalOpen] = useState<boolean>(false);
   const [courseData, setCourseData] = useState({
     Title: "",
     Description: "",
@@ -25,8 +27,10 @@ function createCourse() {
   });
 
   const navigate = useNavigate();
-  const haldleCloseModal = () => setQuizModalOpen(false);
-
+  const haldleCloseModal = () => {
+    setQuizModalOpen(false), 
+    setLessonModalOpen(false)
+  };
   const handleLogoButton = (e: any) => {
     if (e.target.files.length) {
       setLogo({
@@ -62,6 +66,7 @@ function createCourse() {
       console.error("Can't create course", error);
     }*/
     if (type === "lesson") {
+      setLessonModalOpen(true);
     } else {
       setQuizModalOpen(true);
     }
@@ -243,6 +248,10 @@ function createCourse() {
             courseId={courseId > 0 ? courseId : 1}
             isOpen={isQuizModalOpen}
             handleClose={haldleCloseModal}></QuizModal>
+          <LessonModal
+            courseId={courseId > 0 ? courseId : 1}
+            isOpen={isLessonModalOpen}
+            handleClose={haldleCloseModal}></LessonModal>
         </Box>
       </Container>
     </Container>
