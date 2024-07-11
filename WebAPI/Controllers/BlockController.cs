@@ -38,7 +38,7 @@ namespace WebAPI.Controllers
 
         [Authorize(Roles = "admin")]
         [HttpPost("create-block")]
-        public async Task<IActionResult> Create([FromBody] CreateBlockRequest request)
+        public async Task<IActionResult> Create([FromForm] CreateBlockRequest request)
         {
             var block = await blockService.Create(request);
             return Ok(block); 
