@@ -19,7 +19,7 @@ function App() {
         <NippoNavbar />
       </NavbarLayout>
       <Routes>
-        <Route path="/courses" element={<CourseListGroup cards={courses} />} />
+        <Route path="/courses" element={<CourseListGroup />} />
         <Route
           path="/courses/liked"
           element={<LikedCoursesList cards={courses} />}
