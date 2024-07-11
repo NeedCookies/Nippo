@@ -85,6 +85,15 @@ namespace Application.Services
             if (error.Length > 0)
                 throw new ArgumentException(error.ToString());
 
+            var maybeBought = await userCoursesRepository.GetUserCourse(courseId, userId);
+            if (maybeBought != null)
+            {
+                throw new InvalidOperationException(
+                    $"Course already bought by user: {maybeBought}"
+                    );
+            }
+
+            await basketRepository.DeleteFromBasket(courseId, userId);
             return await userCoursesRepository.Add(courseId, userId);
         }
 
@@ -98,6 +107,22 @@ namespace Application.Services
 
             if (error.Length > 0)
                 throw new ArgumentException(error.ToString());
+
+            var maybeAdded = basketRepository.GetBasketCourse(courseId, userId);
+            if (maybeAdded != null)
+            {
+                throw new InvalidOperationException(
+                    $"Course already in basket: {maybeAdded}"
+                    );
+            }
+
+            var maybeBought = await userCoursesRepository.GetUserCourse(courseId, userId);
+            if (maybeBought != null)
+            {
+                throw new InvalidOperationException(
+                    $"Course already bought by user: {maybeBought}"
+                    );
+            }
 
             return await basketRepository.AddtoBasket(courseId, userId);
         }

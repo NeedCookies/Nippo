@@ -39,13 +39,18 @@ namespace DataAccess.Repositories
             return deleteFromBasket;
         }
 
-        public Task<List<BasketCourses>> GetBasketCourses(string userId)
+        public async Task<List<BasketCourses>> GetBasketCourses(string userId)
         {
-            var basketCourses = dbContext.BasketCourses.
+            return await dbContext.BasketCourses.
                 Where(bc => bc.UserId == userId).
                 ToListAsync();
+        }
 
-            return basketCourses;
+        public async Task<BasketCourses?> GetBasketCourse(int courseId, string userId)
+        {
+            return await dbContext.BasketCourses
+                .Where(bc => bc.UserId == userId)
+                .FirstOrDefaultAsync();
         }
     }
 }
