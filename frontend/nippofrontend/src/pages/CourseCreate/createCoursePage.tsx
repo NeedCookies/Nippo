@@ -56,6 +56,7 @@ function createCourse() {
         setCourseSaved(true);
         setCourseIdState(response.data.id);
         getCourseData();
+        navigate(`/course/${courseId}/create`);
       } else {
         console.log(response.status);
         console.log(response);
@@ -157,7 +158,7 @@ function createCourse() {
       if (response.status === 200) {
         const quizzesWithType = response.data.map((quiz: any) => ({
           ...quiz,
-          type: "lesson",
+          type: "quiz",
         }));
         setModules((prevModules) => [...prevModules, ...quizzesWithType]);
       } else {

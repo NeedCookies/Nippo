@@ -10,6 +10,7 @@ import { LoginPage } from "./pages/LoginPage";
 import RequireAuth from "./components/RequireAuth";
 import NavbarLayout from "./components/NavbarLayout";
 import NippoNavbar from "./components/navbar/navbarMain";
+import { Basket } from "./pages/Basket";
 
 function App() {
   return (
@@ -51,8 +52,10 @@ function App() {
             </RequireAuth>
           }
         />
+        <Route path="/basket" element={<Basket />} />
         <Route path="/register" element={<RegisterPage />} />
         <Route path="/login" element={<LoginPage />} />
+        <Route path="/" element={<LoginPage />} />
       </Routes>
     </BrowserRouter>
   );

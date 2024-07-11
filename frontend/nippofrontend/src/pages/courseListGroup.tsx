@@ -6,8 +6,39 @@ import Grid from "@mui/material/Grid";
 import Box from "@mui/material/Box";
 import { Typography } from "@mui/material";
 import RequireAuth from "../components/RequireAuth";
+import { useEffect, useState } from "react";
+import axios from "axios";
+import myLogo from "../components/Images/logo.jpg";
 
-function Courses({ cards }: CourseListGroupProps) {
+interface CourseCard {
+  id: number;
+  title: string;
+  description: string;
+  price: number;
+  logo: string;
+  authorId: string;
+}
+
+function Courses() {
+  const [courses, setCourses] = useState<CourseCard[]>();
+
+  useEffect(() => {
+    async function getCourses() {
+      try {
+        const response = await axios.get(`course/get-all-courses`);
+        if (response.status === 200) {
+          setCourses(response.data);
+        } else {
+          console.log("Another response status");
+          console.log(response.status);
+        }
+      } catch (error) {
+        console.error(error);
+      }
+    }
+    getCourses();
+  }, []);
+
   return (
     <RequireAuth>
       <Container>
@@ -28,12 +59,12 @@ function Courses({ cards }: CourseListGroupProps) {
             container
             rowSpacing={1}
             columnSpacing={{ xs: 1, sm: 2, md: 3 }}>
-            {cards.map((card: CourseCardProps) => (
+            {courses?.map((course) => (
               <CourseCard
-                title={card.title}
-                description={card.description}
-                price={card.price}
-                logo={card.logo}
+                title={course.title}
+                description={course.description}
+                price={course.price}
+                logo={course.logo === "c://dataStorage" ? myLogo : course.logo}
               />
             ))}
           </Grid>

@@ -24,7 +24,9 @@ function NavbarPages() {
           </Nav.Link>
         </Nav.Item>
         <Nav.Item>
-          <Nav.Link eventKey="link-2">Корзина</Nav.Link>
+          <Nav.Link href="/basket" eventKey="/basket">
+            Корзина
+          </Nav.Link>
         </Nav.Item>
       </Nav>
     </Nav.Item>
