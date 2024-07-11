@@ -10,7 +10,8 @@ namespace Application.Services
 {
     public class CoursesService(
         ICourseRepository courseRepository, 
-        IUserCoursesRepository userCoursesRepository) : ICoursesService
+        IUserCoursesRepository userCoursesRepository,
+        IBasketRepository basketRepository) : ICoursesService
     {
         public async Task<Course> Create(CreateCourseRequest request, string authorId)
         {
@@ -75,7 +76,52 @@ namespace Application.Services
 
         public async Task<UserCourses> PurchaseCourse(int courseId, string userId)
         {
+            StringBuilder error = new StringBuilder();
+            if (userId == null)
+                error.AppendLine("userId is null");
+            if (courseId < 0)
+                error.AppendLine("Wrong course id");
+
+            if (error.Length > 0)
+                throw new ArgumentException(error.ToString());
+
             return await userCoursesRepository.Add(courseId, userId);
+        }
+
+        public async Task<BasketCourses> AddToBasket(int courseId, string userId)
+        {
+            StringBuilder error = new StringBuilder();
+            if (userId == null)
+                error.AppendLine("userId is null");
+            if (courseId < 0)
+                error.AppendLine("Wrong course id");
+
+            if (error.Length > 0)
+                throw new ArgumentException(error.ToString());
+
+            return await basketRepository.AddtoBasket(courseId, userId);
+        }
+
+        public async Task<BasketCourses> DeleteFromBasket(int courseId, string userId)
+        {
+            StringBuilder error = new StringBuilder();
+            if (userId == null)
+                error.AppendLine("userId is null");
+            if (courseId < 0)
+                error.AppendLine("Wrong course id");
+
+            if (error.Length > 0)
+                throw new ArgumentException(error.ToString());
+
+            return await basketRepository.DeleteFromBasket(courseId, userId);
+        }
+
+        public async Task<List<BasketCourses>> GetBasketCourses(string userId)
+        {
+            if (userId == null)
+                throw new ArgumentNullException("userId is null");
+
+            return await basketRepository.GetBasketCourses(userId);
         }
     }
 }

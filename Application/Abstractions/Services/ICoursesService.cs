@@ -12,5 +12,8 @@ namespace Application.Abstractions.Services
         public Task<Course> Delete(int id);
         public Task<Course> GetById(int id);
         public Task<UserCourses> PurchaseCourse(int courseId, string userId);
+        public Task<BasketCourses> AddToBasket(int courseId, string userId);
+        public Task<BasketCourses> DeleteFromBasket(int courseId, string userId);
+        public Task<List<BasketCourses>> GetBasketCourses(string userId);
     }
 }
