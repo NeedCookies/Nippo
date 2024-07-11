@@ -35,6 +35,7 @@ export const Basket = () => {
     useState<BasketCourseProps[]>();
   const [basketCourses, setBasketCourses] = useState<CourseCardProps[]>();
   const [alreadyBought, setAlreadyBought] = useState<boolean>(false);
+  const [lackOfPoints, setLackOfPoints] = useState<boolean>(false);
 
   const handleClose = (
     event: React.SyntheticEvent | Event,
@@ -88,8 +89,30 @@ export const Basket = () => {
         console.log(response.status);
       }
     } catch (error) {
-      setAlreadyBought(true);
-      console.error(error);
+      if (error.response.status === 500) {
+        if (
+          String(error.response.data).includes("Course already bought by user")
+        ) {
+          console.log("Вы уже купили этот курс");
+          setAlreadyBought(true);
+        } else if (
+          String(error.response.data).includes("Don't have enough points")
+        ) {
+          console.log("У вас недостаточно баллов для покупки этого курса");
+          setLackOfPoints(true);
+        } else {
+          console.error(
+            "Ошибка при покупке курса:",
+            error.response.data.message
+          );
+        }
+      } else {
+        console.error(
+          "Ошибка при покупке курса:",
+          error.response.status,
+          error.response.data
+        );
+      }
     }
   };
 
@@ -254,7 +277,19 @@ export const Basket = () => {
             severity="success"
             variant="filled"
             sx={{ width: "100%" }}>
-            Курс уже куплен вами, или находится в вашей корзине
+            Курс уже куплен вами
+          </Alert>
+        </Snackbar>
+        <Snackbar
+          open={lackOfPoints}
+          autoHideDuration={5000}
+          onClose={handleClose}>
+          <Alert
+            onClose={handleClose}
+            severity="warning"
+            variant="filled"
+            sx={{ width: "100%" }}>
+            Недостаточно поинтов для покупки
           </Alert>
         </Snackbar>
       </Container>

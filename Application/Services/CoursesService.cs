@@ -11,7 +11,9 @@ namespace Application.Services
     public class CoursesService(
         ICourseRepository courseRepository, 
         IUserCoursesRepository userCoursesRepository,
-        IBasketRepository basketRepository) : ICoursesService
+        IBasketRepository basketRepository,
+        IUserRepository userRepository,
+        IUnitOfWork unitOfWork) : ICoursesService
     {
         public async Task<Course> Create(CreateCourseRequest request, string authorId)
         {
@@ -93,7 +95,16 @@ namespace Application.Services
                     );
             }
 
+            var user = await userRepository.GetByUserId(userId);
+            var course = await GetById(courseId);
+            if (user.Points < course.Price)
+            {
+                throw new ApplicationException("Don't have enough points");
+            }
+
             await basketRepository.DeleteFromBasket(courseId, userId);
+            user.Points = user.Points - (int)course.Price;
+            await unitOfWork.SaveChangesAsync();
             return await userCoursesRepository.Add(courseId, userId);
         }
 
