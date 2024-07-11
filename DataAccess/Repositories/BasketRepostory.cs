@@ -49,7 +49,8 @@ namespace DataAccess.Repositories
         public async Task<BasketCourses?> GetBasketCourse(int courseId, string userId)
         {
             return await dbContext.BasketCourses
-                .Where(bc => bc.UserId == userId)
+                .Where(bc => bc.UserId == userId
+                && bc.CourseId == courseId)
                 .FirstOrDefaultAsync();
         }
     }

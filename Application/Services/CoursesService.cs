@@ -108,7 +108,7 @@ namespace Application.Services
             if (error.Length > 0)
                 throw new ArgumentException(error.ToString());
 
-            var maybeAdded = basketRepository.GetBasketCourse(courseId, userId);
+            var maybeAdded = await basketRepository.GetBasketCourse(courseId, userId);
             if (maybeAdded != null)
             {
                 throw new InvalidOperationException(
