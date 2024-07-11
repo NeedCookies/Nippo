@@ -19,7 +19,7 @@ function NavbarPages() {
           </Nav.Link>
         </Nav.Item>
         <Nav.Item>
-          <Nav.Link href="/courses/liked" eventKey="/courses/liked">
+          <Nav.Link href="/my-courses" eventKey="/my-courses">
             Я прохожу
           </Nav.Link>
         </Nav.Item>

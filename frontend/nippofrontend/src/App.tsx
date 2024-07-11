@@ -20,10 +20,7 @@ function App() {
       </NavbarLayout>
       <Routes>
         <Route path="/courses" element={<CourseListGroup />} />
-        <Route
-          path="/courses/liked"
-          element={<LikedCoursesList cards={courses} />}
-        />
+        <Route path="/my-courses" element={<LikedCoursesList />} />
         <Route
           path="course/create"
           element={

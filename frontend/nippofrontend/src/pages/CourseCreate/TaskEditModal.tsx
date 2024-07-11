@@ -45,7 +45,7 @@ export const TaskEditModal = ({
   const fetchQuestion = async (questionId: number) => {
     try {
       const response = await axios.get(
-        `question/get-by-id?questionId=${questionId}`
+        `/question/get-by-id?questionId=${questionId}`
       );
 
       if (response.status === 200) {
@@ -124,7 +124,7 @@ export const TaskEditModal = ({
     }));
   };
 
-  const handleAddTask = async () => {
+  const handleEditTask = async () => {
     try {
       const response = await axios.post(
         `/queston/update?questionId=${questionId}`,
@@ -286,8 +286,8 @@ export const TaskEditModal = ({
             variant="contained"
             size="large"
             sx={{ margin: 2 }}
-            onClick={() => handleAddTask()}>
-            Добавить
+            onClick={() => handleEditTask()}>
+            Сохранить
           </Button>
         </Box>
       </Container>

@@ -56,7 +56,6 @@ function createCourse() {
         setCourseSaved(true);
         setCourseIdState(response.data.id);
         getCourseData();
-        navigate(`/course/${courseId}/create`);
       } else {
         console.log(response.status);
         console.log(response);
@@ -109,6 +108,7 @@ function createCourse() {
     if (courseId) {
       getCourseData();
       setCourseIdState(Number(courseId));
+      navigate(`/course/${courseId}/create`);
     }
   }, [courseId]);
 

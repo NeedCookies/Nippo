@@ -1,13 +1,10 @@
-import CourseListGroupProps from "../components/courseComponents/Interfaces/courseListGroupProps";
-import CourseCard from "../components/courseComponents/courseCard";
 import Container from "@mui/material/Container";
 import Grid from "@mui/material/Grid";
 import Box from "@mui/material/Box";
-import { Paper, Typography, Button } from "@mui/material";
+import { Paper, Typography, Button, Snackbar, Alert } from "@mui/material";
 import RequireAuth from "../components/RequireAuth";
 import { useEffect, useState } from "react";
 import axios from "axios";
-import myLogo from "../components/Images/logo.jpg";
 import AddShoppingCartIcon from "@mui/icons-material/AddShoppingCart";
 
 interface CourseCardProps {
@@ -20,7 +17,19 @@ interface CourseCardProps {
 }
 
 function Courses() {
+  const [alreadyInBasket, setAlreadyInBasket] = useState<boolean>(false);
   const [courses, setCourses] = useState<CourseCardProps[]>();
+
+  const handleClose = (
+    event: React.SyntheticEvent | Event,
+    reason?: string
+  ) => {
+    if (reason === "clickaway") {
+      return;
+    }
+
+    setAlreadyInBasket(false);
+  };
 
   const handleAddToBasket = (courseId: number) => {
     async function addToBasket(courseId: number) {
@@ -36,6 +45,7 @@ function Courses() {
           console.log(response.status);
         }
       } catch (error) {
+        setAlreadyInBasket(true);
         console.error(error);
       }
     }
@@ -143,6 +153,18 @@ function Courses() {
             ))}
           </Grid>
         </Container>
+        <Snackbar
+          open={alreadyInBasket}
+          autoHideDuration={5000}
+          onClose={handleClose}>
+          <Alert
+            onClose={handleClose}
+            severity="success"
+            variant="filled"
+            sx={{ width: "100%" }}>
+            Курс уже куплен вами, или находится в вашей корзине
+          </Alert>
+        </Snackbar>
       </Container>
     </RequireAuth>
   );

@@ -1,4 +1,12 @@
-import { Box, Typography, Container, Paper, Button } from "@mui/material";
+import {
+  Box,
+  Typography,
+  Container,
+  Paper,
+  Button,
+  Snackbar,
+  Alert,
+} from "@mui/material";
 import RequireAuth from "../components/RequireAuth";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { useEffect, useState } from "react";
@@ -26,6 +34,18 @@ export const Basket = () => {
   const [basketCoursesIds, setBasketCoursesIds] =
     useState<BasketCourseProps[]>();
   const [basketCourses, setBasketCourses] = useState<CourseCardProps[]>();
+  const [alreadyBought, setAlreadyBought] = useState<boolean>(false);
+
+  const handleClose = (
+    event: React.SyntheticEvent | Event,
+    reason?: string
+  ) => {
+    if (reason === "clickaway") {
+      return;
+    }
+
+    setAlreadyBought(false);
+  };
 
   async function getBasketCourses() {
     try {
@@ -55,7 +75,23 @@ export const Basket = () => {
     }
   }
 
-  const handleBuyClick = () => {};
+  const handleBuyClick = async (courseId: number) => {
+    try {
+      const response = await axios.post(
+        `/course/purchase-course?courseId=${courseId}`
+      );
+      if (response.status === 200) {
+        console.log("Курс успешно куплен");
+        console.log("Cделай всплывающее окно с уведомлением");
+      } else {
+        console.log("Another response status");
+        console.log(response.status);
+      }
+    } catch (error) {
+      setAlreadyBought(true);
+      console.error(error);
+    }
+  };
 
   const handleDeleteClick = async (courseId: number) => {
     try {
@@ -182,7 +218,7 @@ export const Basket = () => {
                       }}
                       margin={2}>
                       <Button
-                        onClick={handleBuyClick}
+                        onClick={() => handleBuyClick(course.id)}
                         variant="contained"
                         color="success">
                         Купить {course.price}
@@ -209,6 +245,18 @@ export const Basket = () => {
               </Paper>
             ))}
         </Container>
+        <Snackbar
+          open={alreadyBought}
+          autoHideDuration={5000}
+          onClose={handleClose}>
+          <Alert
+            onClose={handleClose}
+            severity="success"
+            variant="filled"
+            sx={{ width: "100%" }}>
+            Курс уже куплен вами, или находится в вашей корзине
+          </Alert>
+        </Snackbar>
       </Container>
     </RequireAuth>
   );
