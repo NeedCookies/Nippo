@@ -13,14 +13,26 @@ namespace Application.Services
         IUserCoursesRepository userCoursesRepository,
         IBasketRepository basketRepository,
         IUserRepository userRepository,
-        IUnitOfWork unitOfWork) : ICoursesService
+        IUnitOfWork unitOfWork,
+        IStorageService storageService) : ICoursesService
     {
         public async Task<Course> Create(CreateCourseRequest request, string authorId)
         {
             string title = request.Title;
             string descript = request.Description;
             decimal price = request.Price;
-            string imgPath = request.ImgPath;
+
+            if (request.ImgPath == null)
+            {
+                throw new ArgumentNullException("Bad logo type");
+            }
+
+            var logoStream = request.ImgPath.OpenReadStream();
+            var fileName = Guid.NewGuid().ToString();
+
+            await storageService.PutAsync(fileName, logoStream, request.ImgPath.ContentType);
+
+            string imgPath = fileName;
 
             StringBuilder error = new StringBuilder("");
             if (title.Length == 0)
@@ -46,13 +58,50 @@ namespace Application.Services
 
         public async Task<Course> Update(UpdateCourseRequest request)
         {
-            int id = request.Id;
-            string title = request.Title;
-            string descript = request.Description;
-            decimal price = request.Price;
-            string imgPath = request.ImgPath;
+            var course = await courseRepository.GetById(request.Id);
 
-            return await courseRepository.Update(id, title, descript, price, imgPath);
+            if (course == null)
+            {
+                throw new ArgumentException($"No course with Id{request.Id}");
+            }
+
+            StringBuilder error = new StringBuilder("");
+            if (request.Title.Length == 0)
+            {
+                error.Append("Title shouldn't be null");
+            }
+            if (request.Description.Length == 0)
+            {
+                error.Append("Description shouldn't be null");
+            }
+            if (request.Price < 0)
+            {
+                error.Append("Prize should be equal 0 or more");
+            }
+            if (request.ImgPath == null)
+            {
+                error.Append("Bad logo type");
+            }
+
+            if (error.Length > 0)
+            {
+                throw new ArgumentException(error.ToString());
+            }
+
+            course.Title = request.Title;
+            course.Description = request.Description;
+            course.Price = request.Price;
+
+            var logoStream = request.ImgPath.OpenReadStream();
+            var fileName = Guid.NewGuid().ToString();
+
+            await storageService.PutAsync(fileName, logoStream, request.ImgPath.ContentType);
+
+            course.ImgPath = fileName;
+
+            await unitOfWork.SaveChangesAsync();
+
+            return await courseRepository.GetById(request.Id);
         }
 
         public async Task<Course> Delete(int courseId) => await courseRepository.Delete(courseId);
@@ -72,6 +121,12 @@ namespace Application.Services
             {
                 throw new Exception("Course with such id was not found");
             }
+
+            var imgPath = course.ImgPath != null ?
+                await storageService.GetUrlAsync(course.ImgPath) :
+                null;
+
+            course.ImgPath = imgPath;
 
             return course;
         }
