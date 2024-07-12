@@ -36,7 +36,7 @@ namespace WebAPI.Controllers
 
         [Authorize(Roles = "admin")]
         [HttpPost("create-course")]
-        public async Task<IActionResult> Create([FromBody] CreateCourseRequest request)
+        public async Task<IActionResult> Create([FromForm] CreateCourseRequest request)
         {
             string userId = GetUserId();
 
@@ -93,7 +93,7 @@ namespace WebAPI.Controllers
 
         [Authorize(Roles = "admin")]
         [HttpPost("edit-course")]
-        public async Task<IActionResult> Update([FromBody] UpdateCourseRequest request)
+        public async Task<IActionResult> Update([FromForm] UpdateCourseRequest request)
         {
             var course = await coursesService.Update(request);
             return Ok(course);

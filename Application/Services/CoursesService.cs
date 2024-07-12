@@ -108,9 +108,16 @@ namespace Application.Services
 
         public async Task<List<Course>> GetAllCourses()
         {
-            var allCourses = courseRepository.GetAllCourses();
+            var allCourses = await courseRepository.GetAllCourses();
 
-            return await allCourses;
+            foreach (var course in allCourses)
+            {
+                course.ImgPath = course.ImgPath != null ?
+                    await storageService.GetUrlAsync(course.ImgPath) :
+                    null;
+            }
+
+            return allCourses;
         }
 
         public async Task<Course> GetById(int id)
