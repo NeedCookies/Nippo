@@ -10,6 +10,7 @@ import { LoginPage } from "./pages/LoginPage";
 import RequireAuth from "./components/RequireAuth";
 import NavbarLayout from "./components/NavbarLayout";
 import NippoNavbar from "./components/navbar/navbarMain";
+import { Basket } from "./pages/Basket";
 
 function App() {
   return (
@@ -18,11 +19,8 @@ function App() {
         <NippoNavbar />
       </NavbarLayout>
       <Routes>
-        <Route path="/courses" element={<CourseListGroup cards={courses} />} />
-        <Route
-          path="/courses/liked"
-          element={<LikedCoursesList cards={courses} />}
-        />
+        <Route path="/courses" element={<CourseListGroup />} />
+        <Route path="/my-courses" element={<LikedCoursesList />} />
         <Route
           path="course/create"
           element={
@@ -51,8 +49,10 @@ function App() {
             </RequireAuth>
           }
         />
+        <Route path="/basket" element={<Basket />} />
         <Route path="/register" element={<RegisterPage />} />
         <Route path="/login" element={<LoginPage />} />
+        <Route path="/" element={<LoginPage />} />
       </Routes>
     </BrowserRouter>
   );

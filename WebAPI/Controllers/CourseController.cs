@@ -55,10 +55,39 @@ namespace WebAPI.Controllers
         [HttpPost("purchase-course")]
         public async Task<IActionResult> PurchaseCourse(int courseId)
         {
-            string token = HttpContext.Request.Cookies["jwt-token-cookie"];
             string userId = GetUserId();
 
             var result = await coursesService.PurchaseCourse(courseId, userId);
+            return Ok(result);
+        }
+
+        [Authorize]
+        [HttpPost("add-to-basket")]
+        public async Task<IActionResult> AddToBasket(int courseId)
+        {
+            string userId = GetUserId();
+
+            var result = await coursesService.AddToBasket(courseId, userId);
+            return Ok(result);
+        }
+
+        [Authorize]
+        [HttpPost("remove-from-basket")]
+        public async Task<IActionResult> RemoveFromBasket(int courseId)
+        {
+            string userId = GetUserId();
+
+            var result = await coursesService.DeleteFromBasket(courseId, userId);
+            return Ok(result);
+        }
+
+        [Authorize]
+        [HttpGet("get-basket-courses")]
+        public async Task<IActionResult> GetBasketCourses()
+        {
+            string userId = GetUserId();
+
+            var result = await coursesService.GetBasketCourses(userId);
             return Ok(result);
         }
 
@@ -77,7 +106,6 @@ namespace WebAPI.Controllers
             var course = await coursesService.Delete(courseId);
             return Ok(course);
         }
-
 
         [HttpGet("test-query")]
         public async Task<IActionResult> TestQuery() => Ok("Aboba");

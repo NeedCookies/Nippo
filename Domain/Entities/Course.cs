@@ -16,5 +16,6 @@ namespace Domain.Entities
         public ICollection<Quiz>? Quizes { get; set; }
         [JsonIgnore]
         public ICollection<UserCourses>? UserCourses { get; set; }
+        public ICollection<BasketCourses>? BasketCourses { get; set; }
     }
 }

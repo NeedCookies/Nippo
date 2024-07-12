@@ -10,7 +10,10 @@ namespace Application.Services
 {
     public class CoursesService(
         ICourseRepository courseRepository, 
-        IUserCoursesRepository userCoursesRepository) : ICoursesService
+        IUserCoursesRepository userCoursesRepository,
+        IBasketRepository basketRepository,
+        IUserRepository userRepository,
+        IUnitOfWork unitOfWork) : ICoursesService
     {
         public async Task<Course> Create(CreateCourseRequest request, string authorId)
         {
@@ -75,7 +78,86 @@ namespace Application.Services
 
         public async Task<UserCourses> PurchaseCourse(int courseId, string userId)
         {
+            StringBuilder error = new StringBuilder();
+            if (userId == null)
+                error.AppendLine("userId is null");
+            if (courseId < 0)
+                error.AppendLine("Wrong course id");
+
+            if (error.Length > 0)
+                throw new ArgumentException(error.ToString());
+
+            var maybeBought = await userCoursesRepository.GetUserCourse(courseId, userId);
+            if (maybeBought != null)
+            {
+                throw new InvalidOperationException(
+                    $"Course already bought by user: {maybeBought}"
+                    );
+            }
+
+            var user = await userRepository.GetByUserId(userId);
+            var course = await GetById(courseId);
+            if (user.Points < course.Price)
+            {
+                throw new ApplicationException("Don't have enough points");
+            }
+
+            await basketRepository.DeleteFromBasket(courseId, userId);
+            user.Points = user.Points - (int)course.Price;
+            await unitOfWork.SaveChangesAsync();
             return await userCoursesRepository.Add(courseId, userId);
+        }
+
+        public async Task<BasketCourses> AddToBasket(int courseId, string userId)
+        {
+            StringBuilder error = new StringBuilder();
+            if (userId == null)
+                error.AppendLine("userId is null");
+            if (courseId < 0)
+                error.AppendLine("Wrong course id");
+
+            if (error.Length > 0)
+                throw new ArgumentException(error.ToString());
+
+            var maybeAdded = await basketRepository.GetBasketCourse(courseId, userId);
+            if (maybeAdded != null)
+            {
+                throw new InvalidOperationException(
+                    $"Course already in basket: {maybeAdded}"
+                    );
+            }
+
+            var maybeBought = await userCoursesRepository.GetUserCourse(courseId, userId);
+            if (maybeBought != null)
+            {
+                throw new InvalidOperationException(
+                    $"Course already bought by user: {maybeBought}"
+                    );
+            }
+
+            return await basketRepository.AddtoBasket(courseId, userId);
+        }
+
+        public async Task<BasketCourses> DeleteFromBasket(int courseId, string userId)
+        {
+            StringBuilder error = new StringBuilder();
+            if (userId == null)
+                error.AppendLine("userId is null");
+            if (courseId < 0)
+                error.AppendLine("Wrong course id");
+
+            if (error.Length > 0)
+                throw new ArgumentException(error.ToString());
+
+            return await basketRepository.DeleteFromBasket(courseId, userId);
+        }
+
+        public async Task<List<BasketCourses>> GetBasketCourses(string userId)
+        {
+            if (userId == null)
+                throw new ArgumentNullException("userId is null");
+
+            return await basketRepository.GetBasketCourses(userId);
         }
     }
 }

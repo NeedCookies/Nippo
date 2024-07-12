@@ -16,6 +16,7 @@ namespace Domain.Entities.Identity
         public ICollection<UserCourses>? UserCourses { get; set; }
         public ICollection<QuizResult>? QuizResults { get; set; }
         public ICollection<UserAnswer>? UserAnswers { get; set; }
+        public ICollection<BasketCourses>? BasketCourses { get; set; }
     }
 }
  

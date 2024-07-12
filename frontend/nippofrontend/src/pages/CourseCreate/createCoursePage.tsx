@@ -108,6 +108,7 @@ function createCourse() {
     if (courseId) {
       getCourseData();
       setCourseIdState(Number(courseId));
+      navigate(`/course/${courseId}/create`);
     }
   }, [courseId]);
 
@@ -157,7 +158,7 @@ function createCourse() {
       if (response.status === 200) {
         const quizzesWithType = response.data.map((quiz: any) => ({
           ...quiz,
-          type: "lesson",
+          type: "quiz",
         }));
         setModules((prevModules) => [...prevModules, ...quizzesWithType]);
       } else {
