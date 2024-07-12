@@ -19,7 +19,7 @@ interface CourseCardProps {
   title: string;
   description: string;
   price: number;
-  logo: string;
+  imgPath: string;
   authorId: string;
 }
 
@@ -46,6 +46,7 @@ export const Basket = () => {
     }
 
     setAlreadyBought(false);
+    setLackOfPoints(false);
   };
 
   async function getBasketCourses() {
@@ -193,17 +194,21 @@ export const Basket = () => {
                   justifyContent: "space-around",
                   margin: 1,
                 }}>
-                <Container
-                  component="img"
-                  src={course.logo}
-                  alt="Course logo"
+                <Box
                   sx={{
-                    height: 233,
-                    width: 350,
-                    maxHeight: { xs: 233, md: 167 },
-                    maxWidth: { xs: 350, md: 250 },
-                  }}
-                />
+                    marginTop: 2,
+                    paddingX: 1,
+                    marginBottom: 1,
+                    display: "flex",
+                    justifyContent: "center",
+                    backgroundColor: "#858585",
+                  }}>
+                  <img
+                    src={course.imgPath}
+                    alt="course logo"
+                    style={{ width: "200px", height: "200px" }}
+                  />
+                </Box>
                 <Container
                   sx={{
                     height: "90%",
@@ -243,7 +248,8 @@ export const Basket = () => {
                       <Button
                         onClick={() => handleBuyClick(course.id)}
                         variant="contained"
-                        color="success">
+                        color="success"
+                        sx={{ width: "150px" }}>
                         Купить {course.price}
                       </Button>
                     </Box>
@@ -259,7 +265,8 @@ export const Basket = () => {
                         onClick={() => handleDeleteClick(course.id)}
                         variant="contained"
                         color="error"
-                        startIcon={<DeleteIcon />}>
+                        startIcon={<DeleteIcon />}
+                        sx={{ width: "150px" }}>
                         Удалить
                       </Button>
                     </Box>

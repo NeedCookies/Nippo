@@ -12,12 +12,13 @@ interface CourseCardProps {
   title: string;
   description: string;
   price: number;
-  logo: string;
+  imgPath: string;
   authorId: string;
 }
 
 function Courses() {
   const [alreadyInBasket, setAlreadyInBasket] = useState<boolean>(false);
+  const [addedToBasket, setAddedToBasket] = useState<boolean>(false);
   const [courses, setCourses] = useState<CourseCardProps[]>();
 
   const handleClose = (
@@ -29,6 +30,7 @@ function Courses() {
     }
 
     setAlreadyInBasket(false);
+    setAddedToBasket(false);
   };
 
   const handleAddToBasket = (courseId: number) => {
@@ -39,8 +41,7 @@ function Courses() {
         );
 
         if (response.status === 200) {
-          console.log("Курс успешно добавлен в корзину");
-          console.log("Надо сделать Snackbat");
+          setAddedToBasket(true);
         } else {
           console.log(response.status);
         }
@@ -99,17 +100,22 @@ function Courses() {
                     display: "flex",
                     flexDirection: "column",
                   }}>
-                  <Container
-                    component="img"
-                    src={course.logo}
-                    alt="Course logo"
+                  <Box
                     sx={{
-                      height: 233,
-                      width: 350,
-                      maxHeight: { xs: 233, md: 167 },
-                      maxWidth: { xs: 350, md: 250 },
-                    }}
-                  />
+                      marginTop: 2,
+                      paddingX: 1,
+                      marginBottom: 1,
+                      width: "100%",
+                      display: "flex",
+                      justifyContent: "center",
+                      backgroundColor: "#858585",
+                    }}>
+                    <img
+                      src={course.imgPath}
+                      alt="Course logo"
+                      style={{ maxWidth: "100%", height: "200px" }}
+                    />
+                  </Box>
                   <Container
                     sx={{
                       height: "90%",
@@ -159,10 +165,22 @@ function Courses() {
           onClose={handleClose}>
           <Alert
             onClose={handleClose}
-            severity="success"
+            severity="info"
             variant="filled"
             sx={{ width: "100%" }}>
             Курс уже куплен вами, или находится в вашей корзине
+          </Alert>
+        </Snackbar>
+        <Snackbar
+          open={addedToBasket}
+          autoHideDuration={5000}
+          onClose={handleClose}>
+          <Alert
+            onClose={handleClose}
+            severity="success"
+            variant="filled"
+            sx={{ width: "100%" }}>
+            Курс добавлен в корзину
           </Alert>
         </Snackbar>
       </Container>

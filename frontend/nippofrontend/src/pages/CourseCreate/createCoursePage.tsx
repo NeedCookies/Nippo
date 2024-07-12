@@ -15,44 +15,59 @@ interface Module {
   type: string;
 }
 
+interface CourseDataProps {
+  Title: string;
+  Description: string;
+  Price: string;
+  Logo: string;
+}
+
 function createCourse() {
   const { courseId } = useParams<{ courseId?: string }>();
-  const [logo, setLogo] = useState({
-    preview: "",
-    raw: "",
-  });
 
   const [courseIdState, setCourseIdState] = useState<number>(-1);
   const [isCourseSaved, setCourseSaved] = useState<boolean>(false);
   const [modules, setModules] = useState<Module[]>([]);
   const [isQuizModalOpen, setQuizModalOpen] = useState<boolean>(false);
-  const [courseData, setCourseData] = useState({
+  const [courseData, setCourseData] = useState<CourseDataProps>({
     Title: "",
     Description: "",
     Price: "",
+    Logo: "",
   });
+  const [logo, setLogo] = useState<File | null>(null);
 
   const navigate = useNavigate();
   const haldleCloseModal = () => setQuizModalOpen(false);
 
-  const handleLogoButton = (e: any) => {
-    if (e.target.files.length) {
-      setLogo({
-        preview: URL.createObjectURL(e.target.files[0]),
-        raw: e.target.files[0],
-      });
+  const handleLogoButton = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      setLogo(e.target.files[0]);
     }
   };
 
   const handleSaveCourse = async () => {
     try {
-      const response = await axios.post("/course/create-course", {
-        title: courseData.Title,
-        description: courseData.Description,
-        price: courseData.Price,
-        imgPath: "c://dataStorage",
+      const formData = new FormData();
+      formData.append("Title", courseData.Title);
+      formData.append("Description", courseData.Description);
+      formData.append("Price", courseData.Price);
+      if (logo) {
+        formData.append("ImgPath", logo);
+      }
+
+      const response = await axios.post("/course/create-course", formData, {
+        headers: { "Content-Type": "multipart/form-data" },
       });
+
       if (response.status === 200) {
+        setCourseData((prev) => ({
+          ...prev!,
+          Title: response.data.title,
+          Description: response.data.description,
+          Price: response.data.price,
+          Logo: response.data.imgPath,
+        }));
         setCourseSaved(true);
         setCourseIdState(response.data.id);
         getCourseData();
@@ -66,14 +81,29 @@ function createCourse() {
   };
   const handleSaveCourseChanges = async () => {
     try {
-      const response = await axios.post("/course/edit-course", {
-        id: courseId,
-        title: courseData.Title,
-        description: courseData.Description,
-        price: courseData.Price,
-        imgPath: "c://dataStorage",
+      const formData = new FormData();
+      if (courseId) {
+        formData.append("Id", courseId);
+      }
+      formData.append("Title", courseData.Title);
+      formData.append("Description", courseData.Description);
+      formData.append("Price", courseData.Price);
+      if (logo) {
+        formData.append("ImgPath", logo);
+      }
+
+      const response = await axios.post("/course/edit-course", formData, {
+        headers: { "Content-Type": "multipart/form-data" },
       });
+
       if (response.status === 200) {
+        setCourseData((prev) => ({
+          ...prev!,
+          Title: response.data.title,
+          Description: response.data.description,
+          Price: response.data.price,
+          Logo: response.data.imgPath,
+        }));
         setCourseSaved(false);
         setCourseSaved(true);
         setCourseIdState(response.data.id);
@@ -119,7 +149,7 @@ function createCourse() {
         courseData.Title = response.data.title;
         courseData.Description = response.data.description;
         courseData.Price = response.data.price;
-        logo.raw = response.data.imgPath;
+        courseData.Logo = response.data.imgPath;
         getLessons();
         getQuizzes();
         setCourseSaved(true);
@@ -246,7 +276,7 @@ function createCourse() {
             onChange={handleLogoButton}
             sx={{ width: "100%" }}
           />
-          {logo.preview && (
+          {courseData.Logo && (
             <Box
               sx={{
                 marginTop: 2,
@@ -258,7 +288,7 @@ function createCourse() {
                 backgroundColor: "#858585",
               }}>
               <img
-                src={logo.preview}
+                src={courseData.Logo}
                 alt="Preview"
                 style={{ maxWidth: "100%", maxHeight: "200px" }}
               />
