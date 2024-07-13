@@ -18,6 +18,8 @@ namespace Domain.Entities.Identity
         public ICollection<QuizResult>? QuizResults { get; set; }
         [JsonIgnore]
         public ICollection<UserAnswer>? UserAnswers { get; set; }
+        [JsonIgnore]
+        public ICollection<UserProgress>? UserProgresses { get; set; }
     }
 }
  

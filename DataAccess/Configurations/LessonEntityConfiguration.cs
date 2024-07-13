@@ -15,6 +15,11 @@ namespace DataAccess.Configurations
 
             builder.HasOne(l => l.Course)
                 .WithMany(c => c.Lessons);
+
+            //builder.HasMany(l => l.UserProgresses)
+            //    .WithOne()
+            //    .HasForeignKey(up => up.ElementId)
+            //    .HasConstraintName("FK_Lesson_UserProgress");
         }
     }
 }

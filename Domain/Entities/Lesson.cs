@@ -9,5 +9,6 @@
         public string Title { get; set; } = null!;
         public DateTime CreateDate { get; set; }
         public ICollection<Block> Blocks { get; set; } = null!;
+        public ICollection<UserProgress>? UserProgresses { get; set; }
     }
 }

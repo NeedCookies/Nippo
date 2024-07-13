@@ -8,5 +8,6 @@
         public string Title { get; set; } = null!;
         public ICollection<Question> Questions { get; set; } = null!;
         public ICollection<QuizResult>? QuizResults { get; set; }
+        public ICollection<UserProgress>? UserProgresses { get; set; }
     }
 }

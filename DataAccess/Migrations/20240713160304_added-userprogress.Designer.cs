@@ -3,6 +3,7 @@ using System;
 using DataAccess;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace DataAccess.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240713160304_added-userprogress")]
+    partial class addeduserprogress
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -404,14 +407,12 @@ namespace DataAccess.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<bool>("IsCheck")
-                        .HasColumnType("boolean");
-
-                    b.Property<int?>("LessonId")
+                    b.Property<int>("ElementId")
                         .HasColumnType("integer");
 
-                    b.Property<int?>("QuizId")
-                        .HasColumnType("integer");
+                    b.Property<string>("ElementType")
+                        .IsRequired()
+                        .HasColumnType("text");
 
                     b.Property<string>("UserId")
                         .IsRequired()
@@ -419,9 +420,7 @@ namespace DataAccess.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("LessonId");
-
-                    b.HasIndex("QuizId");
+                    b.HasIndex("ElementId");
 
                     b.HasIndex("UserId");
 
@@ -659,23 +658,24 @@ namespace DataAccess.Migrations
 
             modelBuilder.Entity("Domain.Entities.UserProgress", b =>
                 {
-                    b.HasOne("Domain.Entities.Lesson", "Lesson")
+                    b.HasOne("Domain.Entities.Lesson", null)
                         .WithMany("UserProgresses")
-                        .HasForeignKey("LessonId");
+                        .HasForeignKey("ElementId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("FK_Lesson_UserProgress");
 
-                    b.HasOne("Domain.Entities.Quiz", "Quiz")
+                    b.HasOne("Domain.Entities.Quiz", null)
                         .WithMany("UserProgresses")
-                        .HasForeignKey("QuizId");
+                        .HasForeignKey("ElementId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("Domain.Entities.Identity.ApplicationUser", "User")
                         .WithMany("UserProgresses")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("Lesson");
-
-                    b.Navigation("Quiz");
 
                     b.Navigation("User");
                 });
