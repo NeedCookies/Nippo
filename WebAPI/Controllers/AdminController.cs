@@ -8,7 +8,7 @@ namespace WebAPI.Controllers
     [ApiController]
     [Route("admin")]
     [Authorize(Roles = "admin")]
-    public class AdminController(IUserService userService): ControllerBase
+    public class AdminController(IUserService userService, IDiscountService discountService): ControllerBase
     {
         [HttpPost("give-points")]
         public async Task<IActionResult> GivePointsToUser(GivePointsRequest givePointsRequest)
@@ -40,6 +40,12 @@ namespace WebAPI.Controllers
             return Ok(updatedUser);
         }
 
+        [HttpPost("add-promocode")]
+        public async Task<IActionResult> AddPromocode(PromocodeDto promocodeDto)
+        {
+            await discountService.AddPromocode(promocodeDto);
 
+            return Ok();
+        }
     }
 }
