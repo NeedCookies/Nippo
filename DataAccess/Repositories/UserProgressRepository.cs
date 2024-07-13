@@ -16,6 +16,7 @@ namespace DataAccess.Repositories
                 UserProgress newUserProgress = new UserProgress
                 {
                     UserId = userProgress.UserId,
+                    CourseId = userProgress.CourseId,
                     IsCheck = false
                 };
 
@@ -31,10 +32,11 @@ namespace DataAccess.Repositories
             await appDbContext.SaveChangesAsync();
         }
 
-        public async Task<List<UserProgress>> GetElementsByUserId(string userId)
+        public async Task<List<UserProgress>> GetElementsByUserCourseId(string userId, int courseId)
         {
             var userProgresses = await appDbContext.UserProgresses
-                .Where(up => up.UserId == userId)
+                .Where(up => up.UserId == userId 
+                    && up.CourseId == courseId)
                 .ToListAsync();
 
             return userProgresses;
@@ -44,8 +46,14 @@ namespace DataAccess.Repositories
         {
             var userProgress = await appDbContext.UserProgresses
                 .FirstOrDefaultAsync(up => up.UserId == userProgressRequest.UserId 
-                    && ((userProgressRequest.ElementType == 0 && up.LessonId == userProgressRequest.ElementId)
-                        || (userProgressRequest.ElementType == 1 && up.QuizId == userProgressRequest.ElementId)));
+                    && up.CourseId == userProgressRequest.CourseId
+                    && (
+                        (userProgressRequest.ElementType == 0 
+                        && up.LessonId == userProgressRequest.ElementId)
+                        || 
+                        (userProgressRequest.ElementType == 1 
+                        && up.QuizId == userProgressRequest.ElementId))
+                       );
 
             userProgress.IsCheck = true;
 

@@ -2,6 +2,8 @@
 using Application.Abstractions.Services;
 using Application.Contracts;
 using Domain.Entities;
+using Domain.Entities.Identity;
+using Microsoft.AspNetCore.Identity;
 using System.Text;
 
 namespace Application.Services
@@ -9,7 +11,9 @@ namespace Application.Services
     public class LessonsService(
         ILessonRepository lessonRepository, 
         IUserCoursesRepository userCoursesRepository,
-        ICourseRepository courseRepository) : ILessonsService
+        ICourseRepository courseRepository,
+        IUserService userService,
+        IUserProgressRepository userProgressRepository) : ILessonsService
     {
         public async Task<Lesson> Create(CreateLessonRequest request)
         {
@@ -50,9 +54,25 @@ namespace Application.Services
             var lesson = await lessonRepository.GetById(lessonId);
 
             if(await Validate(lesson.CourseId, userId))
+            {
+                var user = await userService.GetUserInfoById(userId);
+
+                if (user.Role == "user")
+                    await userProgressRepository.UpdateProgress(
+                        new UserProgressRequest
+                        (
+                            userId, 
+                            lesson.CourseId, 
+                            lessonId, 
+                            0
+                         )
+                    );
+
                 return lesson;
+            }
             else
                 throw new Exception("Access denied");
+
         }
 
         public async Task<List<Lesson>> GetByCourseId(int courseId, string userId)

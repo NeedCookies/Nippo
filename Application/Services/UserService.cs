@@ -19,7 +19,8 @@ namespace Application.Services
         ICourseRepository courseRepository,
         UserManager<ApplicationUser> userManager,
         RoleManager<AppRole> roleManager,
-        IStorageService storageService) : IUserService
+        IStorageService storageService,
+        IUserProgressRepository userProgressRepository) : IUserService
     {
         public async Task<PersonalInfoDto> GetUserInfoById(string userId)
         {
@@ -224,6 +225,9 @@ namespace Application.Services
 
             return passwordRegex.IsMatch(password);
         }
+
+        public async Task<List<UserProgress>> GetUserProgresses(string userId, int courseId) =>
+            await userProgressRepository.GetElementsByUserCourseId(userId, courseId);
     }
 }
     

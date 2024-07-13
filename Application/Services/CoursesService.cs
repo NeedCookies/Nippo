@@ -10,7 +10,10 @@ namespace Application.Services
 {
     public class CoursesService(
         ICourseRepository courseRepository, 
-        IUserCoursesRepository userCoursesRepository) : ICoursesService
+        IUserCoursesRepository userCoursesRepository,
+        IUserProgressRepository userProgressRepository,
+        ILessonRepository lessonRepository,
+        IQuizRepository quizRepository) : ICoursesService
     {
         public async Task<Course> Create(CreateCourseRequest request, string authorId)
         {
@@ -80,6 +83,40 @@ namespace Application.Services
 
         public async Task<UserCourses> PurchaseCourse(int courseId, string userId)
         {
+            var courseLessons = await lessonRepository.GetLessonsByCourseAsync(courseId);
+            var courseQuizzes = await quizRepository.GetQuizzesByCourseAsync(courseId);
+            List<UserProgressRequest> request = new List<UserProgressRequest>();
+
+            int courseSize = courseLessons.Count + courseQuizzes.Count;
+
+            for(int i = 0; i < courseLessons.Count; i++)
+            {
+                UserProgressRequest newRequest = new UserProgressRequest
+                (
+                    userId,
+                    courseId,
+                    courseLessons[i].Id,
+                    0
+                );
+
+                request.Add(newRequest);
+            }
+
+            for (int i = 0; i < courseQuizzes.Count; i++)
+            {
+                UserProgressRequest newRequest = new UserProgressRequest
+                (
+                    userId,
+                    courseId,
+                    courseQuizzes[i].Id,
+                    1
+                );
+             
+                request.Add(newRequest);
+            }
+
+            await userProgressRepository.AddedAll(request);
+
             return await userCoursesRepository.Add(courseId, userId);
         }
     }
