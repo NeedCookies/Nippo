@@ -11,6 +11,8 @@ namespace Infrastructure.Extensions
             services.AddScoped<IPasswordHasher, PasswordHasher>();
             services.AddScoped<IJwtProvider, JwtProvider>();
             services.AddScoped<IStorageService, MinIOStorageService>();
+            services.AddScoped<IDiscountService, DiscountService>();
+
             return services;
         }
     }
