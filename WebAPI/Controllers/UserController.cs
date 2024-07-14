@@ -39,6 +39,15 @@ namespace WebAPI.Controllers
             return Ok(newUserInfo);
         }
 
+        [HttpGet("get-user-course-progress")]
+        public async Task<IActionResult> GetUserCourseProgress(int courseId)
+        {
+            var userId = GetUserId();
+            var userProgress = await userService.GetUserProgresses(userId, courseId);
+
+            return Ok(userProgress);
+        }
+
         private string GetUserId()
         {
             return HttpContext.User.FindFirst("userId")!.Value;

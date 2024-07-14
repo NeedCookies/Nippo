@@ -1,4 +1,6 @@
-﻿namespace Domain.Entities
+﻿using System.Text.Json.Serialization;
+
+namespace Domain.Entities
 {
     public class Quiz
     {
@@ -8,6 +10,7 @@
         public string Title { get; set; } = null!;
         public ICollection<Question> Questions { get; set; } = null!;
         public ICollection<QuizResult>? QuizResults { get; set; }
+        [JsonIgnore]
         public ICollection<UserProgress>? UserProgresses { get; set; }
     }
 }

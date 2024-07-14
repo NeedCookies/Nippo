@@ -12,6 +12,21 @@ namespace DataAccess.Configurations
             builder.HasOne(up => up.User)
             .WithMany(u => u.UserProgresses)
             .HasForeignKey(up => up.UserId);
+
+            builder.HasOne(uc => uc.Course)
+                .WithMany(c => c.UserProgresses)
+                .HasForeignKey(uc => uc.CourseId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            builder.HasOne(uc => uc.Lesson)
+                .WithMany(c => c.UserProgresses)
+                .HasForeignKey(uc => uc.LessonId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            builder.HasOne(uc => uc.Quiz)
+                .WithMany(c => c.UserProgresses)
+                .HasForeignKey(uc => uc.QuizId)
+                .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }
