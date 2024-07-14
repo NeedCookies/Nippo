@@ -19,7 +19,8 @@ namespace Application.Services
         ICourseRepository courseRepository,
         UserManager<ApplicationUser> userManager,
         RoleManager<AppRole> roleManager,
-        IStorageService storageService) : IUserService
+        IStorageService storageService,
+        IUserProgressRepository userProgressRepository) : IUserService
     {
         public async Task<PersonalInfoDto> GetUserInfoById(string userId)
         {
@@ -129,6 +130,9 @@ namespace Application.Services
             return userCourses;
         }
 
+        public async Task<List<Course>> GetCreatedCourses(string userId) =>
+            await courseRepository.GetCreatedCourses(userId);
+
         public async Task<PersonalInfoDto> UpdateUserInfo(string userId, UserInfoUpdateRequest updateRequest)
         {
             var user = await userRepository.GetByUserId(userId);
@@ -214,6 +218,35 @@ namespace Application.Services
 
             await userRolesRepository.AssignRole(userId, roleId);
         }
+
+        public async Task UpgradeRoleToAuthor(string userId)
+        {
+            var user = await GetUserInfoById(userId);
+            string authorRoleId = "2";
+
+            if (user.FirstName == null)
+                throw new Exception("FirstName Field Is Empty!");
+            if (user.LastName == null)
+                throw new Exception("LastName Field Is Empty!");
+            if (user.BirthDate == null)
+                throw new Exception("BirthDate Field Is Empty!");
+            if (user.PictureUrl == null)
+                throw new Exception("PictureUrl Field Is Empty!");
+
+            await userRolesRepository.RemoveRole(userId);
+            await userRolesRepository.AssignRole(userId, authorRoleId);
+        }
+
+        public async Task DowngradeRoleToUser(string userId)
+        {
+            string userRoleId = "1";
+
+            await userRolesRepository.RemoveRole(userId);
+            await userRolesRepository.AssignRole(userId, userRoleId);
+        }
+
+        public async Task<List<UserProgress>> GetUserProgresses(string userId, int courseId) =>
+            await userProgressRepository.GetElementsByUserCourseId(userId, courseId);
 
         private bool IsValidEmail(string email)
         {

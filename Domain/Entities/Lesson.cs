@@ -1,4 +1,6 @@
-﻿namespace Domain.Entities
+﻿using System.Text.Json.Serialization;
+
+namespace Domain.Entities
 
 {
     public class Lesson
@@ -9,5 +11,7 @@
         public string Title { get; set; } = null!;
         public DateTime CreateDate { get; set; }
         public ICollection<Block> Blocks { get; set; } = null!;
+        [JsonIgnore]
+        public ICollection<UserProgress>? UserProgresses { get; set; }
     }
 }

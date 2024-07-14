@@ -36,7 +36,7 @@ namespace Infrastructure.Services
             var presignedUrlArgs = new PresignedGetObjectArgs()
                 .WithBucket(_bucketName)
                 .WithObject(objectName)
-                .WithExpiry(60 * 60 * 12);
+                .WithExpiry(24 * 60 * 60);
 
             var url = await _minioClient.PresignedGetObjectAsync(presignedUrlArgs);
             url = url.Replace("http://minio:9000", _externalEndpoint);

@@ -9,6 +9,10 @@ namespace Application.Services
     public class CoursesService(
         ICourseRepository courseRepository, 
         IUserCoursesRepository userCoursesRepository,
+        IUserProgressRepository userProgressRepository,
+        ILessonRepository lessonRepository,
+        IQuizRepository quizRepository,
+        IUserService userService,
         IBasketRepository basketRepository,
         IUserRepository userRepository,
         IUnitOfWork unitOfWork,
@@ -102,8 +106,6 @@ namespace Application.Services
             return await courseRepository.GetById(request.Id);
         }
 
-        public async Task<Course> Delete(int courseId) => await courseRepository.Delete(courseId);
-
         public async Task<List<Course>> GetAllCourses()
         {
             var allCourses = await courseRepository.GetAllCourses();
@@ -118,14 +120,38 @@ namespace Application.Services
             return allCourses;
         }
 
+        public async Task<Course> Delete(int courseId) => 
+            await courseRepository.Delete(courseId);
+
+        public async Task<string> GetAuthorById(int id) =>
+            await courseRepository.GetAuthorById(id);
+
+        public async Task<List<Course>> GetCoursesToCheck() =>
+            await courseRepository.GetCoursesByStatus(PublishStatus.Check);
+
+        public async Task<Course> AcceptCourse(int courseId) =>
+            await courseRepository.ChangeStatus(courseId, PublishStatus.Publish);
+
+        public async Task<Course> CancelCourse(int courseId) =>
+            await courseRepository.ChangeStatus(courseId, PublishStatus.Edit);
+
+        public async Task<Course> SubmitForReview(int courseId, string userId)
+        {
+            var courseAuthor = await courseRepository.GetAuthorById(courseId);
+            var userInfo = await userService.GetUserInfoById(userId);
+
+            if (courseAuthor == userId && userInfo.Role == "author")
+                return await courseRepository.ChangeStatus(courseId, PublishStatus.Check);
+            else
+                throw new Exception("Access denied");
+        }
+
         public async Task<Course> GetById(int id)
         {
             var course = await courseRepository.GetById(id);
 
             if (course == null)
-            {
                 throw new Exception("Course with such id was not found");
-            }
 
             var imgPath = course.ImgPath != null ?
                 await storageService.GetUrlAsync(course.ImgPath) :
@@ -148,23 +174,54 @@ namespace Application.Services
                 throw new ArgumentException(error.ToString());
 
             var maybeBought = await userCoursesRepository.GetUserCourse(courseId, userId);
+
             if (maybeBought != null)
-            {
                 throw new InvalidOperationException(
-                    $"Course already bought by user: {maybeBought}"
-                    );
-            }
+                    $"Course already bought by user: {maybeBought}");
 
             var user = await userRepository.GetByUserId(userId);
             var course = await GetById(courseId);
+
             if (user.Points < course.Price)
-            {
                 throw new ApplicationException("Don't have enough points");
-            }
 
             await basketRepository.DeleteFromBasket(courseId, userId);
             user.Points -= (int)course.Price;
             await unitOfWork.SaveChangesAsync();
+
+            var courseLessons = await lessonRepository.GetLessonsByCourseAsync(courseId);
+            var courseQuizzes = await quizRepository.GetQuizzesByCourseAsync(courseId);
+            List<UserProgressRequest> request = new List<UserProgressRequest>();
+
+            int courseSize = courseLessons.Count + courseQuizzes.Count;
+
+            for(int i = 0; i < courseLessons.Count; i++)
+            {
+                UserProgressRequest newRequest = new UserProgressRequest
+                (
+                    userId,
+                    courseId,
+                    courseLessons[i].Id,
+                    0
+                );
+
+                request.Add(newRequest);
+            }
+
+            for (int i = 0; i < courseQuizzes.Count; i++)
+            {
+                UserProgressRequest newRequest = new UserProgressRequest
+                (
+                    userId,
+                    courseId,
+                    courseQuizzes[i].Id,
+                    1
+                );
+             
+                request.Add(newRequest);
+            }
+
+            await userProgressRepository.AddedAll(request);
             return await userCoursesRepository.Add(courseId, userId);
         }
 
@@ -180,20 +237,16 @@ namespace Application.Services
                 throw new ArgumentException(error.ToString());
 
             var maybeAdded = await basketRepository.GetBasketCourse(courseId, userId);
+            
             if (maybeAdded != null)
-            {
                 throw new InvalidOperationException(
-                    $"Course already in basket: {maybeAdded}"
-                    );
-            }
+                    $"Course already in basket: {maybeAdded}");
 
             var maybeBought = await userCoursesRepository.GetUserCourse(courseId, userId);
+            
             if (maybeBought != null)
-            {
                 throw new InvalidOperationException(
-                    $"Course already bought by user: {maybeBought}"
-                    );
-            }
+                    $"Course already bought by user: {maybeBought}");
 
             return await basketRepository.AddtoBasket(courseId, userId);
         }
@@ -205,7 +258,6 @@ namespace Application.Services
                 error.AppendLine("userId is null");
             if (courseId < 0)
                 error.AppendLine("Wrong course id");
-
             if (error.Length > 0)
                 throw new ArgumentException(error.ToString());
 

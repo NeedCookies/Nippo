@@ -8,6 +8,7 @@ namespace Application.Abstractions.Repositories
         Task<List<int>> GetAcquiredUsers(int courseId);
         Task<UserCourses> Add(int courseId, string userId);
         Task<UserCourses> Delete(int courseId, string userId);
+        Task<bool> IsCoursePurchased(string userId, int courseId);
         Task<UserCourses?> GetUserCourse(int courseId, string userId);
     }
 }

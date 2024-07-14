@@ -14,8 +14,12 @@ namespace Domain.Entities.Identity
         public ICollection<Course>? Courses { get; set; }
         [JsonIgnore]
         public ICollection<UserCourses>? UserCourses { get; set; }
+        [JsonIgnore]
         public ICollection<QuizResult>? QuizResults { get; set; }
+        [JsonIgnore]
         public ICollection<UserAnswer>? UserAnswers { get; set; }
+        [JsonIgnore]
+        public ICollection<UserProgress>? UserProgresses { get; set; }
         public ICollection<BasketCourses>? BasketCourses { get; set; }
     }
 }

@@ -5,13 +5,22 @@ using Microsoft.EntityFrameworkCore;
 
 namespace DataAccess.Repositories
 {
-    public class CourseRepository(AppDbContext appDbContext, IUserRepository userRepository) : ICourseRepository
+    public class CourseRepository(
+        AppDbContext appDbContext, 
+        IUserRepository userRepository, 
+        IUserCoursesRepository userCoursesRepository) : ICourseRepository
     {
         private readonly AppDbContext _appDbContext = appDbContext;
-        public async Task<List<Course>> GetAllCourses()
-        {
-            return await _appDbContext.Courses.ToListAsync();
-        }
+
+        public async Task<List<Course>> GetAllCourses() =>
+            await _appDbContext.Courses
+            .Where(c => c.Status == (int)PublishStatus.Publish)
+            .ToListAsync();
+
+        public async Task<List<Course>> GetCreatedCourses(string userId) =>
+            await _appDbContext.Courses
+            .Where(c => c.AuthorId == userId)
+            .ToListAsync();
 
         public async Task<Course> Create(string title, string desc, decimal price, string imgPath, string authorId)
         {
@@ -21,7 +30,8 @@ namespace DataAccess.Repositories
                 Description = desc,
                 Price = price,
                 AuthorId = authorId,
-                ImgPath = imgPath
+                ImgPath = imgPath,
+                Status = 0
             };
 
             await _appDbContext.Courses.AddAsync(course);
@@ -58,38 +68,34 @@ namespace DataAccess.Repositories
             return course;
         }
 
-        public Task<List<Course>> GetCoursesByAuthorAsync(int authorId)
+        public async Task<List<Course>> GetCoursesByAuthorAsync(string authorId) => 
+            await _appDbContext.Courses
+            .Where(c => c.AuthorId == authorId)
+            .ToListAsync();
+
+        public async Task<Course?> GetById(int id) => 
+            await _appDbContext.Courses
+            .FindAsync(id);
+
+        public async Task<string> GetAuthorById(int id) => 
+            await _appDbContext.Courses
+            .Where(a => a.Id == id)
+            .Select(a => a.AuthorId)
+            .FirstOrDefaultAsync();
+
+        public async Task<List<Course>> GetCoursesByStatus(PublishStatus status) =>
+            await _appDbContext.Courses.Where(c => c.Status == (int)status).ToListAsync();
+
+        public async Task<Course> ChangeStatus(int courseId, PublishStatus status)
         {
-            throw new NotImplementedException();
-        }
+            var course = await GetById(courseId);
 
-        public async Task<Course?> GetById(int id)
-        {
-            return await _appDbContext.Courses.FindAsync(id);
-        }
+            course.Status = (int)status;
 
-        public async Task<ApplicationUser> PurchaseCourse(int courseId, string userId)
-        {
-            var user = await userRepository.GetByUserId(userId);
-            Course course = await _appDbContext.Courses.FirstOrDefaultAsync(u => u.Id == courseId);
-            decimal coursePrice = course.Price;
-
-            if (coursePrice > user.Points)
-            {
-                throw new Exception("Not enough money");
-            }
-
-            user.Points -= (int)coursePrice;
-
-            if (user.Courses == null)
-            {
-                user.Courses = new List<Course>();
-            }
-
-            user.Courses.Add(course);
+            _appDbContext.Courses.Update(course);
             await _appDbContext.SaveChangesAsync();
 
-            return user;
+            return course;
         }
     }
 }

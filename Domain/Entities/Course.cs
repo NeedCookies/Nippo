@@ -12,10 +12,21 @@ namespace Domain.Entities
         public string AuthorId { get; set; } = null!;
         public ApplicationUser Author { get; set; } = null!;
         public string? ImgPath { get; set; }
+        public int Status { get; set; }
         public ICollection<Lesson>? Lessons { get; set; } 
         public ICollection<Quiz>? Quizes { get; set; }
         [JsonIgnore]
         public ICollection<UserCourses>? UserCourses { get; set; }
+        [JsonIgnore]
+        public ICollection<UserProgress>? UserProgresses { get; set; }
+        [JsonIgnore]
         public ICollection<BasketCourses>? BasketCourses { get; set; }
+    }
+
+    public enum PublishStatus
+    {
+        Edit,
+        Check,
+        Publish
     }
 }

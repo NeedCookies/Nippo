@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using WebAPI.Extensions;
 using Infrastructure.Options;
 using WebAPI.Middlewares;
+using Application.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -34,9 +35,12 @@ await using (var scope = app.Services.CreateAsyncScope())
     await Task.Delay(1000);
 
     var dbContext = scope.ServiceProvider.GetService<AppDbContext>();
+    //var userService = scope.ServiceProvider.GetRequiredService<UserService>();
+
     if (dbContext!.Database.IsRelational())
     {
         await dbContext.Database.MigrateAsync();
+        //await userService.Register("admin", "admin@mail.ru", "admin");
     }
 }
 

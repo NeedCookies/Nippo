@@ -4,6 +4,7 @@ import courses from "./components/FakeData/fakeCourses";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import CreateCourse from "./pages/CourseCreate/createCoursePage";
 import QuizEditPage from "./pages/CourseCreate/QuizEditPage";
+import LessonEditPage from "./pages/CourseCreate/LessonEditPage";
 import { PersonalAccount } from "./pages/PersonalAccount/PersonalAccount";
 import { RegisterPage } from "./pages/RegisterPage";
 import { LoginPage } from "./pages/LoginPage";
@@ -58,6 +59,10 @@ function App() {
         <Route
           path="/course/:courseId/quiz/:quizId/edit"
           element={<QuizEditPage />}
+        />
+        <Route
+          path="/course/:courseId/lesson/:lessonId/edit"
+          element={<LessonEditPage />}
         />
         <Route
           path="/profile"

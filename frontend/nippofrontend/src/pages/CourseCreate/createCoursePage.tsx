@@ -7,6 +7,7 @@ import Input from "@mui/material/Input";
 import Button from "@mui/material/Button";
 import { useNavigate, useParams } from "react-router-dom";
 import { QuizModal } from "./QuizModal";
+import { LessonModal } from "./LessonModal";
 import axios from "axios";
 
 interface Module {
@@ -30,6 +31,7 @@ function createCourse() {
   const [isCourseSaved, setCourseSaved] = useState<boolean>(false);
   const [modules, setModules] = useState<Module[]>([]);
   const [isQuizModalOpen, setQuizModalOpen] = useState<boolean>(false);
+  const [isLessonModalOpen, setLessonModalOpen] = useState<boolean>(false);
   const [courseData, setCourseData] = useState<CourseDataProps>({
     Title: "",
     Description: "",
@@ -120,6 +122,7 @@ function createCourse() {
 
   const handleAddModules = (type: string) => {
     if (type === "lesson") {
+      setLessonModalOpen(true);
     } else {
       setQuizModalOpen(true);
     }
@@ -382,6 +385,10 @@ function createCourse() {
             courseId={courseIdState}
             isOpen={isQuizModalOpen}
             handleClose={haldleCloseModal}></QuizModal>
+          <LessonModal
+            courseId={courseIdState}
+            isOpen={isLessonModalOpen}
+            handleClose={haldleCloseModal}></LessonModal>
         </Box>
       </Container>
     </Container>

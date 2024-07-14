@@ -3,6 +3,7 @@ using System;
 using DataAccess;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace DataAccess.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240710153015_edit-lesson-entity")]
+    partial class editlessonentity
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -45,30 +48,6 @@ namespace DataAccess.Migrations
                     b.HasIndex("QuestionId");
 
                     b.ToTable("Answers");
-                });
-
-            modelBuilder.Entity("Domain.Entities.BasketCourses", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("CourseId")
-                        .HasColumnType("integer");
-
-                    b.Property<string>("UserId")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CourseId");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("BasketCourses");
                 });
 
             modelBuilder.Entity("Domain.Entities.Block", b =>
@@ -120,9 +99,6 @@ namespace DataAccess.Migrations
 
                     b.Property<decimal>("Price")
                         .HasColumnType("numeric");
-
-                    b.Property<int>("Status")
-                        .HasColumnType("integer");
 
                     b.Property<string>("Title")
                         .IsRequired()
@@ -326,9 +302,6 @@ namespace DataAccess.Migrations
                     b.Property<int>("CourseId")
                         .HasColumnType("integer");
 
-                    b.Property<int>("Order")
-                        .HasColumnType("integer");
-
                     b.Property<string>("Title")
                         .IsRequired()
                         .HasMaxLength(255)
@@ -424,43 +397,6 @@ namespace DataAccess.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("UserCourses");
-                });
-
-            modelBuilder.Entity("Domain.Entities.UserProgress", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("CourseId")
-                        .HasColumnType("integer");
-
-                    b.Property<bool>("IsCheck")
-                        .HasColumnType("boolean");
-
-                    b.Property<int?>("LessonId")
-                        .HasColumnType("integer");
-
-                    b.Property<int?>("QuizId")
-                        .HasColumnType("integer");
-
-                    b.Property<string>("UserId")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CourseId");
-
-                    b.HasIndex("LessonId");
-
-                    b.HasIndex("QuizId");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("UserProgresses");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -580,25 +516,6 @@ namespace DataAccess.Migrations
                     b.Navigation("Question");
                 });
 
-            modelBuilder.Entity("Domain.Entities.BasketCourses", b =>
-                {
-                    b.HasOne("Domain.Entities.Course", "Course")
-                        .WithMany("BasketCourses")
-                        .HasForeignKey("CourseId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Domain.Entities.Identity.ApplicationUser", "User")
-                        .WithMany("BasketCourses")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Course");
-
-                    b.Navigation("User");
-                });
-
             modelBuilder.Entity("Domain.Entities.Block", b =>
                 {
                     b.HasOne("Domain.Entities.Lesson", "Lesson")
@@ -711,39 +628,6 @@ namespace DataAccess.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("Domain.Entities.UserProgress", b =>
-                {
-                    b.HasOne("Domain.Entities.Course", "Course")
-                        .WithMany("UserProgresses")
-                        .HasForeignKey("CourseId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Domain.Entities.Lesson", "Lesson")
-                        .WithMany("UserProgresses")
-                        .HasForeignKey("LessonId")
-                        .OnDelete(DeleteBehavior.Cascade);
-
-                    b.HasOne("Domain.Entities.Quiz", "Quiz")
-                        .WithMany("UserProgresses")
-                        .HasForeignKey("QuizId")
-                        .OnDelete(DeleteBehavior.Cascade);
-
-                    b.HasOne("Domain.Entities.Identity.ApplicationUser", "User")
-                        .WithMany("UserProgresses")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Course");
-
-                    b.Navigation("Lesson");
-
-                    b.Navigation("Quiz");
-
-                    b.Navigation("User");
-                });
-
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
                 {
                     b.HasOne("Domain.Entities.Identity.AppRole", null)
@@ -797,21 +681,15 @@ namespace DataAccess.Migrations
 
             modelBuilder.Entity("Domain.Entities.Course", b =>
                 {
-                    b.Navigation("BasketCourses");
-
                     b.Navigation("Lessons");
 
                     b.Navigation("Quizes");
 
                     b.Navigation("UserCourses");
-
-                    b.Navigation("UserProgresses");
                 });
 
             modelBuilder.Entity("Domain.Entities.Identity.ApplicationUser", b =>
                 {
-                    b.Navigation("BasketCourses");
-
                     b.Navigation("Courses");
 
                     b.Navigation("QuizResults");
@@ -819,15 +697,11 @@ namespace DataAccess.Migrations
                     b.Navigation("UserAnswers");
 
                     b.Navigation("UserCourses");
-
-                    b.Navigation("UserProgresses");
                 });
 
             modelBuilder.Entity("Domain.Entities.Lesson", b =>
                 {
                     b.Navigation("Blocks");
-
-                    b.Navigation("UserProgresses");
                 });
 
             modelBuilder.Entity("Domain.Entities.Question", b =>
@@ -842,8 +716,6 @@ namespace DataAccess.Migrations
                     b.Navigation("Questions");
 
                     b.Navigation("QuizResults");
-
-                    b.Navigation("UserProgresses");
                 });
 #pragma warning restore 612, 618
         }
