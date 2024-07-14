@@ -13,6 +13,7 @@ interface Module {
   id: number;
   title: string;
   type: string;
+  order: number;
 }
 
 interface CourseDataProps {
@@ -324,7 +325,7 @@ function createCourse() {
                 key={module.id}
                 textAlign={"start"}
                 sx={{ width: "50%" }}>
-                {module.id}. {module.title}
+                {module.order}. {module.title}
               </Typography>
               <Typography textAlign={"end"} sx={{ width: "50%" }}>
                 тип: {module.type}

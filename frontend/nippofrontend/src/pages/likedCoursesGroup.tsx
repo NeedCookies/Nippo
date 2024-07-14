@@ -21,6 +21,10 @@ function likedCoursesList() {
   const [userCourses, setUserCourses] = useState<CourseCardProps[]>();
   const navigate = useNavigate();
 
+  const handleGoToCourse = (courseId: number) => {
+    navigate(`/my-course/${courseId}`);
+  };
+
   async function getUserCourses() {
     try {
       const response = await axios.get(`/user/get-courses`);
@@ -64,7 +68,7 @@ function likedCoursesList() {
                   fontSize: "36px",
                   color: "white",
                 }}>
-                Корзина пуста
+                У вас нет приобретенных курсов
                 <Button onClick={() => navigate("/courses")}>
                   <AddToQueueIcon
                     sx={{ color: "white", fontSize: "36px" }}
@@ -139,7 +143,8 @@ function likedCoursesList() {
                       <Button
                         variant="contained"
                         color="success"
-                        sx={{ width: "120px" }}>
+                        sx={{ width: "120px" }}
+                        onClick={() => handleGoToCourse(course.id)}>
                         Продолжить учиться
                       </Button>
                     </Box>

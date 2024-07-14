@@ -11,6 +11,8 @@ import RequireAuth from "./components/RequireAuth";
 import NavbarLayout from "./components/NavbarLayout";
 import NippoNavbar from "./components/navbar/navbarMain";
 import { Basket } from "./pages/Basket";
+import { CourseMainPage } from "./pages/CourseWatch/CourseMainPage";
+import { QuizMainPage } from "./pages/CourseWatch/QuizMainPage";
 
 function App() {
   return (
@@ -21,6 +23,22 @@ function App() {
       <Routes>
         <Route path="/courses" element={<CourseListGroup />} />
         <Route path="/my-courses" element={<LikedCoursesList />} />
+        <Route
+          path="/my-course/:courseId"
+          element={
+            <RequireAuth>
+              <CourseMainPage />
+            </RequireAuth>
+          }
+        />
+        <Route
+          path="/my-course/:courseId/quiz/:quizId"
+          element={
+            <RequireAuth>
+              <QuizMainPage />
+            </RequireAuth>
+          }
+        />
         <Route
           path="course/create"
           element={
