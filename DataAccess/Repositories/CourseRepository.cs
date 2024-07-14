@@ -5,11 +5,22 @@ using Microsoft.EntityFrameworkCore;
 
 namespace DataAccess.Repositories
 {
-    public class CourseRepository(AppDbContext appDbContext, IUserRepository userRepository) : ICourseRepository
+    public class CourseRepository(
+        AppDbContext appDbContext, 
+        IUserRepository userRepository, 
+        IUserCoursesRepository userCoursesRepository) : ICourseRepository
     {
         private readonly AppDbContext _appDbContext = appDbContext;
+
         public async Task<List<Course>> GetAllCourses() =>
-            await _appDbContext.Courses.ToListAsync();
+            await _appDbContext.Courses
+            .Where(c => c.Status == (int)PublishStatus.Publish)
+            .ToListAsync();
+
+        public async Task<List<Course>> GetCreatedCourses(string userId) =>
+            await _appDbContext.Courses
+            .Where(c => c.AuthorId == userId)
+            .ToListAsync();
 
         public async Task<Course> Create(string title, string desc, decimal price, string imgPath, string authorId)
         {
@@ -19,7 +30,8 @@ namespace DataAccess.Repositories
                 Description = desc,
                 Price = price,
                 AuthorId = authorId,
-                ImgPath = imgPath
+                ImgPath = imgPath,
+                Status = 0
             };
 
             await _appDbContext.Courses.AddAsync(course);
@@ -71,6 +83,9 @@ namespace DataAccess.Repositories
             .Select(a => a.AuthorId)
             .FirstOrDefaultAsync();
 
+        public async Task<List<Course>> GetCoursesByStatus(PublishStatus status) =>
+            await _appDbContext.Courses.Where(c => c.Status == (int)status).ToListAsync();
+
         public async Task<ApplicationUser> PurchaseCourse(int courseId, string userId)
         {
             var user = await userRepository.GetByUserId(userId);
@@ -93,6 +108,18 @@ namespace DataAccess.Repositories
             await _appDbContext.SaveChangesAsync();
 
             return user;
+        }
+
+        public async Task<Course> ChangeStatus(int courseId, PublishStatus status)
+        {
+            var course = await GetById(courseId);
+
+            course.Status = (int)status;
+
+            _appDbContext.Courses.Update(course);
+            await _appDbContext.SaveChangesAsync();
+
+            return course;
         }
     }
 }

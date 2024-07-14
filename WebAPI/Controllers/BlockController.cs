@@ -36,7 +36,7 @@ namespace WebAPI.Controllers
             return Ok(block);
         }
 
-        [Authorize(Roles = "admin")]
+        [Authorize(Roles = "author")]
         [HttpPost("create-block")]
         public async Task<IActionResult> Create([FromForm] CreateBlockRequest request)
         {
@@ -44,7 +44,7 @@ namespace WebAPI.Controllers
             return Ok(block); 
         }
 
-        [Authorize(Roles = "admin")]
+        [Authorize(Roles = "author")]
         [HttpPost("update-block")]
         public async Task<IActionResult> Update([FromBody] UpdateBlockRequest request)
         {
@@ -52,7 +52,7 @@ namespace WebAPI.Controllers
             return Ok(block);
         }
 
-        [Authorize(Roles = "admin")]
+        [Authorize(Roles = "author")]
         [HttpPost("delete-block")]
         public async Task<IActionResult> Delete(int id)
         {
@@ -60,7 +60,7 @@ namespace WebAPI.Controllers
             return Ok(block);
         }
 
-        [Authorize(Roles = "admin")]
+        [Authorize(Roles = "author")]
         [HttpPost("move-up")]
         public async Task<IActionResult> RaiseBlockUp(int id)
         {
@@ -68,7 +68,7 @@ namespace WebAPI.Controllers
             return Ok(block);
         }
 
-        [Authorize(Roles = "admin")]
+        [Authorize(Roles = "author")]
         [HttpPost("move-down")]
         public async Task<IActionResult> LowerBlockDown(int id)
         {

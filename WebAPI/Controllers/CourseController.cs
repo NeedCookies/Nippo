@@ -34,7 +34,7 @@ namespace WebAPI.Controllers
             return Ok(course);
         }
 
-        [Authorize(Roles = "admin")]
+        [Authorize(Roles = "author")]
         [HttpPost("create-course")]
         public async Task<IActionResult> Create([FromBody] CreateCourseRequest request)
         {
@@ -48,6 +48,7 @@ namespace WebAPI.Controllers
             }
 
             var course = await coursesService.Create(request, userId);
+            
             return Ok(course);
         }
 
@@ -59,25 +60,36 @@ namespace WebAPI.Controllers
             string userId = GetUserId();
 
             var result = await coursesService.PurchaseCourse(courseId, userId);
+            
             return Ok(result);
         }
 
-        [Authorize(Roles = "admin")]
+        [Authorize(Roles = "author")]
         [HttpPost("edit-course")]
         public async Task<IActionResult> Update([FromBody] UpdateCourseRequest request)
         {
             var course = await coursesService.Update(request);
+            
             return Ok(course);
         }
 
-        [Authorize(Roles = "admin")]
+        [Authorize(Roles = "author")]
         [HttpDelete("delete-course")]
         public async Task<IActionResult> Delete(int courseId)
         {
             var course = await coursesService.Delete(courseId);
+            
             return Ok(course);
         }
 
+        [Authorize(Roles ="author")]
+        [HttpPost("submit-for-review")]
+        public async Task<IActionResult> SubmitForReview(int courseId)
+        {
+            var course = await coursesService.SubmitForReview(courseId, GetUserId());
+            
+            return Ok(course);
+        }
 
         [HttpGet("test-query")]
         public async Task<IActionResult> TestQuery() => Ok("Aboba");

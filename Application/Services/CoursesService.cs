@@ -13,7 +13,8 @@ namespace Application.Services
         IUserCoursesRepository userCoursesRepository,
         IUserProgressRepository userProgressRepository,
         ILessonRepository lessonRepository,
-        IQuizRepository quizRepository) : ICoursesService
+        IQuizRepository quizRepository,
+        IUserService userService) : ICoursesService
     {
         public async Task<Course> Create(CreateCourseRequest request, string authorId)
         {
@@ -55,13 +56,33 @@ namespace Application.Services
             return await courseRepository.Update(id, title, descript, price, imgPath);
         }
 
-        public async Task<Course> Delete(int courseId) => await courseRepository.Delete(courseId);
+        public async Task<Course> Delete(int courseId) => 
+            await courseRepository.Delete(courseId);
 
-        public async Task<List<Course>> GetAllCourses()
+        public async Task<List<Course>> GetAllCourses() =>
+            await courseRepository.GetAllCourses();
+
+        public async Task<string> GetAuthorById(int id) =>
+            await courseRepository.GetAuthorById(id);
+
+        public async Task<List<Course>> GetCoursesToCheck() =>
+            await courseRepository.GetCoursesByStatus(PublishStatus.Check);
+
+        public async Task<Course> AcceptCourse(int courseId) =>
+            await courseRepository.ChangeStatus(courseId, PublishStatus.Publish);
+
+        public async Task<Course> CancelCourse(int courseId) =>
+            await courseRepository.ChangeStatus(courseId, PublishStatus.Edit);
+
+        public async Task<Course> SubmitForReview(int courseId, string userId)
         {
-            var allCourses = courseRepository.GetAllCourses();
+            var courseAuthor = await courseRepository.GetAuthorById(courseId);
+            var userInfo = await userService.GetUserInfoById(userId);
 
-            return await allCourses;
+            if (courseAuthor == userId && userInfo.Role == "author")
+                return await courseRepository.ChangeStatus(courseId, PublishStatus.Check);
+            else
+                throw new Exception("Access denied");
         }
 
         public async Task<Course> GetById(int id)
@@ -74,11 +95,6 @@ namespace Application.Services
             }
 
             return course;
-        }
-
-        public async Task<string> GetAuthorById(int id)
-        {
-            return await courseRepository.GetAuthorById(id);
         }
 
         public async Task<UserCourses> PurchaseCourse(int courseId, string userId)

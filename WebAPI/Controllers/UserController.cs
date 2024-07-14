@@ -48,6 +48,15 @@ namespace WebAPI.Controllers
             return Ok(userProgress);
         }
 
+        [Authorize(Roles ="author")]
+        [HttpGet("get-created-courses")]
+        public async Task<IActionResult> GetCreatedCourses()
+        {
+            var courses = await userService.GetCreatedCourses(GetUserId());
+
+            return Ok(courses);
+        }
+
         private string GetUserId()
         {
             return HttpContext.User.FindFirst("userId")!.Value;

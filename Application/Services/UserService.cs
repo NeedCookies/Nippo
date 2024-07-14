@@ -127,6 +127,9 @@ namespace Application.Services
             return userCourses;
         }
 
+        public async Task<List<Course>> GetCreatedCourses(string userId) =>
+            await courseRepository.GetCreatedCourses(userId);
+
         public async Task<PersonalInfoDto> UpdateUserInfo(string userId, UserInfoUpdateRequest updateRequest)
         {
             var user = await userRepository.GetByUserId(userId);
@@ -213,6 +216,9 @@ namespace Application.Services
             await userRolesRepository.AssignRole(userId, roleId);
         }
 
+        public async Task<List<UserProgress>> GetUserProgresses(string userId, int courseId) =>
+            await userProgressRepository.GetElementsByUserCourseId(userId, courseId);
+
         private bool IsValidEmail(string email)
         {
             var emailRegex = new Regex(@"^[^@\s]+@[^@\s]+\.[^@\s]+$");
@@ -225,9 +231,6 @@ namespace Application.Services
 
             return passwordRegex.IsMatch(password);
         }
-
-        public async Task<List<UserProgress>> GetUserProgresses(string userId, int courseId) =>
-            await userProgressRepository.GetElementsByUserCourseId(userId, courseId);
     }
 }
     

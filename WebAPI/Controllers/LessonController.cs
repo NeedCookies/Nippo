@@ -18,7 +18,7 @@ namespace WebAPI.Controllers
             return Ok(lessons);
         }
 
-        [Authorize(Roles = "admin")]
+        [Authorize(Roles = "author")]
         [HttpPost("create")]
         public async Task<IActionResult> Create([FromBody] CreateLessonRequest request)
         {
@@ -27,7 +27,7 @@ namespace WebAPI.Controllers
             return Ok(lesson);
         }
 
-        [Authorize(Roles = "admin")]
+        [Authorize(Roles = "author")]
         [HttpPost("update")]
         public async Task<IActionResult> Update(int lessonId, string title)
         {
@@ -36,7 +36,7 @@ namespace WebAPI.Controllers
             return Ok(lesson);
         }
 
-        [Authorize(Roles = "admin")]
+        [Authorize(Roles = "author")]
         [HttpDelete("delete")]
         public async Task<IActionResult> Delete(int lessonId)
         {
