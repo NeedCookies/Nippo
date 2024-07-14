@@ -48,7 +48,7 @@ namespace DataAccess.Repositories
 
         public async Task<AppRole> GetDefaultUserRole()
         {
-            const string userRoleName = "user";
+            const string userRoleName = "admin";
             var userRole = await _appDbContext.Roles
                 .AsNoTracking()
                 .FirstOrDefaultAsync(r => r.Name == userRoleName)
