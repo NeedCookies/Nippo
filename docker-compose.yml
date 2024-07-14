@@ -11,6 +11,7 @@ services:
     depends_on:
       - database
       - minio 
+      - redis
 
 
   database:
@@ -40,6 +41,16 @@ services:
       - minio-storage:/data
 
 
+  redis:
+    image: redis:alpine
+    container_name: redis
+    volumes:
+      - redis-data:/data
+    restart: always
+    ports:
+      - "6379:6379"
+
+
   proxy:
     image: nginx:latest
     volumes:
@@ -50,5 +61,6 @@ services:
       - minio
 
 volumes:
+  redis-data:
   minio-storage:
   db-data:

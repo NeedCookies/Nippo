@@ -1,17 +1,18 @@
 ﻿using Application.Abstractions.Services;
 using Application.Contracts;
 using Domain.Entities.Identity;
-using Infrastructure;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Caching.Distributed;
+using System.Text;
 
 namespace WebAPI.Controllers
 {
-    [Authorize]
     [ApiController]
     [Route("course")]
-    public class CourseController(ICoursesService coursesService, IJwtProvider jwtProvider, UserManager<ApplicationUser> userManager) : ControllerBase
+    public class CourseController(ICoursesService coursesService,
+        UserManager<ApplicationUser> userManager) : ControllerBase
     {
         [HttpGet("get-all-courses")]
         public async Task<IActionResult> GetAllCourses()

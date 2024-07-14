@@ -2,8 +2,6 @@
 using Application.Abstractions.Services;
 using Application.Contracts;
 using Domain.Entities;
-using Domain.Entities.Identity;
-using Microsoft.AspNetCore.Identity;
 using System.Text;
 
 namespace Application.Services
@@ -165,7 +163,7 @@ namespace Application.Services
             }
 
             await basketRepository.DeleteFromBasket(courseId, userId);
-            user.Points = user.Points - (int)course.Price;
+            user.Points -= (int)course.Price;
             await unitOfWork.SaveChangesAsync();
             return await userCoursesRepository.Add(courseId, userId);
         }
