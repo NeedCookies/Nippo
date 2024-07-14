@@ -13,7 +13,6 @@ namespace Application.Abstractions.Repositories
         Task<Course> Delete(int id);
         Task<Course?> GetById(int id);
         Task<string> GetAuthorById(int id);
-        Task<ApplicationUser> PurchaseCourse(int courseId, string userId);
         Task<List<Course>> GetCoursesByStatus(PublishStatus status);
         Task<Course> ChangeStatus(int courseId, PublishStatus status);
     }

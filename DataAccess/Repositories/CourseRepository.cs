@@ -86,30 +86,6 @@ namespace DataAccess.Repositories
         public async Task<List<Course>> GetCoursesByStatus(PublishStatus status) =>
             await _appDbContext.Courses.Where(c => c.Status == (int)status).ToListAsync();
 
-        public async Task<ApplicationUser> PurchaseCourse(int courseId, string userId)
-        {
-            var user = await userRepository.GetByUserId(userId);
-            Course course = await _appDbContext.Courses.FirstOrDefaultAsync(u => u.Id == courseId);
-            decimal coursePrice = course.Price;
-
-            if (coursePrice > user.Points)
-            {
-                throw new Exception("Not enough money");
-            }
-
-            user.Points -= (int)coursePrice;
-
-            if (user.Courses == null)
-            {
-                user.Courses = new List<Course>();
-            }
-
-            user.Courses.Add(course);
-            await _appDbContext.SaveChangesAsync();
-
-            return user;
-        }
-
         public async Task<Course> ChangeStatus(int courseId, PublishStatus status)
         {
             var course = await GetById(courseId);
