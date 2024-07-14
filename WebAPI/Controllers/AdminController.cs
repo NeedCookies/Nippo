@@ -10,7 +10,8 @@ namespace WebAPI.Controllers
     [Authorize(Roles = "admin")]
     public class AdminController(
         IUserService userService, 
-        ICoursesService coursesService): ControllerBase
+        ICoursesService coursesService,
+        IDiscountService discountService) : ControllerBase
     {
         [HttpPost("give-points")]
         public async Task<IActionResult> GivePointsToUser(GivePointsRequest givePointsRequest)
@@ -63,6 +64,14 @@ namespace WebAPI.Controllers
         public async Task<IActionResult> CancelCourse(int courseId)
         {
             return Ok(await coursesService.CancelCourse(courseId));
+        }
+
+        [HttpPost("add-promocode")]
+        public async Task<IActionResult> AddPromocode(PromocodeDto promocodeDto)
+        {
+            await discountService.AddPromocode(promocodeDto);
+
+            return Ok();
         }
     }
 }

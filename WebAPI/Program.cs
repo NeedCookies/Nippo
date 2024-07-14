@@ -18,6 +18,7 @@ builder.Services.Configure<JwtOptions>(builder.Configuration.GetSection(nameof(J
 builder.Services.Configure<MinIoOptions>(builder.Configuration.GetSection("Minio"));
 
 builder.Services.AddDbContext(builder.Configuration);
+builder.Services.AddRedisCache(builder.Configuration);
 builder.Services.AddAppRepositories();
 builder.Services.AddInfrastructureServices();
 builder.Services.AddIdentityServices();
