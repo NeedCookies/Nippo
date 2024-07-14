@@ -10,7 +10,7 @@ namespace WebAPI.Controllers
     [Route("user")]
     public class UserController(IUserService userService) : ControllerBase
     {
-        [HttpPost("get-courses")]
+        [HttpGet("get-courses")]
         public async Task<IActionResult> GetUserCourses()
         {
             string userId = GetUserId();

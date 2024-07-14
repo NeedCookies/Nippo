@@ -34,7 +34,9 @@ namespace DataAccess.Repositories
 
         public async Task<Answer> GetById(int answerId)
         {
-            var answer = await dbContext.Answers.Where(a => a.Id == answerId).FirstOrDefaultAsync();
+            var answer = await dbContext.Answers
+                .Where(a => a.Id == answerId)
+                .FirstOrDefaultAsync();
 
             if (answer == null)
                 throw new NullReferenceException($"No answer with id: {answerId}");
@@ -44,7 +46,16 @@ namespace DataAccess.Repositories
 
         public async Task<List<Answer>> GetByQuestion(int questionId)
         {
-            return await dbContext.Answers.Where(a => a.QuestionId == questionId).ToListAsync();
+            return await dbContext.Answers
+                .Where(a => a.QuestionId == questionId)
+                .ToListAsync();
+        }
+
+        public async Task<List<Answer>> GetRightByQuestion(int questionId)
+        {
+            return await dbContext.Answers
+                .Where(a => a.QuestionId == questionId
+                && a.IsCorrect).ToListAsync();
         }
 
         public async Task<Answer> Update(int answerId, string text, bool isCorrect)

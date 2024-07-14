@@ -120,6 +120,9 @@ namespace Application.Services
 
                 if (course != null)
                 {
+                    course.ImgPath = course.ImgPath != null 
+                        ? await storageService.GetUrlAsync(course.ImgPath) 
+                        : null;
                     userCourses.Add(course);
                 }
             }

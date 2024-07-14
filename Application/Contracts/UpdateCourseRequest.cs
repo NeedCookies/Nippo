@@ -1,4 +1,6 @@
-﻿namespace Application.Contracts
+﻿using Microsoft.AspNetCore.Http;
+
+namespace Application.Contracts
 {
     public record UpdateCourseRequest
         (
@@ -6,6 +8,6 @@
         string Title,
         string Description,
         decimal Price,
-        string ImgPath
+        IFormFile ImgPath
         );
 }

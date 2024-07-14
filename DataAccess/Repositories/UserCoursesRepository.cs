@@ -47,6 +47,14 @@ namespace DataAccess.Repositories
             return usersId;
         }
 
+        public async Task<UserCourses?> GetUserCourse(int courseId, string userId)
+        {
+            return await appDbContext.UserCourses
+                .Where(uc => uc.CourseId == courseId &&
+                uc.UserId == userId)
+                .FirstOrDefaultAsync();
+        }
+
         public async Task<List<int>> GetUserCourses(string userId)
         {
             List<int> coursesId = new List<int>();

@@ -21,7 +21,9 @@ namespace Application.Services
             if (error.Length > 0)
                 throw new ArgumentException(error.ToString());
 
-            return await quizRepository.Create(courseId, title);
+            int order = (await quizRepository.GetQuizzesByCourseAsync(courseId)).Count() + 1;
+
+            return await quizRepository.Create(courseId, title, order);
         }
 
         public async Task<List<Quiz>> GetByCourseId(int courseId)

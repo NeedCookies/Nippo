@@ -2,7 +2,6 @@
 using Microsoft.Extensions.Configuration;
 using Application.Services;
 using Microsoft.Extensions.DependencyInjection;
-using Application.Abstractions.Repositories;
 
 namespace Application.Extensions
 {
@@ -17,6 +16,8 @@ namespace Application.Extensions
             services.AddScoped<IQuestionService, QuestionService>();
             services.AddScoped<IAnswerService, AnswerService>();
             services.AddScoped<IUserService, UserService>();
+            services.AddScoped<IUserAnswerService, UserAnswerService>();
+            services.AddScoped<IQuizResultService, QuizResultService>();
 
             return services;
         }

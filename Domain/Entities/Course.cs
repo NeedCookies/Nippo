@@ -18,6 +18,7 @@ namespace Domain.Entities
         [JsonIgnore]
         public ICollection<UserCourses>? UserCourses { get; set; }
         public ICollection<UserProgress>? UserProgresses { get; set; }
+        public ICollection<BasketCourses>? BasketCourses { get; set; }
     }
 
     public enum PublishStatus

@@ -11,7 +11,7 @@ namespace Application.Services
         public async Task<Question> Create(CreateQuestionRequest request)
         {
             int quizId = request.QuizId;
-            string text = request.Text;
+            string text = request.Text.Trim();
             QuestionType type;
             Enum.TryParse(request.Type, true, out type);
             
@@ -56,6 +56,8 @@ namespace Application.Services
 
         public async Task<Question> Update(int questionId, string text)
         {
+            text = text.Trim();
+
             StringBuilder error = new StringBuilder();
             if (questionId < 0)
                 error.AppendLine("Wrong question Id");

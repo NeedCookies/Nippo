@@ -11,6 +11,9 @@ import { LoginPage } from "./pages/LoginPage";
 import RequireAuth from "./components/RequireAuth";
 import NavbarLayout from "./components/NavbarLayout";
 import NippoNavbar from "./components/navbar/navbarMain";
+import { Basket } from "./pages/Basket";
+import { CourseMainPage } from "./pages/CourseWatch/CourseMainPage";
+import { QuizMainPage } from "./pages/CourseWatch/QuizMainPage";
 
 function App() {
   return (
@@ -19,10 +22,23 @@ function App() {
         <NippoNavbar />
       </NavbarLayout>
       <Routes>
-        <Route path="/courses" element={<CourseListGroup cards={courses} />} />
+        <Route path="/courses" element={<CourseListGroup />} />
+        <Route path="/my-courses" element={<LikedCoursesList />} />
         <Route
-          path="/courses/liked"
-          element={<LikedCoursesList cards={courses} />}
+          path="/my-course/:courseId"
+          element={
+            <RequireAuth>
+              <CourseMainPage />
+            </RequireAuth>
+          }
+        />
+        <Route
+          path="/my-course/:courseId/quiz/:quizId"
+          element={
+            <RequireAuth>
+              <QuizMainPage />
+            </RequireAuth>
+          }
         />
         <Route
           path="course/create"
@@ -56,8 +72,10 @@ function App() {
             </RequireAuth>
           }
         />
+        <Route path="/basket" element={<Basket />} />
         <Route path="/register" element={<RegisterPage />} />
         <Route path="/login" element={<LoginPage />} />
+        <Route path="/" element={<LoginPage />} />
       </Routes>
     </BrowserRouter>
   );

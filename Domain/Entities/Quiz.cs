@@ -8,6 +8,7 @@ namespace Domain.Entities
         public int CourseId { get; set; }
         public Course Course { get; set; } = null!;
         public string Title { get; set; } = null!;
+        public int Order { get; set; } 
         public ICollection<Question> Questions { get; set; } = null!;
         public ICollection<QuizResult>? QuizResults { get; set; }
         [JsonIgnore]
