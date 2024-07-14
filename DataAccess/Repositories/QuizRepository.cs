@@ -6,12 +6,13 @@ namespace DataAccess.Repositories
 {
     public class QuizRepository(AppDbContext dbContext) : IQuizRepository
     {
-        public async Task<Quiz> Create(int courseId, string title)
+        public async Task<Quiz> Create(int courseId, string title, int order)
         {
             var quiz = new Quiz
             {
                 CourseId = courseId,
-                Title = title
+                Title = title,
+                Order = order
             };
 
             await dbContext.Quizzes.AddAsync(quiz);
