@@ -57,6 +57,21 @@ namespace WebAPI.Controllers
             return Ok(courses);
         }
 
+        [HttpPost("upgrade-to-author")]
+        public async Task<IActionResult> UpgradeRoleToAuthor()
+        {
+            await userService.UpgradeRoleToAuthor(GetUserId());
+            return Ok();
+        }
+
+        [Authorize(Roles ="author")]
+        [HttpPost("downgrade-to-user")]
+        public async Task<IActionResult> DowngradeRoleToUser()
+        {
+            await userService.DowngradeRoleToUser(GetUserId());
+            return Ok();
+        }
+
         private string GetUserId()
         {
             return HttpContext.User.FindFirst("userId")!.Value;

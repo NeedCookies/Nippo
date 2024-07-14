@@ -18,5 +18,7 @@ namespace Application.Abstractions.Services
         Task<PersonalInfoDto> UpdateUserInfo(string userId, UserInfoUpdateRequest updateRequest);
         Task<List<ApplicationUser>> GenerateUsers();
         Task AssignRole(string userId, string roleId);
+        Task UpgradeRoleToAuthor(string userId);
+        Task DowngradeRoleToUser(string userId);
     }
 }
