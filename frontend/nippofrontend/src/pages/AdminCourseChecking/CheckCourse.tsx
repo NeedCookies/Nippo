@@ -247,7 +247,7 @@ export const CheckCourse = () => {
             </Button>
           </Box>
         </Box>
-        <Box>
+        <Box sx={{ width: "100%" }}>
           {modules?.map((module: ModuleProps) => (
             <Box
               sx={{

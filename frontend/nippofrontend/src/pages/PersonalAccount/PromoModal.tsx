@@ -65,7 +65,7 @@ export const PromoModal = ({ open, onClose }: PromoModalProps) => {
           <Typography>Введите текст промокода: </Typography>
           <TextField
             id="filled-basic"
-            label="Название курса"
+            label="Промокод"
             variant="filled"
             sx={{ width: "100%" }}
             value={promoText}
@@ -88,7 +88,7 @@ export const PromoModal = ({ open, onClose }: PromoModalProps) => {
           <Typography>Размер скидки:</Typography>
           <TextField
             id="filled-basic"
-            label="Название курса"
+            label="Скидка"
             variant="filled"
             sx={{ width: "100%" }}
             value={discount}
@@ -97,7 +97,7 @@ export const PromoModal = ({ open, onClose }: PromoModalProps) => {
           <Typography>Сколько часов будет действовать:</Typography>
           <TextField
             id="filled-basic"
-            label="Название курса"
+            label="Длительность"
             variant="filled"
             sx={{ width: "100%" }}
             value={expiration}
