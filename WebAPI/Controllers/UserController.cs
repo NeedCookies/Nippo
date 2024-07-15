@@ -57,6 +57,15 @@ namespace WebAPI.Controllers
             return Ok(courses);
         }
 
+        [Authorize(Roles = "author")]
+        [HttpGet("get-users-by-course")]
+        public async Task<IActionResult> GetUsersByCourse(int courseId)
+        {
+            var users = await userService.GetUsersByCourse(courseId);
+
+            return Ok(users);
+        }
+
         [HttpPost("upgrade-to-author")]
         public async Task<IActionResult> UpgradeRoleToAuthor()
         {
