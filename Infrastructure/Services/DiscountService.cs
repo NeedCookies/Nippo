@@ -40,7 +40,8 @@ namespace Infrastructure.Services
 
             if (promocodeEntity.PromocodeType == PromocodeType.Percent)
             {
-                newPrice *= (100 - promocodeEntity.Discount) / 100;
+                newPrice = int.Parse(
+                    Math.Round(newPrice * ((100 - promocodeEntity.Discount) / 100.0)).ToString());
             }
             else
             {
@@ -48,7 +49,7 @@ namespace Infrastructure.Services
             }
 
             //На случай, если вдруг скидка будет больше, чем сама цена курса
-            return Math.Min(newPrice, 0);
+            return Math.Max(newPrice, 0);
         }
 
         private class PromocodeEntity

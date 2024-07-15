@@ -20,7 +20,8 @@ namespace Application.Services
         UserManager<ApplicationUser> userManager,
         RoleManager<AppRole> roleManager,
         IStorageService storageService,
-        IUserProgressRepository userProgressRepository) : IUserService
+        IUserProgressRepository userProgressRepository,
+        IDiscountService discountService) : IUserService
     {
         public async Task<PersonalInfoDto> GetUserInfoById(string userId)
         {

@@ -1,6 +1,7 @@
 ﻿using Application.Abstractions.Repositories;
 using Application.Abstractions.Services;
 using Application.Contracts;
+using Application.Contracts.Operations;
 using Domain.Entities;
 using System.Text;
 
@@ -16,7 +17,8 @@ namespace Application.Services
         IBasketRepository basketRepository,
         IUserRepository userRepository,
         IUnitOfWork unitOfWork,
-        IStorageService storageService) : ICoursesService
+        IStorageService storageService,
+        IDiscountService discountService) : ICoursesService
     {
         public async Task<Course> Create(CreateCourseRequest request, string authorId)
         {
@@ -126,8 +128,19 @@ namespace Application.Services
         public async Task<string> GetAuthorById(int id) =>
             await courseRepository.GetAuthorById(id);
 
-        public async Task<List<Course>> GetCoursesToCheck() =>
-            await courseRepository.GetCoursesByStatus(PublishStatus.Check);
+        public async Task<List<Course>> GetCoursesToCheck()
+        {
+            var allCourses = await courseRepository.GetCoursesByStatus(PublishStatus.Check);
+
+            foreach (var course in allCourses)
+            {
+                course.ImgPath = course.ImgPath != null ?
+                    await storageService.GetUrlAsync(course.ImgPath) :
+                    null;
+            }
+
+            return allCourses;
+        }
 
         public async Task<Course> AcceptCourse(int courseId) =>
             await courseRepository.ChangeStatus(courseId, PublishStatus.Publish);
@@ -143,7 +156,8 @@ namespace Application.Services
             if (courseAuthor == userId && userInfo.Role == "author")
                 return await courseRepository.ChangeStatus(courseId, PublishStatus.Check);
             else
-                throw new Exception("Access denied");
+                throw new Exception($"Access denied courseAuthor: {courseAuthor}" +
+                    $" userId: {userId} userInfo: {userInfo.Role}");
         }
 
         public async Task<Course> GetById(int id)
@@ -162,8 +176,21 @@ namespace Application.Services
             return course;
         }
 
-        public async Task<UserCourses> PurchaseCourse(int courseId, string userId)
+        public async Task<int> ApplyPromocode(CoursePurchaseRequest request)
         {
+            if (request == null || request.Promocode == null)
+                throw new ArgumentNullException("Bad promocode");
+
+            var course = await GetById(request.CourseId);
+            int newPrice = await discountService.ApplyPromocode(course, request.Promocode);
+
+            return newPrice;
+        }
+
+        public async Task<UserCourses> PurchaseCourse(CoursePurchaseRequest request, string userId)
+        {
+            int courseId = request.CourseId;
+
             StringBuilder error = new StringBuilder();
             if (userId == null)
                 error.AppendLine("userId is null");
@@ -182,6 +209,11 @@ namespace Application.Services
             var user = await userRepository.GetByUserId(userId);
             var course = await GetById(courseId);
 
+            if (request.Promocode != null)
+            {
+                course.Price = await ApplyPromocode(request);
+            }
+
             if (user.Points < course.Price)
                 throw new ApplicationException("Don't have enough points");
 
@@ -191,7 +223,7 @@ namespace Application.Services
 
             var courseLessons = await lessonRepository.GetLessonsByCourseAsync(courseId);
             var courseQuizzes = await quizRepository.GetQuizzesByCourseAsync(courseId);
-            List<UserProgressRequest> request = new List<UserProgressRequest>();
+            List<UserProgressRequest> progressRequest = new List<UserProgressRequest>();
 
             int courseSize = courseLessons.Count + courseQuizzes.Count;
 
@@ -205,7 +237,7 @@ namespace Application.Services
                     0
                 );
 
-                request.Add(newRequest);
+                progressRequest.Add(newRequest);
             }
 
             for (int i = 0; i < courseQuizzes.Count; i++)
@@ -217,11 +249,11 @@ namespace Application.Services
                     courseQuizzes[i].Id,
                     1
                 );
-             
-                request.Add(newRequest);
+
+                progressRequest.Add(newRequest);
             }
 
-            await userProgressRepository.AddedAll(request);
+            await userProgressRepository.AddedAll(progressRequest);
             return await userCoursesRepository.Add(courseId, userId);
         }
 
