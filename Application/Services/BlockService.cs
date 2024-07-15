@@ -69,7 +69,18 @@ namespace Application.Services
 
         public async Task<List<Block>> GetByLesson(int lessonId)
         {
-            return await blockRepository.GetBlocksByLessonAsync(lessonId);
+            var blocks = await blockRepository.GetBlocksByLessonAsync(lessonId);
+            
+            foreach(var block in blocks)
+            {
+                if (block.Type == BlockType.Image || block.Type == BlockType.Video)
+                {
+                    var fileUrl = await storageService.GetUrlAsync(block.Content);
+                    block.Content = fileUrl;
+                }
+            }
+
+            return blocks;
         }
 
         public async Task<Block> LowerBlockDown(int id)
