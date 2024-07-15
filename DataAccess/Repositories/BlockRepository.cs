@@ -62,6 +62,7 @@ namespace DataAccess.Repositories
         public async Task<List<Block>> GetBlocksByLessonAsync(int lessonId) =>
             await appDbContext.Blocks
                 .Where(b => b.LessonId == lessonId)
+                .OrderBy(b => b.Order)
                 .ToListAsync();
 
         public async Task<Block> GetByIdAsync(int id)
@@ -74,12 +75,12 @@ namespace DataAccess.Repositories
 
         private bool IsBlockExists(int id) => 
             appDbContext.Blocks
-            .Any(e => e.Id == id);
+                .Any(e => e.Id == id);
 
         private async Task<int> GetMaxOrderByLessonId(int lessonId) =>
             await appDbContext.Blocks
-            .Where(b => b.LessonId == lessonId)
-            .MaxAsync(b => (int?)b.Order) 
-            ?? 0;
+                .Where(b => b.LessonId == lessonId)
+                .MaxAsync(b => (int?)b.Order) 
+                ?? 0;
     }
 }
