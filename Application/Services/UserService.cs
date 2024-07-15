@@ -67,6 +67,8 @@ namespace Application.Services
 
             await unitOfWork.SaveChangesAsync();
 
+            logger.LogWarning("Points were given to user. Points: {Points}. User Id: {UserId}", points, userId);
+
             return await GetUserInfoById(userId);
         }
 
@@ -83,6 +85,7 @@ namespace Application.Services
 
             var token = await jwtProvider.GenerateAsync(user);
 
+            logger.LogInformation("User were logged in. User Id: {UserId}", user.Id);
             return token;
         }
 
