@@ -21,7 +21,7 @@ interface CourseDataProps {
   Title: string;
   Description: string;
   Price: string;
-  Logo: string;
+  ImgPath: string;
 }
 
 function createCourse() {
@@ -41,7 +41,10 @@ function createCourse() {
   const [logo, setLogo] = useState<File | null>(null);
 
   const navigate = useNavigate();
-  const haldleCloseModal = () => setQuizModalOpen(false);
+  const haldleCloseModal = () => {
+    setQuizModalOpen(false);
+    setLessonModalOpen(false);
+  };
 
   const handleLogoButton = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
@@ -136,6 +139,19 @@ function createCourse() {
   const handleEditModule = (module: any) => {
     const moduleType = module.type === "lesson" ? "lesson" : "quiz";
     navigate("/edit-" + moduleType + "/id=" + module.id);
+  };
+
+  const handleCourseFinished = async () => {
+    try {
+      const response = await axios.post(`/course/submit-for-review`, {
+        courseId: Number(courseId),
+      });
+      if (response.status === 200) {
+        console.log("Курс отправлен на проверку");
+      }
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   useEffect(() => {
@@ -380,6 +396,16 @@ function createCourse() {
             <Typography sx={{ fontFamily: "cursive", fontStyle: "italic" }}>
               Сохраните курс, чтобы создать тесты и уроки
             </Typography>
+          )}
+          {isCourseSaved && (
+            <Button
+              variant="contained"
+              size="large"
+              sx={{ margin: 2 }}
+              onClick={handleCourseFinished}
+              disabled={!isCourseSaved}>
+              Курс готов
+            </Button>
           )}
           <QuizModal
             courseId={courseIdState}

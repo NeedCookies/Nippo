@@ -14,6 +14,8 @@ import NippoNavbar from "./components/navbar/navbarMain";
 import { Basket } from "./pages/Basket";
 import { CourseMainPage } from "./pages/CourseWatch/CourseMainPage";
 import { QuizMainPage } from "./pages/CourseWatch/QuizMainPage";
+import { CoursesChecking } from "./pages/AdminCourseChecking/CoursesChecking";
+import { CheckCourse } from "./pages/AdminCourseChecking/CheckCourse";
 
 function App() {
   return (
@@ -40,6 +42,16 @@ function App() {
             </RequireAuth>
           }
         />
+        <Route path="admin/courses-to-check" element={<CoursesChecking />} />
+        <Route
+          path="check-course/:courseId"
+          element={
+            <RequireAuth>
+              <CheckCourse />
+            </RequireAuth>
+          }
+        />
+
         <Route
           path="course/create"
           element={
