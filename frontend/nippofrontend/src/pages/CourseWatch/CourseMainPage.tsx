@@ -74,7 +74,7 @@ export const CourseMainPage = () => {
           type: "quiz",
           order: module.order,
         }));
-        quizModules.map(async (q) => {
+        quizModules.map(async (q: any) => {
           try {
             const response = await axios.get(
               `/quizresult/get-by-quiz?quizId=${q.id}`

@@ -16,6 +16,7 @@ import { CourseMainPage } from "./pages/CourseWatch/CourseMainPage";
 import { QuizMainPage } from "./pages/CourseWatch/QuizMainPage";
 import { CoursesChecking } from "./pages/AdminCourseChecking/CoursesChecking";
 import { CheckCourse } from "./pages/AdminCourseChecking/CheckCourse";
+import { LessonMainPage } from "./pages/CourseWatch/LessonMainPage";
 
 function App() {
   return (
@@ -39,6 +40,14 @@ function App() {
           element={
             <RequireAuth>
               <QuizMainPage />
+            </RequireAuth>
+          }
+        />
+        <Route
+          path="/my-course/:courseId/lesson/:lessonId"
+          element={
+            <RequireAuth>
+              <LessonMainPage />
             </RequireAuth>
           }
         />
