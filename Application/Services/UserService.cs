@@ -6,6 +6,7 @@ using Domain.Entities.Identity;
 using System.Text.RegularExpressions;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 
 namespace Application.Services
 {
@@ -20,7 +21,8 @@ namespace Application.Services
         UserManager<ApplicationUser> userManager,
         RoleManager<AppRole> roleManager,
         IStorageService storageService,
-        IUserProgressRepository userProgressRepository) : IUserService
+        IUserProgressRepository userProgressRepository,
+        ILogger<UserService> logger) : IUserService
     {
         public async Task<PersonalInfoDto> GetUserInfoById(string userId)
         {
@@ -105,6 +107,8 @@ namespace Application.Services
             var defaultRole = await userRepository.GetDefaultUserRole();
 
             await userRolesRepository.AssignRole(registeredUser.Id, defaultRole.Id);
+
+            logger.LogInformation("A new user has registered. UserId: {UserId}, Role: {Role}", user.Id, defaultRole.Name);
 
             return user;
         }
@@ -217,6 +221,8 @@ namespace Application.Services
             }
 
             await userRolesRepository.AssignRole(userId, roleId);
+
+            logger.LogInformation("User was assigned a new role. User Id: {UserId}. New role Id: {RoleId}", userId, roleId);
         }
 
         public async Task UpgradeRoleToAuthor(string userId)
@@ -235,6 +241,8 @@ namespace Application.Services
 
             await userRolesRepository.RemoveRole(userId);
             await userRolesRepository.AssignRole(userId, authorRoleId);
+
+            logger.LogInformation("User role was changed to 'Author'. User Id: {UserId}.", userId);
         }
 
         public async Task DowngradeRoleToUser(string userId)
@@ -243,6 +251,8 @@ namespace Application.Services
 
             await userRolesRepository.RemoveRole(userId);
             await userRolesRepository.AssignRole(userId, userRoleId);
+
+            logger.LogInformation("User role was downgraded to 'User'. User Id: {UserId}.", userId);
         }
 
         public async Task<List<UserProgress>> GetUserProgresses(string userId, int courseId) =>
