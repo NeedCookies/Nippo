@@ -181,7 +181,7 @@ namespace Application.Services
             if (request == null || request.Promocode == null)
                 throw new ArgumentNullException("Bad promocode");
 
-            var course = await GetById(request.CourseId);
+            var course = await courseRepository.GetById(request.CourseId);
             int newPrice = await discountService.ApplyPromocode(course, request.Promocode);
 
             return newPrice;
@@ -207,7 +207,7 @@ namespace Application.Services
                     $"Course already bought by user: {maybeBought}");
 
             var user = await userRepository.GetByUserId(userId);
-            var course = await GetById(courseId);
+            var course = await courseRepository.GetById(courseId);
 
             if (request.Promocode != null)
             {
