@@ -14,6 +14,7 @@ import NippoNavbar from "./components/navbar/navbarMain";
 import { Basket } from "./pages/Basket";
 import { CourseMainPage } from "./pages/CourseWatch/CourseMainPage";
 import { QuizMainPage } from "./pages/CourseWatch/QuizMainPage";
+import { CreatedCoursesStat } from "./pages/PersonalAccount/CreatedCoursesStat";
 
 function App() {
   return (
@@ -72,6 +73,7 @@ function App() {
             </RequireAuth>
           }
         />
+        <Route path="/author/courses" element={<CreatedCoursesStat />} />
         <Route path="/basket" element={<Basket />} />
         <Route path="/register" element={<RegisterPage />} />
         <Route path="/login" element={<LoginPage />} />

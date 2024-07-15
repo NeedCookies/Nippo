@@ -1,5 +1,6 @@
 ﻿using Application.Abstractions.Services;
 using Application.Contracts;
+using Application.Contracts.Update;
 using Microsoft.AspNetCore.Mvc;
 
 namespace WebAPI.Controllers
@@ -37,9 +38,9 @@ namespace WebAPI.Controllers
         }
 
         [HttpPost("update")]
-        public async Task<IActionResult> Update(int questionId, string text)
+        public async Task<IActionResult> Update([FromBody] UpdateQuestionRequest request)
         {
-            var question = await questionService.Update(questionId, text);
+            var question = await questionService.Update(request);
             return Ok(question);
         }
     }

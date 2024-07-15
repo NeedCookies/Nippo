@@ -168,6 +168,13 @@ namespace Application.Services
             return await GetUserInfoById(user.Id);
         }
 
+        public async Task<int> GetUsersByCourse(int courseId)
+        {
+            var userIds =  await userCoursesRepository.GetAcquiredUsers(courseId);
+
+            return userIds.Count;
+        }
+
         public async Task<List<GetUsersAndRolesRequest>> GetUsersAndRoles()
         {
             var users = await userRepository.GetAllUsers();
