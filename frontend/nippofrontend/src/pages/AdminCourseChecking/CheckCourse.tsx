@@ -58,6 +58,10 @@ export const CheckCourse = () => {
     setCancelCourse(false);
   };
 
+  const handleGoToLesson = (lessonId: any) => {
+    navigate(`lesson/${lessonId}`);
+  };
+
   const handleCloseModal = () => {
     setQuizModalOpen(false);
     setLessonModalOpen(false);
@@ -95,8 +99,9 @@ export const CheckCourse = () => {
 
   const handleCheckModule = (module: ModuleProps) => {
     if (module.type === "lesson") {
-      setChosenLessonId(module.id);
-      setLessonModalOpen(true);
+      // setChosenLessonId(module.id);
+      // setLessonModalOpen(true);
+      handleGoToLesson(module.id);
     } else {
       setChosenQuizId(module.id);
       setQuizModalOpen(true);

@@ -19,7 +19,7 @@ function LessonMainPage () {
     const [blocks, setBlocks] = useState<Block[]>([]);
 
     const handleBackToCourse = () => {
-        navigate(`/my-course/${courseId}`);
+        navigate(`/check-course/${courseId}`);
     };
 
     const fetchLessonData = async () => {

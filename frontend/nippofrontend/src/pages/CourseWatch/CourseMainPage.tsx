@@ -39,7 +39,7 @@ export const CourseMainPage = () => {
   };
 
   const handleGoToLesson = async (lessonId: number) => {
-    navigate(`/my-course/lesson/${lessonId}`);
+    navigate(`/my-course/${courseId}/lesson/${lessonId}`);
   };
 
   async function getCourseData(courseId: number) {
