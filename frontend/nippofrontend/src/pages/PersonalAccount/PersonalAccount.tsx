@@ -184,11 +184,16 @@ export const PersonalAccount = () => {
           </Link>
           {userInfo &&
             (userInfo.role == "author" || userInfo.role == "admin") && (
-              <Link to={"/author/courses"} className="profile-nav-link">
-                <button className="nav-button">
-                  {"СТАСТИСТИКА\n МОИХ КУРСОВ"}
-                </button>
-              </Link>
+              <>
+                <Link to={"/author/courses"} className="profile-nav-link">
+                  <button className="nav-button">
+                    {"СТАСТИСТИКА\n МОИХ КУРСОВ"}
+                  </button>
+                </Link>
+                <Link to={"/course/create"} className="profile-nav-link">
+                  <button className="nav-button">{"СОЗДАТЬ КУРС"}</button>
+                </Link>
+              </>
             )}
           {userInfo && userInfo.role == "admin" && (
             <Link to={"/admin/courses"} className="profile-nav-link">
