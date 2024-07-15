@@ -26,7 +26,7 @@ export const LessonModal = ({
 
     const handleAddLesson = async () => {
         try{
-            const response = await axios.post("/lesson/create-lesson", {
+            const response = await axios.post("/lesson/create", {
                 courseId: courseId,
                 title: title
             });

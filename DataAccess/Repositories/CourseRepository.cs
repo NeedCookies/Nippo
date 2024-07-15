@@ -90,6 +90,9 @@ namespace DataAccess.Repositories
         {
             var course = await GetById(courseId);
 
+            if (course == null)
+                return null;
+
             course.Status = (int)status;
 
             _appDbContext.Courses.Update(course);

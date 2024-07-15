@@ -131,14 +131,16 @@ function createCourse() {
     }
   };
 
-  const handleDeleteModule = (id: number) => {
-    const clearModules = modules.filter((module) => module.id !== id);
+  const handleDeleteModule = (courseModule: any) => {
+    const clearModules = modules.filter((module) => module.id !== courseModule.id);
+    const moduleType = courseModule.type === "lesson" ? "lesson" : "quiz";
+    axios.delete(`${moduleType}/delete?${moduleType}Id=${courseModule.id}`);
     setModules(clearModules);
   };
 
   const handleEditModule = (module: any) => {
     const moduleType = module.type === "lesson" ? "lesson" : "quiz";
-    navigate("/edit-" + moduleType + "/id=" + module.id);
+    navigate("/course/" + courseId + "/" + moduleType + "/" + module.id + "/edit");
   };
 
   const handleCourseFinished = async () => {
@@ -353,7 +355,7 @@ function createCourse() {
                 variant="contained"
                 size="small"
                 sx={{ marginY: 1 }}
-                onClick={() => handleDeleteModule(module.id)}>
+                onClick={() => handleDeleteModule(module)}>
                 Удалить
               </Button>
               <Button
