@@ -145,10 +145,10 @@ export const PersonalAccount = () => {
           <Link to={"/profile/stats"} className="profile-nav-link">
             <button className="nav-button">ЛИЧНАЯ СТАТИСТИКА</button>
           </Link>
-          <Link to={"/courses/favourite"} className="profile-nav-link">
+          <Link to={"/basket"} className="profile-nav-link">
             <button className="nav-button">ИЗБРАННЫЕ КУРСЫ</button>
           </Link>
-          <Link to={"/courses/bought"} className="profile-nav-link">
+          <Link to={"/my-courses"} className="profile-nav-link">
             <button className="nav-button">КУПЛЕННЫЕ КУРСЫ</button>
           </Link>
           {userInfo &&
