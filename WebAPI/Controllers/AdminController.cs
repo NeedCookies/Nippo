@@ -50,7 +50,7 @@ namespace WebAPI.Controllers
             return Ok(updatedUser);
         }
 
-        [HttpPost("get-courses-to-check")]
+        [HttpGet("get-courses-to-check")]
         public async Task<IActionResult> GetCoursesToCheck()
         {
             var courses = await coursesService.GetCoursesToCheck();
@@ -59,9 +59,9 @@ namespace WebAPI.Controllers
         }
 
         [HttpPost("accept-course")]
-        public async Task<IActionResult> AcceptCourse(int courseId)
+        public async Task<IActionResult> AcceptCourse(CourseIdRequest request)
         {
-            var moderatedCourseInfo = await coursesService.AcceptCourse(courseId);
+            var moderatedCourseInfo = await coursesService.AcceptCourse(request.courseId);
 
             await publishEndpoint.Publish(new NotificationEvent()
             {
@@ -75,9 +75,9 @@ namespace WebAPI.Controllers
         }
 
         [HttpPost("cancel-course")]
-        public async Task<IActionResult> CancelCourse(int courseId)
+        public async Task<IActionResult> CancelCourse(CourseIdRequest request)
         {
-            var moderatedCourseInfo = await coursesService.CancelCourse(courseId);
+            var moderatedCourseInfo = await coursesService.CancelCourse(request.courseId);
 
             await publishEndpoint.Publish(new NotificationEvent()
             {
@@ -91,7 +91,7 @@ namespace WebAPI.Controllers
         }
 
         [HttpPost("add-promocode")]
-        public async Task<IActionResult> AddPromocode(PromocodeDto promocodeDto)
+        public async Task<IActionResult> AddPromocode([FromBody]PromocodeDto promocodeDto)
         {
             await discountService.AddPromocode(promocodeDto);
 

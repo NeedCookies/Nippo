@@ -5,6 +5,7 @@ import axios from "axios";
 import { PointsModal } from "./PointsModal";
 import { Link } from "react-router-dom";
 import { EditUserInfoModal, UserInfoEdit } from "./EditUserInfoModal";
+import { PromoModal } from "./PromoModal";
 
 interface UserInfo {
   firstName: string | null;
@@ -24,6 +25,10 @@ export const PersonalAccount = () => {
   const [isPointsModalOpen, setPointsModalOpen] = useState<boolean>(false);
   const handleOpenPointsModal = () => setPointsModalOpen(true);
   const handleClosePointsModal = () => setPointsModalOpen(false);
+
+  const [isPromoModalOpen, setPromoModalOpen] = useState<boolean>(false);
+  const handleOpenPromoModal = () => setPromoModalOpen(true);
+  const handleClosePromoModal = () => setPromoModalOpen(false);
 
   const [isEditOpen, setEditOpen] = useState<boolean>(false);
   const handleOpenEdit = () => setEditOpen(true);
@@ -184,11 +189,19 @@ export const PersonalAccount = () => {
               </>
             )}
           {userInfo && userInfo.role == "admin" && (
-            <Link to={"/admin/courses"} className="profile-nav-link">
-              <button className="nav-button">МОДЕРАЦИЯ КУРСОВ</button>
-            </Link>
+            <div>
+              <Link to={"/admin/courses"} className="profile-nav-link">
+                <button className="nav-button">МОДЕРАЦИЯ КУРСОВ</button>
+              </Link>
+              <button className="nav-button" onClick={handleOpenPromoModal}>
+                Создать промокод
+              </button>
+            </div>
           )}
         </div>
+      </div>
+      <div>
+        <PromoModal open={isPromoModalOpen} onClose={handleClosePromoModal} />
       </div>
       <div>
         <PointsModal

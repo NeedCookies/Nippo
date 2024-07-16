@@ -1,4 +1,5 @@
 ﻿using Application.Contracts;
+using Application.Contracts.Operations;
 using Domain.Entities;
 using Domain.Entities.Identity;
 
@@ -12,7 +13,8 @@ namespace Application.Abstractions.Services
         public Task<Course> Delete(int id);
         public Task<Course> GetById(int id);
         public Task<string> GetAuthorById(int id);
-        public Task<UserCourses> PurchaseCourse(int courseId, string userId);
+        public Task<int> ApplyPromocode(CoursePurchaseRequest request);
+        public Task<UserCourses> PurchaseCourse(CoursePurchaseRequest request, string userId);
         public Task<Course> SubmitForReview(int courseId, string userId);
         public Task<List<Course>> GetCoursesToCheck();
         public Task<ModeratedCourseInfo> AcceptCourse(int courseId);

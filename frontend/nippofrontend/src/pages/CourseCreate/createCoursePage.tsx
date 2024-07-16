@@ -21,7 +21,7 @@ interface CourseDataProps {
   Title: string;
   Description: string;
   Price: string;
-  Logo: string;
+  ImgPath: string;
 }
 
 function createCourse() {
@@ -36,12 +36,15 @@ function createCourse() {
     Title: "",
     Description: "",
     Price: "",
-    Logo: "",
+    ImgPath: "",
   });
   const [logo, setLogo] = useState<File | null>(null);
 
   const navigate = useNavigate();
-  const haldleCloseModal = () => setQuizModalOpen(false);
+  const haldleCloseModal = () => {
+    setQuizModalOpen(false);
+    setLessonModalOpen(false);
+  };
 
   const handleLogoButton = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
@@ -73,7 +76,7 @@ function createCourse() {
         }));
         setCourseSaved(true);
         setCourseIdState(response.data.id);
-        getCourseData();
+        navigate(`/course/${courseId}/create`);
       } else {
         console.log(response.status);
         console.log(response);
@@ -129,7 +132,9 @@ function createCourse() {
   };
 
   const handleDeleteModule = (courseModule: any) => {
-    const clearModules = modules.filter((module) => module.id !== courseModule.id);
+    const clearModules = modules.filter(
+      (module) => module.id !== courseModule.id
+    );
     const moduleType = courseModule.type === "lesson" ? "lesson" : "quiz";
     axios.delete(`${moduleType}/delete?${moduleType}Id=${courseModule.id}`);
     setModules(clearModules);
@@ -137,16 +142,38 @@ function createCourse() {
 
   const handleEditModule = (module: any) => {
     const moduleType = module.type === "lesson" ? "lesson" : "quiz";
-    navigate("/course/" + courseId + "/" + moduleType + "/" + module.id + "/edit");
+    navigate(
+      "/course/" + courseId + "/" + moduleType + "/" + module.id + "/edit"
+    );
+  };
+
+  const handleCourseFinished = async () => {
+    try {
+      const response = await axios.post(`/course/submit-for-review`, {
+        courseId: Number(courseId),
+      });
+      if (response.status === 200) {
+        console.log("Курс отправлен на проверку");
+      }
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   useEffect(() => {
     if (courseId) {
       getCourseData();
       setCourseIdState(Number(courseId));
-      navigate(`/course/${courseId}/create`);
     }
   }, [courseId]);
+
+  useEffect(() => {
+    async function getData() {
+      await getLessons();
+      getQuizzes();
+    }
+    getData();
+  }, []);
 
   async function getCourseData() {
     try {
@@ -155,10 +182,10 @@ function createCourse() {
         courseData.Title = response.data.title;
         courseData.Description = response.data.description;
         courseData.Price = response.data.price;
-        courseData.Logo = response.data.imgPath;
-        getLessons();
-        getQuizzes();
+        courseData.ImgPath = response.data.imgPath;
         setCourseSaved(true);
+        await getLessons();
+        getQuizzes();
       } else {
         console.log("Another response status");
         console.log(response.status);
@@ -196,7 +223,12 @@ function createCourse() {
           ...quiz,
           type: "quiz",
         }));
-        setModules((prevModules) => [...prevModules, ...quizzesWithType]);
+        setModules((prevModules) => {
+          const filteredModules = prevModules.filter(
+            (module) => module.type !== "quiz"
+          );
+          return [...filteredModules, ...quizzesWithType];
+        });
       } else {
         console.log("Another response status");
         console.log(response.status);
@@ -282,7 +314,7 @@ function createCourse() {
             onChange={handleLogoButton}
             sx={{ width: "100%" }}
           />
-          {courseData.Logo && (
+          {courseData.ImgPath && (
             <Box
               sx={{
                 marginTop: 2,
@@ -294,7 +326,7 @@ function createCourse() {
                 backgroundColor: "#858585",
               }}>
               <img
-                src={courseData.Logo}
+                src={courseData.ImgPath}
                 alt="Preview"
                 style={{ maxWidth: "100%", maxHeight: "200px" }}
               />
@@ -382,6 +414,16 @@ function createCourse() {
             <Typography sx={{ fontFamily: "cursive", fontStyle: "italic" }}>
               Сохраните курс, чтобы создать тесты и уроки
             </Typography>
+          )}
+          {isCourseSaved && (
+            <Button
+              variant="contained"
+              size="large"
+              sx={{ margin: 2 }}
+              onClick={handleCourseFinished}
+              disabled={!isCourseSaved}>
+              Курс готов
+            </Button>
           )}
           <QuizModal
             courseId={courseIdState}

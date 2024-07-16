@@ -88,9 +88,11 @@ namespace Application.Services
             bool isPurchased = await userCoursesRepository.IsCoursePurchased(userId, courseId);
             string courseAuthor = await courseRepository.GetAuthorById(courseId);
 
+            var user = await userService.GetUserInfoById(userId);
+
             bool result = false;
 
-            if (isPurchased || courseAuthor == userId)
+            if (isPurchased || courseAuthor == userId || user.Role == "admin")
                 result = true;
 
             return result;

@@ -13,6 +13,8 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import AddToQueueIcon from "@mui/icons-material/AddToQueue";
 import { useNavigate } from "react-router-dom";
+import { BuyModal } from "./BuyModal";
+import courses from "../components/FakeData/fakeCourses";
 
 interface CourseCardProps {
   id: number;
@@ -29,24 +31,26 @@ interface BasketCourseProps {
   userId: string;
 }
 
+interface BuyModalProps {
+  courseId: number;
+  title: string;
+  price: number;
+}
+
 export const Basket = () => {
   const navigate = useNavigate();
   const [basketCoursesIds, setBasketCoursesIds] =
     useState<BasketCourseProps[]>();
   const [basketCourses, setBasketCourses] = useState<CourseCardProps[]>();
-  const [alreadyBought, setAlreadyBought] = useState<boolean>(false);
-  const [lackOfPoints, setLackOfPoints] = useState<boolean>(false);
+  const [isBuyModalOpen, setBuyModalOpen] = useState<boolean>(false);
+  const [buyingCourse, setBuyingCourse] = useState<BuyModalProps>({
+    courseId: 0,
+    title: "",
+    price: -1,
+  });
 
-  const handleClose = (
-    event: React.SyntheticEvent | Event,
-    reason?: string
-  ) => {
-    if (reason === "clickaway") {
-      return;
-    }
-
-    setAlreadyBought(false);
-    setLackOfPoints(false);
+  const handleCloseBuyModal = () => {
+    setBuyModalOpen(false);
   };
 
   async function getBasketCourses() {
@@ -77,44 +81,14 @@ export const Basket = () => {
     }
   }
 
-  const handleBuyClick = async (courseId: number) => {
-    try {
-      const response = await axios.post(
-        `/course/purchase-course?courseId=${courseId}`
-      );
-      if (response.status === 200) {
-        console.log("Курс успешно куплен");
-        console.log("Cделай всплывающее окно с уведомлением");
-      } else {
-        console.log("Another response status");
-        console.log(response.status);
-      }
-    } catch (error) {
-      if (error.response.status === 500) {
-        if (
-          String(error.response.data).includes("Course already bought by user")
-        ) {
-          console.log("Вы уже купили этот курс");
-          setAlreadyBought(true);
-        } else if (
-          String(error.response.data).includes("Don't have enough points")
-        ) {
-          console.log("У вас недостаточно баллов для покупки этого курса");
-          setLackOfPoints(true);
-        } else {
-          console.error(
-            "Ошибка при покупке курса:",
-            error.response.data.message
-          );
-        }
-      } else {
-        console.error(
-          "Ошибка при покупке курса:",
-          error.response.status,
-          error.response.data
-        );
-      }
-    }
+  const handleBuyCourseClick = ({ courseId, title, price }: BuyModalProps) => {
+    const modalCourse = {
+      courseId: courseId,
+      title: title,
+      price: price,
+    };
+    setBuyingCourse(modalCourse);
+    setBuyModalOpen(true);
   };
 
   const handleDeleteClick = async (courseId: number) => {
@@ -246,7 +220,13 @@ export const Basket = () => {
                       }}
                       margin={2}>
                       <Button
-                        onClick={() => handleBuyClick(course.id)}
+                        onClick={() =>
+                          handleBuyCourseClick({
+                            courseId: course.id,
+                            title: course.title,
+                            price: course.price,
+                          })
+                        }
                         variant="contained"
                         color="success"
                         sx={{ width: "150px" }}>
@@ -275,31 +255,14 @@ export const Basket = () => {
               </Paper>
             ))}
         </Container>
-        <Snackbar
-          open={alreadyBought}
-          autoHideDuration={5000}
-          onClose={handleClose}>
-          <Alert
-            onClose={handleClose}
-            severity="success"
-            variant="filled"
-            sx={{ width: "100%" }}>
-            Курс уже куплен вами
-          </Alert>
-        </Snackbar>
-        <Snackbar
-          open={lackOfPoints}
-          autoHideDuration={5000}
-          onClose={handleClose}>
-          <Alert
-            onClose={handleClose}
-            severity="warning"
-            variant="filled"
-            sx={{ width: "100%" }}>
-            Недостаточно поинтов для покупки
-          </Alert>
-        </Snackbar>
       </Container>
+      <BuyModal
+        courseId={buyingCourse.courseId}
+        courseTitle={buyingCourse.title}
+        price={buyingCourse.price}
+        handleClose={handleCloseBuyModal}
+        isOpen={isBuyModalOpen}
+      />
     </RequireAuth>
   );
 };

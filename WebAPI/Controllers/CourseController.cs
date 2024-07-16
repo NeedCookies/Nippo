@@ -1,5 +1,6 @@
 ﻿using Application.Abstractions.Services;
 using Application.Contracts;
+using Application.Contracts.Operations;
 using Domain.Entities.Identity;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -53,13 +54,21 @@ namespace WebAPI.Controllers
 
         [Authorize]
         [HttpPost("purchase-course")]
-        public async Task<IActionResult> PurchaseCourse(int courseId)
+        public async Task<IActionResult> PurchaseCourse([FromBody] CoursePurchaseRequest request)
         {
             string userId = GetUserId();
 
-            var result = await coursesService.PurchaseCourse(courseId, userId);
+            var result = await coursesService.PurchaseCourse(request, userId);
             
             return Ok(result);
+        }
+
+        [Authorize]
+        [HttpPost("apply-promocode")]
+        public async Task<IActionResult> ApplyPromocode([FromBody] CoursePurchaseRequest request)
+        {
+            var newPrice = await coursesService.ApplyPromocode(request);
+            return Ok(newPrice);
         }
 
         [Authorize]
@@ -112,9 +121,11 @@ namespace WebAPI.Controllers
 
         [Authorize(Roles ="author")]
         [HttpPost("submit-for-review")]
-        public async Task<IActionResult> SubmitForReview(int courseId)
+        public async Task<IActionResult> SubmitForReview([FromBody]CourseIdRequest courseSubmit)
         {
-            var course = await coursesService.SubmitForReview(courseId, GetUserId());
+            int courseId = courseSubmit.courseId;
+            string userId = GetUserId();
+            var course = await coursesService.SubmitForReview(courseId, userId);
             
             return Ok(course);
         }
