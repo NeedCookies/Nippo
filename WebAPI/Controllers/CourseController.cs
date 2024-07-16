@@ -5,8 +5,6 @@ using Domain.Entities.Identity;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Caching.Distributed;
-using System.Text;
 
 namespace WebAPI.Controllers
 {
@@ -125,7 +123,7 @@ namespace WebAPI.Controllers
 
         [Authorize(Roles ="author")]
         [HttpPost("submit-for-review")]
-        public async Task<IActionResult> SubmitForReview([FromBody]SubmitCourse courseSubmit)
+        public async Task<IActionResult> SubmitForReview([FromBody]CourseIdRequest courseSubmit)
         {
             int courseId = courseSubmit.courseId;
             string userId = GetUserId();

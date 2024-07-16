@@ -3,6 +3,7 @@ using Application.Abstractions.Services;
 using Application.Contracts;
 using Application.Contracts.Operations;
 using Domain.Entities;
+using Microsoft.Extensions.Logging;
 using System.Text;
 
 namespace Application.Services
@@ -18,7 +19,8 @@ namespace Application.Services
         IUserRepository userRepository,
         IUnitOfWork unitOfWork,
         IStorageService storageService,
-        IDiscountService discountService) : ICoursesService
+        IDiscountService discountService,
+        ILogger<CoursesService> logger) : ICoursesService
     {
         public async Task<Course> Create(CreateCourseRequest request, string authorId)
         {
@@ -142,16 +144,50 @@ namespace Application.Services
             return allCourses;
         }
 
-        public async Task<Course> AcceptCourse(int courseId) =>
-            await courseRepository.ChangeStatus(courseId, PublishStatus.Publish);
+        public async Task<ModeratedCourseInfo> AcceptCourse(int courseId)
+        {
+            logger.LogInformation("Course was accepted. Course Id: {courseId}", courseId);
+            var course = await courseRepository.ChangeStatus(courseId, PublishStatus.Publish);
 
-        public async Task<Course> CancelCourse(int courseId) =>
-            await courseRepository.ChangeStatus(courseId, PublishStatus.Edit);
+            return new ModeratedCourseInfo()
+            {
+                AdminAnswer = $@"Здравствуйте, {course.Author.UserName}!
+                    Рады сообщить, что ваш курс успешно прошёл модерацию и был размещён на нашем сайте. Теперь пользователи могут ознакомиться с вашим материалом и начать обучение.
+                    Благодарим вас за вклад в развитие нашей платформы и желаем удачи в дальнейшей работе!
+
+                    С уважением,
+                    Администрация",
+
+                AuthorEmail = course.Author.Email!
+            };
+        }
+            
+
+        public async Task<ModeratedCourseInfo> CancelCourse(int courseId)
+        {
+            logger.LogWarning("Course was canceled. Course Id: {courseId} ", courseId);
+            var course = await courseRepository.ChangeStatus(courseId, PublishStatus.Edit);
+
+            return new ModeratedCourseInfo()
+            {
+                AdminAnswer = $@"Здравствуйте, {course.Author.UserName}!
+                Ваш курс был отправлен на доработку. Пожалуйста, ознакомьтесь с правилами размещения курсов на нашем сайте и внесите необходимые изменения. После этого вы можете снова отправить курс на модерацию.
+
+                Благодарим за ваше понимание и сотрудничество.
+
+                С уважением,
+                Администрация",
+
+                AuthorEmail = course.Author.Email!
+            };
+        }
 
         public async Task<Course> SubmitForReview(int courseId, string userId)
         {
             var courseAuthor = await courseRepository.GetAuthorById(courseId);
             var userInfo = await userService.GetUserInfoById(userId);
+
+            logger.LogInformation("Course has been sent for review. Course Id: {CourseId}", courseId);
 
             if (courseAuthor == userId && userInfo.Role == "author")
                 return await courseRepository.ChangeStatus(courseId, PublishStatus.Check);
@@ -204,7 +240,7 @@ namespace Application.Services
 
             if (maybeBought != null)
                 throw new InvalidOperationException(
-                    $"Course already bought by user: {maybeBought}");
+                    $"Course already bought by user: {maybeBought.UserId}");
 
             var user = await userRepository.GetByUserId(userId);
             var course = await courseRepository.GetById(courseId);
@@ -220,6 +256,8 @@ namespace Application.Services
             await basketRepository.DeleteFromBasket(courseId, userId);
             user.Points -= (int)course.Price;
             await unitOfWork.SaveChangesAsync();
+
+            logger.LogInformation("Course was bought by user. Course Id: {CourseId}. User Id: {UserId}");
 
             var courseLessons = await lessonRepository.GetLessonsByCourseAsync(courseId);
             var courseQuizzes = await quizRepository.GetQuizzesByCourseAsync(courseId);

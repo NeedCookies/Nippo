@@ -6,9 +6,13 @@ using Microsoft.EntityFrameworkCore;
 using WebAPI.Extensions;
 using Infrastructure.Options;
 using WebAPI.Middlewares;
-using Application.Services;
+using Serilog;
+using MassTransit;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Host.UseSerilog((context, loggerConfig) =>
+    loggerConfig.ReadFrom.Configuration(context.Configuration));
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
@@ -16,6 +20,8 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.Configure<JwtOptions>(builder.Configuration.GetSection(nameof(JwtOptions)));
 builder.Services.Configure<MinIoOptions>(builder.Configuration.GetSection("Minio"));
+
+builder.Services.AddMessageBroker(builder.Configuration);
 
 builder.Services.AddDbContext(builder.Configuration);
 builder.Services.AddRedisCache(builder.Configuration);
@@ -54,9 +60,14 @@ app.UseCors("Frontend");
 
 app.UseHttpsRedirection();
 
+app.UseSerilogRequestLogging();
+
 app.UseMiddleware<AuthorizationMiddleware>();
 app.UseAuthentication();
 app.UseAuthorization();
+
+app.UseMiddleware<ExceptionHandlingMiddleware>();
+
 app.MapControllers();
 
 app.Run();

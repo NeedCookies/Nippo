@@ -12,6 +12,21 @@ services:
       - database
       - minio 
       - redis
+      - seq
+      - rabbitmq
+  
+
+  notification-service:
+    build:
+      context: "."
+      dockerfile: "./NotificationService/Dockerfile"
+    ports:
+      - "5000:5000"
+      - "5001:5001"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+    depends_on:
+      - rabbitmq
 
 
   database:
@@ -58,9 +73,36 @@ services:
     ports:
       - "80:80"
     depends_on:
-      - minio
+      - backend
+  
+
+  seq:
+    image: datalust/seq:latest
+    container_name: seq
+    environment:
+      - ACCEPT_EULA=Y
+    ports:
+      - 5341:5341
+      - 5340:80
+    volumes:
+      - seq-data:/data
+  
+
+  rabbitmq:
+    image: rabbitmq:management
+    container_name: rabbitmq
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+    ports:
+      - 15672:15672
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq 
+    
 
 volumes:
   redis-data:
+  seq-data:
   minio-storage:
   db-data:
+  rabbitmq_data:  

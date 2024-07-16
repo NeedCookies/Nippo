@@ -6,6 +6,7 @@ using Domain.Entities.Identity;
 using System.Text.RegularExpressions;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 
 namespace Application.Services
 {
@@ -21,7 +22,8 @@ namespace Application.Services
         RoleManager<AppRole> roleManager,
         IStorageService storageService,
         IUserProgressRepository userProgressRepository,
-        IDiscountService discountService) : IUserService
+        IDiscountService discountService,
+        ILogger<UserService> logger) : IUserService
     {
         public async Task<PersonalInfoDto> GetUserInfoById(string userId)
         {
@@ -66,6 +68,8 @@ namespace Application.Services
 
             await unitOfWork.SaveChangesAsync();
 
+            logger.LogWarning("Points were given to user. Points: {Points}. User Id: {UserId}", points, userId);
+
             return await GetUserInfoById(userId);
         }
 
@@ -82,6 +86,7 @@ namespace Application.Services
 
             var token = await jwtProvider.GenerateAsync(user);
 
+            logger.LogInformation("User were logged in. User Id: {UserId}", user.Id);
             return token;
         }
 
@@ -107,6 +112,8 @@ namespace Application.Services
 
             await userRolesRepository.AssignRole(registeredUser.Id, defaultRole.Id);
 
+            logger.LogInformation("A new user has registered. UserId: {UserId}, Role: {Role}", user.Id, defaultRole.Name);
+
             return user;
         }
 
@@ -131,8 +138,19 @@ namespace Application.Services
             return userCourses;
         }
 
-        public async Task<List<Course>> GetCreatedCourses(string userId) =>
-            await courseRepository.GetCreatedCourses(userId);
+        public async Task<List<Course>> GetCreatedCourses(string userId)
+        {
+            var courses = await courseRepository.GetCreatedCourses(userId);
+
+            foreach (var course in courses)
+            {
+                course.ImgPath = course.ImgPath != null
+                        ? await storageService.GetUrlAsync(course.ImgPath)
+                        : null;
+            }
+
+            return courses;
+        }
 
         public async Task<PersonalInfoDto> UpdateUserInfo(string userId, UserInfoUpdateRequest updateRequest)
         {
@@ -163,6 +181,13 @@ namespace Application.Services
             await unitOfWork.SaveChangesAsync();
 
             return await GetUserInfoById(user.Id);
+        }
+
+        public async Task<int> GetUsersByCourse(int courseId)
+        {
+            var userIds =  await userCoursesRepository.GetAcquiredUsers(courseId);
+
+            return userIds.Count;
         }
 
         public async Task<List<GetUsersAndRolesRequest>> GetUsersAndRoles()
@@ -218,6 +243,8 @@ namespace Application.Services
             }
 
             await userRolesRepository.AssignRole(userId, roleId);
+
+            logger.LogInformation("User was assigned a new role. User Id: {UserId}. New role Id: {RoleId}", userId, roleId);
         }
 
         public async Task UpgradeRoleToAuthor(string userId)
@@ -236,6 +263,8 @@ namespace Application.Services
 
             await userRolesRepository.RemoveRole(userId);
             await userRolesRepository.AssignRole(userId, authorRoleId);
+
+            logger.LogInformation("User role was changed to 'Author'. User Id: {UserId}.", userId);
         }
 
         public async Task DowngradeRoleToUser(string userId)
@@ -244,6 +273,8 @@ namespace Application.Services
 
             await userRolesRepository.RemoveRole(userId);
             await userRolesRepository.AssignRole(userId, userRoleId);
+
+            logger.LogInformation("User role was downgraded to 'User'. User Id: {UserId}.", userId);
         }
 
         public async Task<List<UserProgress>> GetUserProgresses(string userId, int courseId) =>

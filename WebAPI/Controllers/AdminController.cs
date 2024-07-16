@@ -1,5 +1,8 @@
 ﻿using Application.Abstractions.Services;
 using Application.Contracts;
+using DataAccess;
+using Domain.Entities;
+using MassTransit;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -11,7 +14,8 @@ namespace WebAPI.Controllers
     public class AdminController(
         IUserService userService, 
         ICoursesService coursesService,
-        IDiscountService discountService) : ControllerBase
+        IDiscountService discountService,
+        IPublishEndpoint publishEndpoint) : ControllerBase
     {
         [HttpPost("give-points")]
         public async Task<IActionResult> GivePointsToUser(GivePointsRequest givePointsRequest)
@@ -57,15 +61,33 @@ namespace WebAPI.Controllers
         [HttpPost("accept-course")]
         public async Task<IActionResult> AcceptCourse(CourseIdRequest request)
         {
-            int courseId = request.courseId;
-            return Ok(await coursesService.AcceptCourse(courseId));
+            var moderatedCourseInfo = await coursesService.AcceptCourse(request.courseId);
+
+            await publishEndpoint.Publish(new NotificationEvent()
+            {
+                Recipient = moderatedCourseInfo.AuthorEmail,
+                Subject = "Результат проверки курса",
+                Body = moderatedCourseInfo.AdminAnswer,
+                Type = NotificationType.Email
+            });
+
+            return Ok();
         }
 
         [HttpPost("cancel-course")]
         public async Task<IActionResult> CancelCourse(CourseIdRequest request)
         {
-            int courseId = request.courseId;
-            return Ok(await coursesService.CancelCourse(courseId));
+            var moderatedCourseInfo = await coursesService.CancelCourse(request.courseId);
+
+            await publishEndpoint.Publish(new NotificationEvent()
+            {
+                Recipient = moderatedCourseInfo.AuthorEmail,
+                Subject = "Результат проверки курса",
+                Body = moderatedCourseInfo.AdminAnswer,
+                Type = NotificationType.Email
+            });
+
+            return Ok();
         }
 
         [HttpPost("add-promocode")]

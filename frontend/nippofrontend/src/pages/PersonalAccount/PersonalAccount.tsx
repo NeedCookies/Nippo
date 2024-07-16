@@ -1,4 +1,4 @@
-import { Avatar, Button } from "@mui/material";
+import { Avatar, Button, Typography } from "@mui/material";
 import "./PersonalAccount.css";
 import { useEffect, useState } from "react";
 import axios from "axios";
@@ -23,11 +23,10 @@ export const PersonalAccount = () => {
   const [userInfo, setUserInfo] = useState<UserInfo | null>(null);
 
   const [isPointsModalOpen, setPointsModalOpen] = useState<boolean>(false);
-  const [isPromoModalOpen, setPromoModalOpen] = useState<boolean>(false);
-
   const handleOpenPointsModal = () => setPointsModalOpen(true);
   const handleClosePointsModal = () => setPointsModalOpen(false);
 
+  const [isPromoModalOpen, setPromoModalOpen] = useState<boolean>(false);
   const handleOpenPromoModal = () => setPromoModalOpen(true);
   const handleClosePromoModal = () => setPromoModalOpen(false);
 
@@ -46,6 +45,20 @@ export const PersonalAccount = () => {
     }));
   };
 
+  const handleUserRoleUpdate = async () => {
+    try {
+      const response = await axios.post(`/user/upgrade-to-author`);
+
+      if (response.status === 200) {
+        getUserInfo();
+      } else {
+        console.log(response.status);
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   const userInfoEdit: UserInfoEdit | null = userInfo
     ? {
         firstName: userInfo.firstName ?? "",
@@ -55,34 +68,20 @@ export const PersonalAccount = () => {
         birthDate: userInfo.birthDate,
       }
     : null;
+  const getUserInfo = async () => {
+    try {
+      const response = await axios.get("user/get-personal-info");
 
-  useEffect(() => {
-    const getUserInfo = async () => {
-      try {
-        const response = await axios.get("user/get-personal-info");
-
-        if (response.status == 200) {
-          setUserInfo(response.data);
-        } else {
-          console.log(response.status);
-        }
-      } catch (e) {
-        //TODO удалить, когда будет готов endpoint на сервере
-        setUserInfo({
-          firstName: "Иван",
-          lastName: "Иванов",
-          userName: "TestUser",
-          phoneNumber: "+7 952 812 52 52",
-          email: "testUser@mail.ru",
-          pictureUrl: null,
-          birthDate: "2004-06-09",
-          points: 400,
-          role: "admin",
-        });
-        console.log(e);
+      if (response.status == 200) {
+        setUserInfo(response.data);
+      } else {
+        console.log(response.status);
       }
-    };
-
+    } catch (e) {
+      console.log(e);
+    }
+  };
+  useEffect(() => {
     getUserInfo();
   }, []);
 
@@ -120,11 +119,36 @@ export const PersonalAccount = () => {
                 <span className="info-label">Почта:</span>
                 <span className="info-value">{userInfo.email}</span>
               </div>
+              <div className="info-item">
+                <span className="info-label">Статус:</span>
+                <span className="info-value">{userInfo.role}</span>
+              </div>
               <div>
                 <Button variant="contained" onClick={handleOpenEdit}>
                   Редактировать
                 </Button>
               </div>
+              {userInfo && userInfo.role == "user" && (
+                <div className="flex">
+                  <Typography
+                    sx={{ fontFamily: "cursive", fontStyle: "italic" }}>
+                    Чтобы стать автором курса, вам нужно заполнить всю
+                    информацию о себе
+                  </Typography>
+                  <Button
+                    variant="contained"
+                    disabled={
+                      userInfo.firstName == undefined ||
+                      userInfo.lastName == undefined ||
+                      userInfo.birthDate == undefined ||
+                      userInfo.phoneNumber == undefined ||
+                      userInfo.pictureUrl == undefined
+                    }
+                    onClick={handleUserRoleUpdate}>
+                    Стать автором
+                  </Button>
+                </div>
+              )}
             </div>
             <div className="points-wrapper">
               <div className="points">{userInfo.points}</div>
@@ -153,19 +177,22 @@ export const PersonalAccount = () => {
           </Link>
           {userInfo &&
             (userInfo.role == "author" || userInfo.role == "admin") && (
-              <Link to={"/author/courses"} className="profile-nav-link">
-                <button className="nav-button">
-                  {"СТАСТИСТИКА\n МОИХ КУРСОВ"}
-                </button>
-              </Link>
+              <>
+                <Link to={"/author/courses"} className="profile-nav-link">
+                  <button className="nav-button">
+                    {"СТАСТИСТИКА\n МОИХ КУРСОВ"}
+                  </button>
+                </Link>
+                <Link to={"/course/create"} className="profile-nav-link">
+                  <button className="nav-button">{"СОЗДАТЬ КУРС"}</button>
+                </Link>
+              </>
             )}
           {userInfo && userInfo.role == "admin" && (
-            <Link to={"/admin/courses-to-check"} className="profile-nav-link">
-              <button className="nav-button">МОДЕРАЦИЯ КУРСОВ</button>
-            </Link>
-          )}
-          {userInfo && userInfo.role == "admin" && (
             <div>
+              <Link to={"/admin/courses"} className="profile-nav-link">
+                <button className="nav-button">МОДЕРАЦИЯ КУРСОВ</button>
+              </Link>
               <button className="nav-button" onClick={handleOpenPromoModal}>
                 Создать промокод
               </button>
@@ -174,13 +201,13 @@ export const PersonalAccount = () => {
         </div>
       </div>
       <div>
+        <PromoModal open={isPromoModalOpen} onClose={handleClosePromoModal} />
+      </div>
+      <div>
         <PointsModal
           open={isPointsModalOpen}
           onClose={handleClosePointsModal}
         />
-      </div>
-      <div>
-        <PromoModal open={isPromoModalOpen} onClose={handleClosePromoModal} />
       </div>
       <div>
         <EditUserInfoModal
