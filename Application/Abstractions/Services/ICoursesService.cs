@@ -15,8 +15,8 @@ namespace Application.Abstractions.Services
         public Task<UserCourses> PurchaseCourse(int courseId, string userId);
         public Task<Course> SubmitForReview(int courseId, string userId);
         public Task<List<Course>> GetCoursesToCheck();
-        public Task<Course> AcceptCourse(int courseId);
-        public Task<Course> CancelCourse(int courseId);
+        public Task<ModeratedCourseInfo> AcceptCourse(int courseId);
+        public Task<ModeratedCourseInfo> CancelCourse(int courseId);
         public Task<BasketCourses> AddToBasket(int courseId, string userId);
         public Task<BasketCourses> DeleteFromBasket(int courseId, string userId);
         public Task<List<BasketCourses>> GetBasketCourses(string userId);

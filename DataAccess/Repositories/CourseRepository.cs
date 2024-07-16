@@ -88,7 +88,8 @@ namespace DataAccess.Repositories
 
         public async Task<Course> ChangeStatus(int courseId, PublishStatus status)
         {
-            var course = await GetById(courseId);
+            var course = await _appDbContext.Courses.Include(c => c.Author)
+                .FirstOrDefaultAsync(c => c.Id == courseId);
 
             if (course == null)
                 return null;
