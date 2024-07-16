@@ -82,7 +82,6 @@ export const PersonalAccount = () => {
         console.log(e);
       }
     };
-
     getUserInfo();
   }, []);
 
@@ -120,6 +119,10 @@ export const PersonalAccount = () => {
                 <span className="info-label">Почта:</span>
                 <span className="info-value">{userInfo.email}</span>
               </div>
+              <div className="info-item">
+                <span className="info-label">Статус:</span>
+                <span className="info-value">{userInfo.role}</span>
+              </div>
               <div>
                 <Button variant="contained" onClick={handleOpenEdit}>
                   Редактировать
@@ -135,6 +138,24 @@ export const PersonalAccount = () => {
                     onClick={handleOpenPointsModal}
                     sx={{ marginTop: "1rem", padding: "0.8rem" }}>
                     Выдать поинты
+              {userInfo && userInfo.role == "user" && (
+                <div className="flex">
+                  <Typography
+                    sx={{ fontFamily: "cursive", fontStyle: "italic" }}>
+                    Чтобы стать автором курса, вам нужно заполнить всю
+                    информацию о себе
+                  </Typography>
+                  <Button
+                    variant="contained"
+                    disabled={
+                      userInfo.firstName == undefined ||
+                      userInfo.lastName == undefined ||
+                      userInfo.birthDate == undefined ||
+                      userInfo.phoneNumber == undefined ||
+                      userInfo.pictureUrl == undefined
+                    }
+                    onClick={handleUserRoleUpdate}>
+                    Стать автором
                   </Button>
                 </div>
               )}

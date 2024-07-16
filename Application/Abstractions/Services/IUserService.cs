@@ -20,5 +20,6 @@ namespace Application.Abstractions.Services
         Task AssignRole(string userId, string roleId);
         Task UpgradeRoleToAuthor(string userId);
         Task DowngradeRoleToUser(string userId);
+        Task <int> GetUsersByCourse(int courseId);
     }
 }

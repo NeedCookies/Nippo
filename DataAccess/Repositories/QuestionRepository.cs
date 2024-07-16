@@ -58,15 +58,15 @@ namespace DataAccess.Repositories
 
         public async Task<Question> Update(int questionId, string text)
         {
-            await dbContext.Questions.
-                Where(q => q.Id == questionId).ExecuteUpdateAsync(q =>
-                q.SetProperty(x => x.Text, x => text));
+            var question = await dbContext.Questions.FindAsync(questionId);
+            if (question == null)
+            {
+                return null;
+            }
 
+            question.Text = text;
             await dbContext.SaveChangesAsync();
-
-            return await dbContext.Questions.
-                Where(q => q.Id == questionId).
-                FirstAsync();
+            return question;
         }
     }
 }

@@ -18,6 +18,7 @@ import { CoursesChecking } from "./pages/AdminCourseChecking/CoursesChecking";
 import { CheckCourse } from "./pages/AdminCourseChecking/CheckCourse";
 import LessonMainPage from "./pages/CourseWatch/LessonMainPage";
 import CheckLesson from "./pages/AdminCourseChecking/CheckLesson";
+import { CreatedCoursesStat } from "./pages/PersonalAccount/CreatedCoursesStat";
 
 function App() {
   return (
@@ -102,6 +103,7 @@ function App() {
             </RequireAuth>
           }
         />
+        <Route path="/author/courses" element={<CreatedCoursesStat />} />
         <Route path="/basket" element={<Basket />} />
         <Route path="/register" element={<RegisterPage />} />
         <Route path="/login" element={<LoginPage />} />

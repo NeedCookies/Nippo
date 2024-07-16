@@ -1,6 +1,7 @@
 ﻿using Application.Abstractions.Repositories;
 using Application.Abstractions.Services;
 using Application.Contracts;
+using Application.Contracts.Update;
 using Domain.Entities;
 using System.Text;
 
@@ -54,9 +55,10 @@ namespace Application.Services
             return await questionRepository.GetByQuiz(quizId);
         }
 
-        public async Task<Question> Update(int questionId, string text)
+        public async Task<Question> Update(UpdateQuestionRequest request)
         {
-            text = text.Trim();
+            int questionId = request.QuestionId;
+            var text = request.Text.Trim();
 
             StringBuilder error = new StringBuilder();
             if (questionId < 0)

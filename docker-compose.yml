@@ -12,6 +12,7 @@ services:
       - database
       - minio 
       - redis
+      - seq
 
 
   database:
@@ -58,9 +59,22 @@ services:
     ports:
       - "80:80"
     depends_on:
-      - minio
+      - backend
+  
+
+  seq:
+    image: datalust/seq:latest
+    container_name: seq
+    environment:
+      - ACCEPT_EULA=Y
+    ports:
+      - 5341:5341
+      - 5340:80
+    volumes:
+      - seq-data:/data
 
 volumes:
   redis-data:
+  seq-data:
   minio-storage:
   db-data:
