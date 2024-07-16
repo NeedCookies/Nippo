@@ -2,6 +2,7 @@
 using Application.Abstractions.Services;
 using Application.Contracts;
 using Domain.Entities;
+using Microsoft.Extensions.Logging;
 using System.Text;
 
 namespace Application.Services
@@ -16,7 +17,8 @@ namespace Application.Services
         IBasketRepository basketRepository,
         IUserRepository userRepository,
         IUnitOfWork unitOfWork,
-        IStorageService storageService) : ICoursesService
+        IStorageService storageService,
+        ILogger<CoursesService> logger) : ICoursesService
     {
         public async Task<Course> Create(CreateCourseRequest request, string authorId)
         {
@@ -129,16 +131,27 @@ namespace Application.Services
         public async Task<List<Course>> GetCoursesToCheck() =>
             await courseRepository.GetCoursesByStatus(PublishStatus.Check);
 
-        public async Task<Course> AcceptCourse(int courseId) =>
-            await courseRepository.ChangeStatus(courseId, PublishStatus.Publish);
+        public async Task<Course> AcceptCourse(int courseId)
+        {
+            logger.LogInformation("Course was accepted. Course Id: {courseId}", courseId);
 
-        public async Task<Course> CancelCourse(int courseId) =>
-            await courseRepository.ChangeStatus(courseId, PublishStatus.Edit);
+            return await courseRepository.ChangeStatus(courseId, PublishStatus.Publish);
+        }
+            
+
+        public async Task<Course> CancelCourse(int courseId)
+        {
+            logger.LogWarning("Course was canceled. Course Id: {courseId} ", courseId);
+
+            return await courseRepository.ChangeStatus(courseId, PublishStatus.Edit);
+        }
 
         public async Task<Course> SubmitForReview(int courseId, string userId)
         {
             var courseAuthor = await courseRepository.GetAuthorById(courseId);
             var userInfo = await userService.GetUserInfoById(userId);
+
+            logger.LogInformation("Course has been sent for review. Course Id: {CourseId}", courseId);
 
             if (courseAuthor == userId && userInfo.Role == "author")
                 return await courseRepository.ChangeStatus(courseId, PublishStatus.Check);
@@ -188,6 +201,8 @@ namespace Application.Services
             await basketRepository.DeleteFromBasket(courseId, userId);
             user.Points -= (int)course.Price;
             await unitOfWork.SaveChangesAsync();
+
+            logger.LogInformation("Course was bought by user. Course Id: {CourseId}. User Id: {UserId}");
 
             var courseLessons = await lessonRepository.GetLessonsByCourseAsync(courseId);
             var courseQuizzes = await quizRepository.GetQuizzesByCourseAsync(courseId);

@@ -67,6 +67,8 @@ namespace Application.Services
 
             await unitOfWork.SaveChangesAsync();
 
+            logger.LogWarning("Points were given to user. Points: {Points}. User Id: {UserId}", points, userId);
+
             return await GetUserInfoById(userId);
         }
 
@@ -83,6 +85,7 @@ namespace Application.Services
 
             var token = await jwtProvider.GenerateAsync(user);
 
+            logger.LogInformation("User were logged in. User Id: {UserId}", user.Id);
             return token;
         }
 
@@ -166,6 +169,13 @@ namespace Application.Services
             await unitOfWork.SaveChangesAsync();
 
             return await GetUserInfoById(user.Id);
+        }
+
+        public async Task<int> GetUsersByCourse(int courseId)
+        {
+            var userIds =  await userCoursesRepository.GetAcquiredUsers(courseId);
+
+            return userIds.Count;
         }
 
         public async Task<List<GetUsersAndRolesRequest>> GetUsersAndRoles()
