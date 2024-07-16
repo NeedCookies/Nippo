@@ -13,12 +13,12 @@ namespace DataAccess.Repositories
         private readonly AppDbContext _appDbContext = appDbContext;
 
         public async Task<List<Course>> GetAllCourses() =>
-            await _appDbContext.Courses
-            .Where(c => c.Status == (int)PublishStatus.Publish)
-            .ToListAsync();
+            await _appDbContext.Courses.AsNoTracking()
+                .Where(c => c.Status == (int)PublishStatus.Publish)
+                .ToListAsync();
 
         public async Task<List<Course>> GetCreatedCourses(string userId) =>
-            await _appDbContext.Courses
+            await _appDbContext.Courses.AsNoTracking()
             .Where(c => c.AuthorId == userId)
             .ToListAsync();
 
@@ -77,11 +77,11 @@ namespace DataAccess.Repositories
             await _appDbContext.Courses
             .FindAsync(id);
 
-        public async Task<string> GetAuthorById(int id) => 
-            await _appDbContext.Courses
-            .Where(a => a.Id == id)
-            .Select(a => a.AuthorId)
-            .FirstOrDefaultAsync();
+        public async Task<string> GetAuthorById(int id) =>
+            (await _appDbContext.Courses
+                .FindAsync(id))!
+                .AuthorId;
+                
 
         public async Task<List<Course>> GetCoursesByStatus(PublishStatus status) =>
             await _appDbContext.Courses.Where(c => c.Status == (int)status).ToListAsync();

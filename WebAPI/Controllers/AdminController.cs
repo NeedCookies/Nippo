@@ -1,5 +1,6 @@
 ﻿using Application.Abstractions.Services;
 using Application.Contracts;
+using MassTransit;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -11,7 +12,8 @@ namespace WebAPI.Controllers
     public class AdminController(
         IUserService userService, 
         ICoursesService coursesService,
-        IDiscountService discountService) : ControllerBase
+        IDiscountService discountService,
+        IPublishEndpoint publishEndpoint) : ControllerBase
     {
         [HttpPost("give-points")]
         public async Task<IActionResult> GivePointsToUser(GivePointsRequest givePointsRequest)
@@ -57,6 +59,14 @@ namespace WebAPI.Controllers
         [HttpPost("accept-course")]
         public async Task<IActionResult> AcceptCourse(int courseId)
         {
+            await publishEndpoint.Publish(new NotificationEvent()
+            {
+                Recipient = "lmo2004@bk.ru",
+                Subject = "Результат проверки курса",
+                Body = "Курс был принят и размещен на платформе",
+                Type = NotificationType.Email
+            });
+
             return Ok(await coursesService.AcceptCourse(courseId));
         }
 

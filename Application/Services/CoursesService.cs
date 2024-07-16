@@ -190,7 +190,7 @@ namespace Application.Services
 
             if (maybeBought != null)
                 throw new InvalidOperationException(
-                    $"Course already bought by user: {maybeBought}");
+                    $"Course already bought by user: {maybeBought.UserId}");
 
             var user = await userRepository.GetByUserId(userId);
             var course = await GetById(courseId);
