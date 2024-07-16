@@ -121,7 +121,7 @@ namespace WebAPI.Controllers
 
         [Authorize(Roles ="author")]
         [HttpPost("submit-for-review")]
-        public async Task<IActionResult> SubmitForReview([FromBody]SubmitCourse courseSubmit)
+        public async Task<IActionResult> SubmitForReview([FromBody]CourseIdRequest courseSubmit)
         {
             int courseId = courseSubmit.courseId;
             string userId = GetUserId();
