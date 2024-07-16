@@ -6,6 +6,8 @@ import NavbarPages from "./navbarPages.js";
 import logo from "../Images/logo.jpg";
 import { useEffect, useState } from "react";
 import axios from "axios";
+import { Link } from "react-router-dom";
+import "./navbar.css";
 
 interface UserInfo {
   firstName: string | "undefined";
@@ -83,9 +85,9 @@ const NippoNavbar = () => {
             </Navbar.Brand>
           </Nav.Item>
           <Nav.Item>
-            <Nav.Link eventKey={"/courses"} className="text-light">
-              <h2 className="text-uppercase">Nippo</h2>
-            </Nav.Link>
+            <Link to={"/courses"} className="text-light custom-nippo">
+              <h2 className="text-uppercase custom-nippo">Nippo</h2>
+            </Link>
           </Nav.Item>
         </div>
         <NavbarPages />

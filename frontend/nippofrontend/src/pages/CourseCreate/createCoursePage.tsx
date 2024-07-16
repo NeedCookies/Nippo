@@ -76,7 +76,7 @@ function createCourse() {
         }));
         setCourseSaved(true);
         setCourseIdState(response.data.id);
-        navigate(`/course/${courseId}/create`);
+        navigate(`/course/${response.data.id}/create`);
       } else {
         console.log(response.status);
         console.log(response);
