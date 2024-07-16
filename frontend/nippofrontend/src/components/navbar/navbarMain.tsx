@@ -73,16 +73,16 @@ const NippoNavbar = () => {
         className="d-flex justify-content-between align-items-center">
         <div className="d-flex align-items-center">
           <Nav.Item className="justify-content-end">
-            <Navbar.Brand href="/courses">
+            <Link to={"/courses"} className="navbar-nippo">
               <Image
                 src={logo}
                 className="d-inline-block align-center"
-                width="30"
-                height="30"
+                width="40"
+                height="40"
                 alt="logo"
                 rounded
               />
-            </Navbar.Brand>
+            </Link>
           </Nav.Item>
           <Nav.Item>
             <Link to={"/courses"} className="text-light custom-nippo">
@@ -92,11 +92,11 @@ const NippoNavbar = () => {
         </div>
         <NavbarPages />
         <Navbar.Text>
-          <a
-            href="/profile"
+          <Link
+            to={"/profile"}
             className="text-uppercase font-weight-bold text-light mr-2 d-flex align-items-center">
             {userInfo.userName}
-          </a>
+          </Link>
           <div className="font-weight-bold">{userInfo?.points}</div>
         </Navbar.Text>
       </Container>
