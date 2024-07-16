@@ -1,5 +1,7 @@
 ﻿using Application.Abstractions.Services;
 using Application.Contracts;
+using DataAccess;
+using Domain.Entities;
 using MassTransit;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -59,24 +61,33 @@ namespace WebAPI.Controllers
         [HttpPost("accept-course")]
         public async Task<IActionResult> AcceptCourse(CourseIdRequest request)
         {
-            int courseId = request.courseId;
+            var moderatedCourseInfo = await coursesService.AcceptCourse(request.courseId);
 
             await publishEndpoint.Publish(new NotificationEvent()
             {
-                Recipient = "lmo2004@bk.ru",
+                Recipient = moderatedCourseInfo.AuthorEmail,
                 Subject = "Результат проверки курса",
-                Body = "Курс был принят и размещен на платформе",
+                Body = moderatedCourseInfo.AdminAnswer,
                 Type = NotificationType.Email
             });
 
-            return Ok(await coursesService.AcceptCourse(courseId));
+            return Ok();
         }
 
         [HttpPost("cancel-course")]
         public async Task<IActionResult> CancelCourse(CourseIdRequest request)
         {
-            int courseId = request.courseId;
-            return Ok(await coursesService.CancelCourse(courseId));
+            var moderatedCourseInfo = await coursesService.CancelCourse(request.courseId);
+
+            await publishEndpoint.Publish(new NotificationEvent()
+            {
+                Recipient = moderatedCourseInfo.AuthorEmail,
+                Subject = "Результат проверки курса",
+                Body = moderatedCourseInfo.AdminAnswer,
+                Type = NotificationType.Email
+            });
+
+            return Ok();
         }
 
         [HttpPost("add-promocode")]

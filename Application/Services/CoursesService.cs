@@ -144,19 +144,42 @@ namespace Application.Services
             return allCourses;
         }
 
-        public async Task<Course> AcceptCourse(int courseId)
+        public async Task<ModeratedCourseInfo> AcceptCourse(int courseId)
         {
             logger.LogInformation("Course was accepted. Course Id: {courseId}", courseId);
+            var course = await courseRepository.ChangeStatus(courseId, PublishStatus.Publish);
 
-            return await courseRepository.ChangeStatus(courseId, PublishStatus.Publish);
+            return new ModeratedCourseInfo()
+            {
+                AdminAnswer = $@"Здравствуйте, {course.Author.UserName}!
+                    Рады сообщить, что ваш курс успешно прошёл модерацию и был размещён на нашем сайте. Теперь пользователи могут ознакомиться с вашим материалом и начать обучение.
+                    Благодарим вас за вклад в развитие нашей платформы и желаем удачи в дальнейшей работе!
+
+                    С уважением,
+                    Администрация",
+
+                AuthorEmail = course.Author.Email!
+            };
         }
             
 
-        public async Task<Course> CancelCourse(int courseId)
+        public async Task<ModeratedCourseInfo> CancelCourse(int courseId)
         {
             logger.LogWarning("Course was canceled. Course Id: {courseId} ", courseId);
+            var course = await courseRepository.ChangeStatus(courseId, PublishStatus.Edit);
 
-            return await courseRepository.ChangeStatus(courseId, PublishStatus.Edit);
+            return new ModeratedCourseInfo()
+            {
+                AdminAnswer = $@"Здравствуйте, {course.Author.UserName}!
+                Ваш курс был отправлен на доработку. Пожалуйста, ознакомьтесь с правилами размещения курсов на нашем сайте и внесите необходимые изменения. После этого вы можете снова отправить курс на модерацию.
+
+                Благодарим за ваше понимание и сотрудничество.
+
+                С уважением,
+                Администрация",
+
+                AuthorEmail = course.Author.Email!
+            };
         }
 
         public async Task<Course> SubmitForReview(int courseId, string userId)
