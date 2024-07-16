@@ -63,20 +63,6 @@ export const PersonalAccount = () => {
                 }
             }
             catch(e){
-                //TODO удалить, когда будет готов endpoint на сервере
-                setUserInfo(
-                    {
-                        firstName: "Иван",
-                        lastName: "Иванов",
-                        userName: "TestUser",
-                        phoneNumber: "+7 952 812 52 52",
-                        email: "testUser@mail.ru",
-                        pictureUrl: null,
-                        birthDate: "2004-06-09",
-                        points: 400,
-                        role: "admin"
-                    }
-                )
                 console.log(e)
             }
         }

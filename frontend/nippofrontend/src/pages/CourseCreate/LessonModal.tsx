@@ -53,10 +53,10 @@ export const LessonModal = ({
                 margin: 1,
                 borderRadius: "6px",
             }}>
-            <Typography>Заголовок теста:</Typography>
+            <Typography>Заголовок урока:</Typography>
             <TextField
                 id="filled-basic"
-                label="Заголовок теста"
+                label="Заголовок урока"
                 variant="filled"
                 sx={{ width: "100%" }}
                 value={title}
