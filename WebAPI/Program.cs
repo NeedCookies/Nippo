@@ -7,6 +7,7 @@ using WebAPI.Extensions;
 using Infrastructure.Options;
 using WebAPI.Middlewares;
 using Serilog;
+using MassTransit;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -19,6 +20,8 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.Configure<JwtOptions>(builder.Configuration.GetSection(nameof(JwtOptions)));
 builder.Services.Configure<MinIoOptions>(builder.Configuration.GetSection("Minio"));
+
+builder.Services.AddMessageBroker(builder.Configuration);
 
 builder.Services.AddDbContext(builder.Configuration);
 builder.Services.AddRedisCache(builder.Configuration);
