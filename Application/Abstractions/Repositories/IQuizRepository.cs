@@ -8,5 +8,6 @@ namespace Application.Abstractions.Repositories
         Task<Quiz> GetQuizByIdAsync(int quizId);
         Task<Quiz> Create(int courseId, string title, int order);
         Task<Quiz> Delete(int quizId);
+        Task<int> GetQuizzesSizeByCourse(int courseId);
     }
 }

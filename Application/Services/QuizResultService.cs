@@ -10,7 +10,9 @@ namespace Application.Services
         IAnswerRepository answerRepository,
         IUserAnswerRepository userAnswerRepository,
         IQuestionRepository questionRepository,
-        IUnitOfWork unitOfWork)
+        IUnitOfWork unitOfWork,
+        IUserProgressRepository userProgressRepository,
+        IQuizRepository quizRepository)
         : IQuizResultService
     {
         public async Task<QuizResult> GetQuizResult(string userId, int quizId)
@@ -88,6 +90,21 @@ namespace Application.Services
             score = (int)Math.Round(scoreRatio * 10, MidpointRounding.AwayFromZero);
 
             var quizResult = await quizResultRepository.GetQuizResultByQuizAsync(quizId, userId);
+
+            if (score > 5)
+            {
+                var quiz = await quizRepository.GetQuizByIdAsync(quizId);
+
+                await userProgressRepository.UpdateProgress(
+                    new UserProgressRequest
+                    (
+                        userId,
+                        quiz.CourseId,
+                        quizId,
+                        1
+                    )
+                );
+            }
 
             if (quizResult == null)
             {

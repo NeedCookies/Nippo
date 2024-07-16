@@ -18,6 +18,7 @@ namespace Application.Extensions
             services.AddScoped<IUserService, UserService>();
             services.AddScoped<IUserAnswerService, UserAnswerService>();
             services.AddScoped<IQuizResultService, QuizResultService>();
+            services.AddScoped<IUserProgressService, UserProgressService>();
 
             return services;
         }
