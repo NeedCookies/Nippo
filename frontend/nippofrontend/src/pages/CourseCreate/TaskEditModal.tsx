@@ -76,8 +76,8 @@ export const TaskEditModal = ({
 
   const fetchQuestionWithAnswers = async (questionId: number) => {
     const [questionData, answersData] = await Promise.all([
-      fetchQuestion(questionId),
-      fetchAnswers(questionId),
+      await fetchQuestion(questionId),
+      await fetchAnswers(questionId),
     ]);
 
     if (questionData) {
@@ -129,13 +129,13 @@ export const TaskEditModal = ({
       const response = await axios.post(
         `/queston/update?questionId=${questionId}`,
         {
-          QuizId: quizId,
+          QuizId: task.id,
           Text: task.question,
-          Type: type,
+          Type: task.type,
         }
       );
       if (response.status === 200) {
-        setQuestionId(response.data.id);
+        fetchQuestionWithAnswers(questionId);
       }
     } catch (error) {
       console.error(error);
