@@ -35,8 +35,6 @@ export const TaskCreateModal = ({
     answers: [{ id: 1, text: "Ответ", isCorrect: true }] as Answer[],
   });
 
-  const [questionId, setQuestionId] = useState<number>();
-
   const handleAnswerChange = (id: number, value: any) => {
     setTask((prev) => ({
       ...prev,
@@ -85,7 +83,6 @@ export const TaskCreateModal = ({
       });
       if (response.status === 200) {
         const Id = response.data.id;
-        setQuestionId(Id);
         for (const ans of task.answers) {
           try {
             const response = await axios.post("/answer/create", {
@@ -167,7 +164,7 @@ export const TaskCreateModal = ({
                   sx={{ display: "flex", alignItems: "center" }}>
                   <Checkbox
                     checked={ans.isCorrect}
-                    onChange={(e) => handleChecksChange(ans.id)}
+                    onChange={(_) => handleChecksChange(ans.id)}
                   />
                   <TextField
                     value={ans.text}
@@ -195,7 +192,7 @@ export const TaskCreateModal = ({
                     icon={<RadioButtonUnchecked />}
                     checkedIcon={<RadioButtonChecked />}
                     checked={ans.isCorrect}
-                    onChange={(e) => {
+                    onChange={(_) => {
                       handleChecksChange(ans.id), handleOneRightAnswer(ans.id);
                     }}
                   />

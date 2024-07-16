@@ -209,7 +209,7 @@ export const TaskEditModal = ({
                   sx={{ display: "flex", alignItems: "center" }}>
                   <Checkbox
                     checked={ans.isCorrect}
-                    onChange={(e) => handleChecksChange(ans.id)}
+                    onChange={(_) => handleChecksChange(ans.id)}
                   />
                   <TextField
                     value={ans.text}
@@ -237,7 +237,7 @@ export const TaskEditModal = ({
                     icon={<RadioButtonUnchecked />}
                     checkedIcon={<RadioButtonChecked />}
                     checked={ans.isCorrect}
-                    onChange={(e) => {
+                    onChange={(_) => {
                       handleChecksChange(ans.id), handleOneRightAnswer(ans.id);
                     }}
                   />

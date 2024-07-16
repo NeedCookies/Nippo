@@ -7,7 +7,7 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import axios from "axios";
+import axios, { AxiosError } from "axios";
 import { useState } from "react";
 import { Modal } from "react-bootstrap";
 
@@ -83,28 +83,30 @@ export const BuyModal = ({
         console.log(response.status);
       }
     } catch (error) {
-      if (error.response.status === 500) {
-        if (
-          String(error.response.data).includes("Course already bought by user")
-        ) {
-          console.log("Вы уже купили этот курс");
-          setAlreadyBought(true);
-        } else if (
-          String(error.response.data).includes("Don't have enough points")
-        ) {
-          console.log("У вас недостаточно баллов для покупки этого курса");
-          setLackOfPoints(true);
+      const axiosError = error as AxiosError;
+      if (axiosError.response?.status === 400) {
+        const errorData = axiosError.response.data;
+
+        if (typeof errorData === 'string') {
+          if (errorData.includes("Course already bought by user")) {
+            console.log("Вы уже купили этот курс");
+            setAlreadyBought(true);
+          } else if (errorData.includes("Don't have enough points")) {
+            console.log("У вас недостаточно баллов для покупки этого курса");
+            setLackOfPoints(true);
+          } else {
+            console.error("Ошибка при покупке курса:", errorData);
+          }
+        } else if (typeof errorData === 'object' && errorData != null && 'message' in errorData) {
+          console.error("Ошибка при покупке курса:", errorData.message);
         } else {
-          console.error(
-            "Ошибка при покупке курса:",
-            error.response.data.message
-          );
+          console.error("Неизвестная ошибка при покупке курса:", errorData);
         }
       } else {
         console.error(
           "Ошибка при покупке курса:",
-          error.response.status,
-          error.response.data
+          axiosError.response?.status,
+          axiosError.response?.data
         );
       }
     }

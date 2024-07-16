@@ -8,7 +8,7 @@ const useLoginStatus = () => {
   return false;
 };
 
-const RequireAuth: FC<{ children: React.ReactElement }> = ({ children }) => {
+const RequireAuth: FC<{ children: React.ReactNode }> = ({ children }) => {
   const userIsLogged = useLoginStatus();
   const navigate = useNavigate();
   useEffect(() => {

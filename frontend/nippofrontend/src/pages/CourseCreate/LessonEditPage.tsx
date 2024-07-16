@@ -299,9 +299,14 @@ function LessonEditPage() {
               {(newBlockType === "Video" || newBlockType === "Image") && (
                 <TextField
                   type="file"
-                  onChange={(e) =>
-                    setNewBlockContent(e.target.files ? e.target.files[0] : "")
-                  }
+                  onChange={(e) => {
+                    const files = (e.target as HTMLInputElement).files;
+                    if (files && files.length > 0) {
+                      setNewBlockContent(files[0]);
+                    } else {
+                      setNewBlockContent(""); 
+                    }
+                  }}
                   sx={{ width: "100%", marginBottom: "1rem" }}
                 />
               )}
