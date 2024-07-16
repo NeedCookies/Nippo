@@ -10,8 +10,10 @@ namespace WebAPI.Controllers
 {
     [ApiController]
     [Route("course")]
-    public class CourseController(ICoursesService coursesService,
-        UserManager<ApplicationUser> userManager) : ControllerBase
+    public class CourseController(
+            ICoursesService coursesService,
+            UserManager<ApplicationUser> userManager,
+            IUserProgressService userProgressService) : ControllerBase
     {
         [HttpGet("get-all-courses")]
         public async Task<IActionResult> GetAllCourses()
@@ -128,6 +130,34 @@ namespace WebAPI.Controllers
             var course = await coursesService.SubmitForReview(courseId, userId);
             
             return Ok(course);
+        }
+
+        [HttpGet("get-course-progress")]
+        public async Task<IActionResult> GetCourseProgress(int courseId)
+        {
+            GetCompletedElementsRequest request = new GetCompletedElementsRequest 
+                (
+                GetUserId(), 
+                courseId
+                );
+            
+            var courseProgress = await userProgressService.GetCourseProgress(request);
+
+            return Ok(courseProgress);
+        }
+
+        [HttpGet("get-course-element-status")]
+        public async Task<IActionResult> GetCourseElementStatus(int courseId, int elementId, int elementType)
+        {
+            UserProgressRequest request = new UserProgressRequest
+                (
+                GetUserId(),
+                courseId,
+                elementId,
+                elementType
+                );
+
+            return Ok(await userProgressService.GetCourseElementStatus(request));
         }
 
         private string GetUserId()

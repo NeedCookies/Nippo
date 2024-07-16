@@ -189,14 +189,16 @@ export const PersonalAccount = () => {
               </>
             )}
           {userInfo && userInfo.role == "admin" && (
-            <div>
+            <>
               <Link to={"/admin/courses"} className="profile-nav-link">
                 <button className="nav-button">МОДЕРАЦИЯ КУРСОВ</button>
               </Link>
-              <button className="nav-button" onClick={handleOpenPromoModal}>
-                Создать промокод
-              </button>
-            </div>
+              <div className="profile-nav-link">
+                <button className="nav-button" onClick={handleOpenPromoModal}>
+                  СОЗДАТЬ ПРОМОКОД
+                </button>
+              </div>
+            </>
           )}
         </div>
       </div>
