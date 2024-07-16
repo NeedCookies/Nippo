@@ -57,5 +57,10 @@ namespace DataAccess.Repositories
             
             return quiz;
         }
+
+        public async Task<int> GetQuizzesSizeByCourse(int courseId) =>
+            await dbContext.Quizzes
+                .Where(q => q.CourseId == courseId)
+                .CountAsync();
     }
 }

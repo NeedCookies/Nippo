@@ -62,5 +62,23 @@ namespace DataAccess.Repositories
 
             return userProgress;
         }
+
+        public async Task<int> GetCompletedCourses(string userId, int courseId) =>
+            await appDbContext.UserProgresses
+                .Where(up => up.UserId == userId
+                    && up.CourseId == courseId 
+                    && up.IsCheck == true)
+                .CountAsync();
+
+        public async Task<bool> GetElementStatus(UserProgressRequest userProgress) =>
+            await appDbContext.UserProgresses
+                .Where(
+                    up => up.UserId == userProgress.UserId
+                    && up.CourseId == userProgress.CourseId
+                    && (
+                        (userProgress.ElementType == 0 && up.LessonId == userProgress.ElementId)
+                        || (userProgress.ElementType == 1 && up.QuizId == userProgress.ElementId)))
+                .Select(up => up.IsCheck)
+                .FirstOrDefaultAsync();
     }
 }

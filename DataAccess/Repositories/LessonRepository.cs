@@ -54,5 +54,10 @@ namespace DataAccess.Repositories
         {
             return await appDbContext.Lessons.Where(l => l.CourseId == courseId).ToListAsync();
         }
+
+        public async Task<int> GetLessonsSizeByCourse(int courseId) =>
+            await appDbContext.Lessons
+                .Where(l => l.CourseId == courseId)
+                .CountAsync();
     }
 }

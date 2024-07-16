@@ -225,8 +225,6 @@ namespace Application.Services
             var courseQuizzes = await quizRepository.GetQuizzesByCourseAsync(courseId);
             List<UserProgressRequest> progressRequest = new List<UserProgressRequest>();
 
-            int courseSize = courseLessons.Count + courseQuizzes.Count;
-
             for(int i = 0; i < courseLessons.Count; i++)
             {
                 UserProgressRequest newRequest = new UserProgressRequest

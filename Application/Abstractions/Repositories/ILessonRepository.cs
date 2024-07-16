@@ -9,5 +9,6 @@ namespace Application.Abstractions.Repositories
         Task<Lesson> Update(string title, int lessonId);
         Task<Lesson> Delete (int lessonId);
         Task<Lesson> GetById(int lessonId);
+        Task<int> GetLessonsSizeByCourse(int courseId);
     }
 }

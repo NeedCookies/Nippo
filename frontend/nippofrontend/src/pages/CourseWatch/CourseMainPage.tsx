@@ -1,4 +1,5 @@
 import { Box, Container, Typography } from "@mui/material";
+import { green } from "@mui/material/colors";
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { Button } from "react-bootstrap";
@@ -18,6 +19,7 @@ interface ModuleProps {
   title: string;
   type: string;
   order: number;
+  status: boolean;
 }
 
 interface QuizResult {
@@ -33,6 +35,10 @@ export const CourseMainPage = () => {
   const [courseData, setCourseData] = useState<CourseDataProps>();
   const [modules, setModules] = useState<ModuleProps[]>();
   const [quizResults, setQuizResults] = useState<QuizResult[]>();
+  const [completedElements, setCompletedElements] = useState<Number>();
+  const [elements, setElements] = useState<Number>();
+  const [elementStatus, setElementStatus] = useState<boolean>();
+  const [elementStatuses, setElementStatuses] = useState<{ [key: number]: string }>({});
 
   const handleGoToQuiz = async (quizId: number) => {
     navigate(`/my-course/${courseId}/quiz/${quizId}`);
@@ -62,18 +68,54 @@ export const CourseMainPage = () => {
     }
   }
 
+  async function getCourseProgress(courseId: number ) {
+    try {
+      const response = await axios.get(`/course/get-course-progress?courseId=${courseId}`);
+      if(response.status === 200) {
+        setElements(response.data.allTasks);
+        setCompletedElements(response.data.completedTasks);
+      };
+    }
+    catch (error) {
+      console.error(error);
+    }
+  }
+
+  async function getCourseElementStatus(courseId: number, elementId: number, elementName: any) {
+      try {
+        let elementType = 0;
+
+        if(elementName === "quiz")
+        {
+          elementType = 1;
+        }
+
+        const response = await axios.get(`/course/get-course-element-status?courseId=${courseId}&elementId=${elementId}&elementType=${elementType}`);
+        if (response.status === 200)
+        {
+          console.log(courseId + " " + elementId + " " + elementName + " " + response.data);
+          return response.data;
+        }
+      }
+    catch (error) {
+      console.error(error);
+    }
+  }
+
   async function getQuizzes(courseId: number) {
     try {
       const response = await axios.get(
         `quiz/get-by-course?courseId=${courseId}`
       );
       if (response.status === 200) {
-        const quizModules = response.data.map((module: any) => ({
+        const quizModules = await Promise.all(response.data.map(async (module: any) => ({
           id: module.id,
           title: module.title,
           type: "quiz",
           order: module.order,
-        }));
+          status: await getCourseElementStatus(courseId, module.id, "quiz"),
+        })));
+
         quizModules.map(async (q: any) => {
           try {
             const response = await axios.get(
@@ -112,12 +154,13 @@ export const CourseMainPage = () => {
         `lesson/get-by-course?courseId=${courseId}`
       );
       if (response.status === 200) {
-        const quizModules = response.data.map((module: any) => ({
+        const quizModules = await Promise.all(response.data.map(async (module: any) => ({
           id: module.id,
           title: module.title,
           type: "lesson",
           order: module.order,
-        }));
+          status: await getCourseElementStatus(courseId, module.id, "lesson"),
+        })));
         setModules((prevModules) => {
           const newModules = prevModules
             ? [...prevModules, ...quizModules]
@@ -137,6 +180,11 @@ export const CourseMainPage = () => {
     if (modules && modules.length > 0) {
       const sortedModules = [...modules].sort((a, b) => a.order - b.order);
       setModules(sortedModules);
+
+      for(const module of modules)
+      {
+        console.log("Это его имя " + module.title + " а это его статус " + module.status);
+      }
     }
   }
 
@@ -144,6 +192,7 @@ export const CourseMainPage = () => {
     getCourseData(Number(courseId));
     getQuizzes(Number(courseId));
     getLessons(Number(courseId));
+    getCourseProgress(Number(courseId));
     sortModules();
   }, []);
 
@@ -189,6 +238,11 @@ export const CourseMainPage = () => {
               {courseData?.description}
             </Typography>
           </Box>
+          <Box>
+            <Typography>
+              Пройдено: {`${completedElements ?? 0} из ${elements ?? 0}`}
+            </Typography>
+          </Box>
         </Box>
       </Container>
       <Box>
@@ -219,6 +273,11 @@ export const CourseMainPage = () => {
               <Typography textAlign={"end"} sx={{ width: "50%" }}>
                 тип: {module.type}
               </Typography>
+              {module.status && (
+                <Typography color={"green"}>
+                  Пройдено!
+                </Typography>
+              )}
             </Box>
             <Box
               marginX={1}
