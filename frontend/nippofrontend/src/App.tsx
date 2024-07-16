@@ -53,7 +53,7 @@ function App() {
             </RequireAuth>
           }
         />
-        <Route path="admin/courses-to-check" element={<CoursesChecking />} />
+        <Route path="admin/courses" element={<CoursesChecking />} />
         <Route
           path="check-course/:courseId"
           element={

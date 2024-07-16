@@ -36,7 +36,7 @@ function createCourse() {
     Title: "",
     Description: "",
     Price: "",
-    Logo: "",
+    ImgPath: "",
   });
   const [logo, setLogo] = useState<File | null>(null);
 
@@ -76,7 +76,7 @@ function createCourse() {
         }));
         setCourseSaved(true);
         setCourseIdState(response.data.id);
-        getCourseData();
+        navigate(`/course/${courseId}/create`);
       } else {
         console.log(response.status);
         console.log(response);
@@ -132,7 +132,9 @@ function createCourse() {
   };
 
   const handleDeleteModule = (courseModule: any) => {
-    const clearModules = modules.filter((module) => module.id !== courseModule.id);
+    const clearModules = modules.filter(
+      (module) => module.id !== courseModule.id
+    );
     const moduleType = courseModule.type === "lesson" ? "lesson" : "quiz";
     axios.delete(`${moduleType}/delete?${moduleType}Id=${courseModule.id}`);
     setModules(clearModules);
@@ -140,7 +142,9 @@ function createCourse() {
 
   const handleEditModule = (module: any) => {
     const moduleType = module.type === "lesson" ? "lesson" : "quiz";
-    navigate("/course/" + courseId + "/" + moduleType + "/" + module.id + "/edit");
+    navigate(
+      "/course/" + courseId + "/" + moduleType + "/" + module.id + "/edit"
+    );
   };
 
   const handleCourseFinished = async () => {
@@ -160,9 +164,16 @@ function createCourse() {
     if (courseId) {
       getCourseData();
       setCourseIdState(Number(courseId));
-      navigate(`/course/${courseId}/create`);
     }
   }, [courseId]);
+
+  useEffect(() => {
+    async function getData() {
+      await getLessons();
+      getQuizzes();
+    }
+    getData();
+  }, []);
 
   async function getCourseData() {
     try {
@@ -171,10 +182,10 @@ function createCourse() {
         courseData.Title = response.data.title;
         courseData.Description = response.data.description;
         courseData.Price = response.data.price;
-        courseData.Logo = response.data.imgPath;
-        getLessons();
-        getQuizzes();
+        courseData.ImgPath = response.data.imgPath;
         setCourseSaved(true);
+        await getLessons();
+        getQuizzes();
       } else {
         console.log("Another response status");
         console.log(response.status);
@@ -212,7 +223,12 @@ function createCourse() {
           ...quiz,
           type: "quiz",
         }));
-        setModules((prevModules) => [...prevModules, ...quizzesWithType]);
+        setModules((prevModules) => {
+          const filteredModules = prevModules.filter(
+            (module) => module.type !== "quiz"
+          );
+          return [...filteredModules, ...quizzesWithType];
+        });
       } else {
         console.log("Another response status");
         console.log(response.status);
@@ -298,7 +314,7 @@ function createCourse() {
             onChange={handleLogoButton}
             sx={{ width: "100%" }}
           />
-          {courseData.Logo && (
+          {courseData.ImgPath && (
             <Box
               sx={{
                 marginTop: 2,
@@ -310,7 +326,7 @@ function createCourse() {
                 backgroundColor: "#858585",
               }}>
               <img
-                src={courseData.Logo}
+                src={courseData.ImgPath}
                 alt="Preview"
                 style={{ maxWidth: "100%", maxHeight: "200px" }}
               />

@@ -42,8 +42,6 @@ export const Basket = () => {
   const [basketCoursesIds, setBasketCoursesIds] =
     useState<BasketCourseProps[]>();
   const [basketCourses, setBasketCourses] = useState<CourseCardProps[]>();
-  const [alreadyBought, setAlreadyBought] = useState<boolean>(false);
-  const [lackOfPoints, setLackOfPoints] = useState<boolean>(false);
   const [isBuyModalOpen, setBuyModalOpen] = useState<boolean>(false);
   const [buyingCourse, setBuyingCourse] = useState<BuyModalProps>({
     courseId: 0,
@@ -53,18 +51,6 @@ export const Basket = () => {
 
   const handleCloseBuyModal = () => {
     setBuyModalOpen(false);
-  };
-
-  const handleClose = (
-    event: React.SyntheticEvent | Event,
-    reason?: string
-  ) => {
-    if (reason === "clickaway") {
-      return;
-    }
-
-    setAlreadyBought(false);
-    setLackOfPoints(false);
   };
 
   async function getBasketCourses() {
