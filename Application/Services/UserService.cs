@@ -138,8 +138,19 @@ namespace Application.Services
             return userCourses;
         }
 
-        public async Task<List<Course>> GetCreatedCourses(string userId) =>
-            await courseRepository.GetCreatedCourses(userId);
+        public async Task<List<Course>> GetCreatedCourses(string userId)
+        {
+            var courses = await courseRepository.GetCreatedCourses(userId);
+
+            foreach (var course in courses)
+            {
+                course.ImgPath = course.ImgPath != null
+                        ? await storageService.GetUrlAsync(course.ImgPath)
+                        : null;
+            }
+
+            return courses;
+        }
 
         public async Task<PersonalInfoDto> UpdateUserInfo(string userId, UserInfoUpdateRequest updateRequest)
         {
