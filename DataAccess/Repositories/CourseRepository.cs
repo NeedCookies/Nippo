@@ -17,11 +17,6 @@ namespace DataAccess.Repositories
                 .Where(c => c.Status == (int)PublishStatus.Publish)
                 .ToListAsync();
 
-        public async Task<List<Course>> GetCreatedCourses(string userId) =>
-            await _appDbContext.Courses.AsNoTracking()
-            .Where(c => c.AuthorId == userId)
-            .ToListAsync();
-
         public async Task<Course> Create(string title, string desc, decimal price, string imgPath, string authorId)
         {
             var course = new Course
@@ -77,10 +72,16 @@ namespace DataAccess.Repositories
             await _appDbContext.Courses
             .FindAsync(id);
 
-        public async Task<string> GetAuthorById(int id) =>
-            (await _appDbContext.Courses
-                .FindAsync(id))!
-                .AuthorId;
+        public async Task<string> GetAuthorById(int id)
+        {
+            var course = await _appDbContext.Courses
+                .FirstOrDefaultAsync(c => c.Id == id);
+
+            if (course == null)
+                throw new NullReferenceException($"No course with id: {id}");
+
+            return course.AuthorId;
+        }
                 
 
         public async Task<List<Course>> GetCoursesByStatus(PublishStatus status) =>

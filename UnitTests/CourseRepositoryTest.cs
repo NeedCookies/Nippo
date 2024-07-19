@@ -10,45 +10,7 @@ namespace UnitTests
     public class CourseRepositoryTest
     {
         [Fact]
-        public async Task GetCoursesByAuthorAsync_ReturnsCoursesByAuthor()
-        {
-            // Arrange
-            var authorId = "author123";
-            var options = new DbContextOptionsBuilder<AppDbContext>()
-                .UseInMemoryDatabase(databaseName: "GetCoursesByAuthorAsync_ReturnsCoursesByAuthor")
-                .Options;
-
-            using (var context = new AppDbContext(options))
-            {
-                var coursesData = new List<Course>
-                {
-                    new Course { Id = 1, Title = "Course 1", AuthorId = authorId },
-                    new Course { Id = 2, Title = "Course 2", AuthorId = authorId },
-                    new Course { Id = 3, Title = "Course 3", AuthorId = "otherAuthor" }
-                };
-                context.Courses.AddRange(coursesData);
-                await context.SaveChangesAsync();
-            }
-
-            using (var context = new AppDbContext(options))
-            {
-                var mockUserRepository = new Mock<IUserRepository>();
-                var mockUserCoursesRepository = new Mock<IUserCoursesRepository>();
-
-                var repository = new CourseRepository(context, mockUserRepository.Object, mockUserCoursesRepository.Object);
-
-                // Act
-                var result = await repository.GetCoursesByAuthorAsync(authorId);
-
-                // Assert
-                Assert.NotNull(result);
-                Assert.Equal(2, result.Count);
-                Assert.True(result.All(c => c.AuthorId == authorId));
-            }
-        }
-
-        [Fact]
-        public async Task GetAllCourses_ReturnsAllCourses()
+        public async Task GetAllPublishedCourses_ReturnsAllPublishedCourses()
         {
             // Arrange
             var options = new DbContextOptionsBuilder<AppDbContext>()
@@ -59,9 +21,9 @@ namespace UnitTests
             {
                 var coursesData = new List<Course>
                 {
-                    new Course { Id = 1, Title = "Course 1" },
-                    new Course { Id = 2, Title = "Course 2" },
-                    new Course { Id = 3, Title = "Course 3" }
+                    new Course { Id = 1, Title = "Course 1", Description = "Course 1 description", AuthorId = "sdf3-5h45", Status = 2},
+                    new Course { Id = 2, Title = "Course 2", Description = "Course 2 description", AuthorId = "fds2-gf4s", Status = 2 },
+                    new Course { Id = 3, Title = "Course 3", Description = "Course 3 description", AuthorId = "7m6f-gf4A", Status = 2 }
                 };
                 context.Courses.AddRange(coursesData);
                 await context.SaveChangesAsync();
@@ -84,7 +46,7 @@ namespace UnitTests
         }
 
         [Fact]
-        public async Task GetCreatedCourses_ReturnsCoursesCreatedByUser()
+        public async Task GetCoursesByAuthorAsync_ReturnsCoursesByAuthor()
         {
             // Arrange
             var userId = "user123";
@@ -96,9 +58,9 @@ namespace UnitTests
             {
                 var coursesData = new List<Course>
                 {
-                    new Course { Id = 1, Title = "Course 1", AuthorId = userId },
-                    new Course { Id = 2, Title = "Course 2", AuthorId = userId },
-                    new Course { Id = 3, Title = "Course 3", AuthorId = "otherUser" }
+                    new Course { Id = 1, Title = "Course 1", Description = "Course 1 description", AuthorId = userId },
+                    new Course { Id = 2, Title = "Course 2", Description = "Course 2 description", AuthorId = userId },
+                    new Course { Id = 3, Title = "Course 3", Description = "Course 3 description", AuthorId = "otherUser" }
                 };
                 context.Courses.AddRange(coursesData);
                 await context.SaveChangesAsync();
@@ -112,7 +74,7 @@ namespace UnitTests
                 var repository = new CourseRepository(context, mockUserRepository.Object, mockUserCoursesRepository.Object);
 
                 // Act
-                var result = await repository.GetCreatedCourses(userId);
+                var result = await repository.GetCoursesByAuthorAsync(userId);
 
                 // Assert
                 Assert.NotNull(result);
@@ -174,7 +136,8 @@ namespace UnitTests
                     Title = "Original Title",
                     Description = "Original Description",
                     Price = 50,
-                    ImgPath = "original_img.jpg"
+                    ImgPath = "original_img.jpg",
+                    AuthorId = "43-gfd341"
                 };
                 context.Courses.Add(courseToUpdate);
                 await context.SaveChangesAsync();
@@ -193,7 +156,8 @@ namespace UnitTests
                     Title = "Updated Title",
                     Description = "Updated Description",
                     Price = 100,
-                    ImgPath = "updated_img.jpg"
+                    ImgPath = "updated_img.jpg",
+                    AuthorId = "43-gfd341"
                 };
 
                 // Act
@@ -209,7 +173,7 @@ namespace UnitTests
         }
 
         [Fact]
-        public async Task Update_NonExistingCourse_ReturnsNull()
+        public async Task Update_NonExistingCourse_ThrowsError()
         {
             // Arrange
             var options = new DbContextOptionsBuilder<AppDbContext>()
@@ -223,11 +187,9 @@ namespace UnitTests
 
                 var repository = new CourseRepository(context, mockUserRepository.Object, mockUserCoursesRepository.Object);
 
-                // Act
-                var result = await repository.Update(999, "Updated Title", "Updated Description", 100, "updated_img.jpg");
-
-                // Assert
-                Assert.Null(result);
+                // Act & Assert
+                await Assert.ThrowsAsync<NullReferenceException>(() 
+                    => repository.Update(999, "Updated Title", "Updated Description", 100, "updated_img.jpg"));
             }
         }
 
@@ -241,7 +203,12 @@ namespace UnitTests
 
             using (var context = new AppDbContext(options))
             {
-                var courseToDelete = new Course {  };
+                var courseToDelete = new Course
+                {
+                    Title = "Test Course",
+                    Description = "Test description",
+                    AuthorId = "gfd3-54jn"
+                };
                 context.Courses.Add(courseToDelete);
                 await context.SaveChangesAsync();
             }
@@ -295,7 +262,13 @@ namespace UnitTests
 
             using (var context = new AppDbContext(options))
             {
-                var courseToFind = new Course { Id = 1, Title = "Found Course" };
+                var courseToFind = new Course 
+                { 
+                    Id = 1, 
+                    Title = "Found Course",
+                    Description = "Test description",
+                    AuthorId = "32hk-4n45"
+                };
                 context.Courses.Add(courseToFind);
                 await context.SaveChangesAsync();
             }
@@ -313,6 +286,8 @@ namespace UnitTests
                 // Assert
                 Assert.NotNull(result);
                 Assert.Equal("Found Course", result.Title);
+                Assert.Equal("Test description", result.Description);
+                Assert.Equal("32hk-4n45", result.AuthorId);
             }
         }
 
@@ -349,7 +324,13 @@ namespace UnitTests
 
             using (var context = new AppDbContext(options))
             {
-                var courseToFind = new Course { Id = 1, AuthorId = "author123" };
+                var courseToFind = new Course 
+                { 
+                    Id = 1, 
+                    AuthorId = "author123",
+                    Title = "Test course",
+                    Description = "Test descritpion"
+                };
                 context.Courses.Add(courseToFind);
                 await context.SaveChangesAsync();
             }
@@ -371,7 +352,7 @@ namespace UnitTests
         }
 
         [Fact]
-        public async Task GetAuthorById_NonExistingCourse_ReturnsNull()
+        public async Task GetAuthorById_NonExistingCourse_ThrowsError()
         {
             // Arrange
             var options = new DbContextOptionsBuilder<AppDbContext>()
@@ -386,10 +367,40 @@ namespace UnitTests
                 var repository = new CourseRepository(context, mockUserRepository.Object, mockUserCoursesRepository.Object);
 
                 // Act
-                var result = await repository.GetAuthorById(999);
+                await Assert.ThrowsAsync<NullReferenceException>(() => repository.GetAuthorById(999));
+            }
+        }
 
-                // Assert
-                Assert.Null(result);
+        [Fact]
+        public async Task GetCoursesByStatus_ReturnsCoursesByStatus()
+        {
+            var options = new DbContextOptionsBuilder<AppDbContext>()
+                .UseInMemoryDatabase(databaseName: "GetCoursesByStatus_ReturnsCoursesByStatus")
+                .Options;
+
+            using (var context = new AppDbContext(options))
+            {
+                var coursesData = new List<Course>
+                {
+                    new Course { Id = 1, Title = "Course 1", Description = "Course 1 description", AuthorId = "sdf4-dsfs", Status = 0 },
+                    new Course { Id = 2, Title = "Course 2", Description = "Course 2 description", AuthorId = "dfe4-sg23", Status = 1 },
+                    new Course { Id = 3, Title = "Course 3", Description = "Course 3 description", AuthorId = "j54l-wer2", Status = 1 }
+                };
+                context.AddRange(coursesData);
+                await context.SaveChangesAsync();
+            }
+
+            using (var context = new AppDbContext(options))
+            {
+                var userRepository = new Mock<IUserRepository>();
+                var userCoursesRepository = new Mock<IUserCoursesRepository>();
+
+                var repository = new CourseRepository(context, userRepository.Object, userCoursesRepository.Object);
+
+                var result = await repository.GetCoursesByStatus(PublishStatus.Check);
+
+                Assert.NotNull(result);
+                Assert.Equal(2, result.Count);
             }
         }
 

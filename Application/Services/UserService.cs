@@ -140,7 +140,7 @@ namespace Application.Services
 
         public async Task<List<Course>> GetCreatedCourses(string userId)
         {
-            var courses = await courseRepository.GetCreatedCourses(userId);
+            var courses = await courseRepository.GetCoursesByAuthorAsync(userId);
 
             foreach (var course in courses)
             {
