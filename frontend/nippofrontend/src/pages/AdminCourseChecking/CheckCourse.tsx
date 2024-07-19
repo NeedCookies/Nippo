@@ -34,8 +34,6 @@ export const CheckCourse = () => {
   const [cancelCourse, setCancelCourse] = useState<boolean>(false);
   const [isQuizModalOpen, setQuizModalOpen] = useState<boolean>(false);
   const [chosenQuizId, setChosenQuizId] = useState<number>(1);
-  const [chosenLessonId, setChosenLessonId] = useState<number>(1);
-  const [isLessonModalOpen, setLessonModalOpen] = useState<boolean>(false);
   const [courseData, setCourseData] = useState<CourseDataProps>({
     id: 0,
     title: "",
@@ -47,7 +45,7 @@ export const CheckCourse = () => {
   const [modules, setModules] = useState<ModuleProps[]>();
 
   const handleAlertClose = (
-    event: React.SyntheticEvent | Event,
+    _: React.SyntheticEvent | Event,
     reason?: string
   ) => {
     if (reason === "clickaway") {
@@ -64,7 +62,6 @@ export const CheckCourse = () => {
 
   const handleCloseModal = () => {
     setQuizModalOpen(false);
-    setLessonModalOpen(false);
   };
 
   const handleAcceptCourse = async () => {
@@ -111,14 +108,19 @@ export const CheckCourse = () => {
   useEffect(() => {
     getCourseData();
   }, []);
+
   async function getCourseData() {
     try {
       const response = await axios.get(`course/get-course?id=${courseId}`);
       if (response.status === 200) {
-        courseData.title = response.data.title;
-        courseData.description = response.data.description;
-        courseData.price = response.data.price;
-        courseData.imgPath = response.data.imgPath;
+        setCourseData((prevCourseData) => ({
+          ...prevCourseData,
+          title: response.data.title,
+          description: response.data.description,
+          price: response.data.price,
+          imgPath: response.data.imgPath
+        }));
+
         await getLessons();
         getQuizzes();
       } else {
@@ -129,6 +131,7 @@ export const CheckCourse = () => {
       console.error(error);
     }
   }
+
   async function getLessons() {
     try {
       const response = await axios.get(

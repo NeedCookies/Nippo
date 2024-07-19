@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import Nav from "react-bootstrap/Nav";
 import { Link } from "react-router-dom";
 import "./navbar.css";
@@ -6,13 +6,13 @@ import "./navbar.css";
 function NavbarPages() {
   const [activeItem, setActiveItem] = useState("/course");
 
-  const handleSelect = (selectedKey) => {
+  const handleSelect = (selectedKey: string | null) => {
     if (selectedKey !== null) {
       setActiveItem(selectedKey);
     }
   };
 
-  const CustomNavLink = ({ to, children }) => (
+  const CustomNavLink : React.FC<{ to: string; children: React.ReactNode }> = ({ to, children }) => (
     <Link to={to} className="custom-nav-link">
       {children}
     </Link>

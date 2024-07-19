@@ -3,9 +3,7 @@ import {
   Typography,
   Container,
   Paper,
-  Button,
-  Snackbar,
-  Alert,
+  Button
 } from "@mui/material";
 import RequireAuth from "../components/RequireAuth";
 import DeleteIcon from "@mui/icons-material/Delete";
@@ -14,7 +12,6 @@ import axios from "axios";
 import AddToQueueIcon from "@mui/icons-material/AddToQueue";
 import { useNavigate } from "react-router-dom";
 import { BuyModal } from "./BuyModal";
-import courses from "../components/FakeData/fakeCourses";
 
 interface CourseCardProps {
   id: number;

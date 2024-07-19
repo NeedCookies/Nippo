@@ -1,6 +1,5 @@
 import CourseListGroup from "./pages/courseListGroup";
 import LikedCoursesList from "./pages/likedCoursesGroup";
-import courses from "./components/FakeData/fakeCourses";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import CreateCourse from "./pages/CourseCreate/createCoursePage";
 import QuizEditPage from "./pages/CourseCreate/QuizEditPage";

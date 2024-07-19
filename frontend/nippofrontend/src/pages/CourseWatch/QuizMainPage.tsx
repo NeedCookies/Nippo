@@ -283,7 +283,7 @@ export const QuizMainPage = () => {
                       icon={<RadioButtonUnchecked />}
                       checkedIcon={<RadioButtonChecked />}
                       checked={answer.isCorrect}
-                      onChange={(e) => {
+                      onChange={(_) => {
                         handleChecksChange(question.id, answer.id),
                           handleOneRightAnswer(question.id, answer.id);
                       }}

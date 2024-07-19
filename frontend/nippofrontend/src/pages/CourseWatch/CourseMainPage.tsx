@@ -1,5 +1,4 @@
 import { Box, Container, Typography } from "@mui/material";
-import { green } from "@mui/material/colors";
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { Button } from "react-bootstrap";
@@ -37,8 +36,6 @@ export const CourseMainPage = () => {
   const [quizResults, setQuizResults] = useState<QuizResult[]>();
   const [completedElements, setCompletedElements] = useState<Number>();
   const [elements, setElements] = useState<Number>();
-  const [elementStatus, setElementStatus] = useState<boolean>();
-  const [elementStatuses, setElementStatuses] = useState<{ [key: number]: string }>({});
 
   const handleGoToQuiz = async (quizId: number) => {
     navigate(`/my-course/${courseId}/quiz/${quizId}`);
