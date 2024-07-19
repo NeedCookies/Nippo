@@ -45,7 +45,7 @@ namespace Application.Services
         public async Task<Quiz> Delete(int quizId)
         {
             if (quizId < 0)
-                throw new ArgumentException("Wrong quiz Id");
+                throw new ArgumentException($"Wrong quiz Id: {quizId}");
 
             return await quizRepository.Delete(quizId);
         }

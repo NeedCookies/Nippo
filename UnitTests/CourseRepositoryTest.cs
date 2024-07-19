@@ -244,11 +244,8 @@ namespace UnitTests
 
                 var repository = new CourseRepository(context, mockUserRepository.Object, mockUserCoursesRepository.Object);
 
-                // Act
-                var result = await repository.Delete(999);
-
-                // Assert
-                Assert.Null(result);
+                // Act & Assert
+                await Assert.ThrowsAsync<NullReferenceException>(() => repository.Delete(999));
             }
         }
 

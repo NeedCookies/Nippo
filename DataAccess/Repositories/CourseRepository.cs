@@ -54,11 +54,13 @@ namespace DataAccess.Repositories
         {
             var course = await _appDbContext.Courses.FindAsync(courseId);
 
-            if(course != null)
+            if(course == null)
             {
-                _appDbContext.Courses.Remove(course);
-                await _appDbContext.SaveChangesAsync();
+                throw new NullReferenceException($"No course with id {courseId}");
             }
+
+            _appDbContext.Courses.Remove(course);
+            await _appDbContext.SaveChangesAsync();
 
             return course;
         }

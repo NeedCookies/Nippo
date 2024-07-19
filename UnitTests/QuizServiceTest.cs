@@ -4,10 +4,6 @@ using Application.Contracts;
 using Application.Services;
 using Domain.Entities;
 using Moq;
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using Xunit;
 
 namespace UnitTests
 {

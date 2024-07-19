@@ -124,11 +124,24 @@ namespace Application.Services
             return allCourses;
         }
 
-        public async Task<Course> Delete(int courseId) => 
-            await courseRepository.Delete(courseId);
+        public async Task<Course> Delete(int courseId)
+        {
+            if (courseId < 0)
+            {
+                throw new ArgumentException($"Wrong course Id: {courseId}");
+            }
+            return await courseRepository.Delete(courseId);
+        }
 
-        public async Task<string> GetAuthorById(int id) =>
-            await courseRepository.GetAuthorById(id);
+        public async Task<string> GetAuthorById(int id)
+        {
+            if (id < 0)
+            {
+                throw new ArgumentException($"Wrong course Id: {id}");
+            }
+
+            return await courseRepository.GetAuthorById(id);
+        }
 
         public async Task<List<Course>> GetCoursesToCheck()
         {
@@ -187,13 +200,18 @@ namespace Application.Services
             var courseAuthor = await courseRepository.GetAuthorById(courseId);
             var userInfo = await userService.GetUserInfoById(userId);
 
-            logger.LogInformation("Course has been sent for review. Course Id: {CourseId}", courseId);
-
             if (courseAuthor == userId && userInfo.Role == "author")
+            {
+                logger.LogInformation("Course has been sent for review. Course Id: {CourseId}", courseId);
                 return await courseRepository.ChangeStatus(courseId, PublishStatus.Check);
+            }
             else
-                throw new Exception($"Access denied courseAuthor: {courseAuthor}" +
+            {
+                logger.LogWarning("User tried to send course for review, bad request. " +
+                    $"User Id: {userId}. Course Author Id: {courseAuthor}. Course Id: {courseId}");
+                throw new ArgumentException($"Access denied courseAuthor: {courseAuthor}" +
                     $" userId: {userId} userInfo: {userInfo.Role}");
+            }
         }
 
         public async Task<Course> GetById(int id)
@@ -214,7 +232,7 @@ namespace Application.Services
 
         public async Task<int> ApplyPromocode(CoursePurchaseRequest request)
         {
-            if (request == null || request.Promocode == null)
+            if (request == null || request.Promocode == null || request.Promocode.Length == 0)
                 throw new ArgumentNullException("Bad promocode");
 
             var course = await courseRepository.GetById(request.CourseId);
@@ -228,7 +246,7 @@ namespace Application.Services
             int courseId = request.CourseId;
 
             StringBuilder error = new StringBuilder();
-            if (userId == null)
+            if (userId == null || userId.Length == 0)
                 error.AppendLine("userId is null");
             if (courseId < 0)
                 error.AppendLine("Wrong course id");
@@ -322,7 +340,7 @@ namespace Application.Services
         public async Task<BasketCourses> DeleteFromBasket(int courseId, string userId)
         {
             StringBuilder error = new StringBuilder();
-            if (userId == null)
+            if (userId == null || userId.Length == 0)
                 error.AppendLine("userId is null");
             if (courseId < 0)
                 error.AppendLine("Wrong course id");
@@ -334,8 +352,8 @@ namespace Application.Services
 
         public async Task<List<BasketCourses>> GetBasketCourses(string userId)
         {
-            if (userId == null)
-                throw new ArgumentNullException("userId is null");
+            if (userId == null || userId.Length == 0)
+                throw new ArgumentException("userId is null");
 
             return await basketRepository.GetBasketCourses(userId);
         }
