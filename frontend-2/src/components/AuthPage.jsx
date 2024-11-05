@@ -1,11 +1,17 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 export function AuthPage() {
   const [haveAccount, setHaveAccount] = useState(false);
   const [passwordShown, setPasswordShown] = useState(false);
 
+  useEffect(() => {
+    window.location.href = "#auth-page";
+  }, []);
+
   return (
-    <main className="min-h-screen flex flex-col bg-gradient-to-r from-slate-800 to-slate-950 text-white text-sm sm:text-base items-center justify-center">
+    <section
+      id="auth-page"
+      className="min-h-screen flex flex-col bg-gradient-to-r from-slate-800 to-slate-950 text-white text-sm sm:text-base items-center justify-center">
       <div className="flex flex-col justify-center items-center w-full sm:max-w-sm bg-slate-600 p-6 rounded-lg gap-4">
         <img
           src="./logo.jpg"
@@ -45,6 +51,6 @@ export function AuthPage() {
           {haveAccount ? "Еще нет аккаунта?" : "Уже есть аккаунт"}
         </button>
       </div>
-    </main>
+    </section>
   );
 }
