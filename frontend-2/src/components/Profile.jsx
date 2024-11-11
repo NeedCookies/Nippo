@@ -5,6 +5,9 @@ export default function Profile() {
   const { haveAvatar, setHaveAvatar } = useState(false);
   const [name, setName] = useState("Ivan");
   const [surname, setSurname] = useState("Ivanov");
+  const [phone, setPhone] = useState("0-000-000-00-0");
+  const [email, setEmail] = useState("empty@email.com");
+  const [points, setPoints] = useState(0);
   const [solvedTasks, setSolvedTasks] = useState(0);
   const [registerDate, setRegisterDate] = useState(
     new Date().getFullYear() - 1
@@ -30,11 +33,13 @@ export default function Profile() {
             Выполнено: <span className="text-gray-600 ">{solvedTasks} </span>
             <i className="fa-solid fa-list-check"></i>
           </p>
+          <p className="text-gray-400 font-semibold">
+            Статус: <span className="text-gray-600 italic">{status}</span>
+          </p>
           <p className="text-blue-600 hover:text-blue-800 cursor-pointer hover:underline">
             Сертификаты
           </p>
-          <div className="w-full bg-gray-400 h-[1px] rounded"></div>
-          <div className="text-gray-400 wrap p-2 text-center">
+          <div className="text-gray-400 wrap pb-2 text-center italic">
             Вы с нами уже{" "}
             <span className="text-gray-600">
               {calcRegisterPeriod()}{" "}
@@ -45,29 +50,65 @@ export default function Profile() {
                 : "год"}
             </span>
           </div>
+          <div className="w-full bg-gray-400 h-[1px] rounded"></div>
+          <p className="text-gray-400 font-semibold">
+            Телефон: <span className="text-gray-600">{phone}</span>
+          </p>
+          <p className="text-gray-400 font-semibold">
+            Email: <span className="text-gray-600">{email}</span>
+          </p>
+          <button className="font-semibold text-gray-600 hover:text-gray-800 p-2 rounded-lg hover:shadow-lg hover:bg-gray-100">
+            Редактировать
+          </button>
         </div>
         <div className="col-span-3 gap-2 p-2">
           <h2 className="flex profile-name mb-4 text-4xl md:text-6xl justify-center">
             {name} {surname}
           </h2>
-          <div className="flex items-center justify-between gap-6 p-4">
+          <div className="flex items-center justify-between gap-6 p-4 flex-wrap">
             <NavLink
               to={"my-stats"}
-              className="bg-slate-200 p-4 rounded-lg shadow-lg hover:bg-slate-300 cursor:pointer font-semibold text-gray-800">
+              className="bg-slate-200 p-4 rounded-lg shadow-lg hover:bg-slate-300 cursor:pointer font-semibold text-gray-800 basis-1/4">
               Моя статистика{" "}
               <i className="fa-solid fa-ranking-star text-blue-400"></i>
             </NavLink>
             <NavLink
               to={"favorite-courses"}
-              className="bg-slate-200 p-4 rounded-lg shadow-lg hover:bg-slate-300 cursor:pointer font-semibold text-gray-800">
+              className="bg-slate-200 p-4 rounded-lg shadow-lg hover:bg-slate-300 cursor:pointer font-semibold text-gray-800 basis-1/4">
               Избранные курсы <i className="fa-solid fa-heart text-red-400"></i>
             </NavLink>
             <NavLink
               to={"my-courses"}
-              className="bg-slate-200 p-4 rounded-lg shadow-lg hover:bg-slate-300 cursor:pointer font-semibold text-gray-800">
+              className="bg-slate-200 p-4 rounded-lg shadow-lg hover:bg-slate-300 cursor:pointer font-semibold text-gray-800 basis-1/4">
               Купленные курсы{" "}
               <i className="fa-solid fa-clipboard-check text-green-400"></i>
             </NavLink>
+            {(status === "author" || status === "admin") && (
+              <>
+                <NavLink
+                  to={"create-course"}
+                  className="bg-slate-200 p-4 rounded-lg shadow-lg hover:bg-slate-300 cursor:pointer font-semibold text-gray-800 basis-1/4">
+                  Создать курс
+                </NavLink>
+                <NavLink
+                  to={"my-courses-stats"}
+                  className="bg-slate-200 p-4 rounded-lg shadow-lg hover:bg-slate-300 cursor:pointer font-semibold text-gray-800 basis-1/4">
+                  Статистика моих курсов
+                </NavLink>
+              </>
+            )}
+            {status === "admin" && (
+              <>
+                <NavLink
+                  to={"course-moderation"}
+                  className="bg-slate-200 p-4 rounded-lg shadow-lg hover:bg-slate-300 cursor:pointer font-semibold text-gray-800 basis-1/4">
+                  Модерация курсов
+                </NavLink>
+                <button className="bg-slate-200 p-4 rounded-lg shadow-lg hover:bg-slate-300 cursor:pointer font-semibold text-gray-800 basis-1/4">
+                  Создать промокод
+                </button>
+              </>
+            )}
           </div>
         </div>
       </div>
