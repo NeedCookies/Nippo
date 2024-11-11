@@ -1,12 +1,18 @@
 import { useEffect, useState } from "react";
+import { useNavigate, useOutletContext } from "react-router-dom";
 
 export function AuthPage() {
+  const { setAuthorized } = useOutletContext();
+  const navigate = useNavigate();
   const [haveAccount, setHaveAccount] = useState(false);
   const [passwordShown, setPasswordShown] = useState(false);
 
-  useEffect(() => {
-    window.location.href = "#auth-page";
-  }, []);
+  function handleAuthentication() {
+    setAuthorized(true);
+    navigate("/");
+  }
+
+  useEffect(() => {}, []);
 
   return (
     <section
@@ -42,7 +48,9 @@ export function AuthPage() {
             )}
           </button>
         </div>
-        <button className="font-semibold bg-slate-800 hover:bg-slate-950 p-2 rounded w-full">
+        <button
+          className="font-semibold bg-slate-800 hover:bg-slate-950 p-2 rounded w-full"
+          onClick={handleAuthentication}>
           {haveAccount ? "Войти" : "Создать профиль"}
         </button>
         <button

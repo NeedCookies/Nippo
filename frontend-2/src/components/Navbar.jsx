@@ -26,7 +26,7 @@ export default function Navbar() {
               <i className="fa-solid fa-user "></i>
             </NavLink>
             <NavLink
-              to="login"
+              to={isAuthorized ? "profile" : "login"}
               className="border border-solid rounded-lg border-blue-400 px-2 blueShadow ">
               {isAuthorized ? "Профиль" : "Войти"}
             </NavLink>
@@ -35,7 +35,7 @@ export default function Navbar() {
       </header>
 
       <main>
-        <Outlet />
+        <Outlet context={{ setAuthorized }} />
       </main>
     </div>
   );
