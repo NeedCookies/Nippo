@@ -12,7 +12,7 @@ export default function Profile() {
   const [registerDate, setRegisterDate] = useState(
     new Date().getFullYear() - 1
   );
-  const [status, setUserStatus] = useState("user");
+  const [status, setUserStatus] = useState("admin");
 
   function calcRegisterPeriod() {
     return new Date().getFullYear() - registerDate;
@@ -83,29 +83,35 @@ export default function Profile() {
               Купленные курсы{" "}
               <i className="fa-solid fa-clipboard-check text-green-400"></i>
             </NavLink>
+
             {(status === "author" || status === "admin") && (
               <>
+                <div className="w-full bg-gray-400 h-[1px] rounded"></div>
                 <NavLink
                   to={"create-course"}
-                  className="bg-slate-200 p-4 rounded-lg shadow-lg hover:bg-slate-300 cursor:pointer font-semibold text-gray-800 basis-1/4">
-                  Создать курс
+                  className="bg-slate-200 p-4 rounded-lg shadow-lg hover:bg-slate-300 cursor:pointer font-semibold text-gray-800 basis-1/3">
+                  Создать курс{" "}
+                  <i className="fa-solid fa-screwdriver-wrench text-blue-400"></i>
                 </NavLink>
                 <NavLink
                   to={"my-courses-stats"}
-                  className="bg-slate-200 p-4 rounded-lg shadow-lg hover:bg-slate-300 cursor:pointer font-semibold text-gray-800 basis-1/4">
+                  className="bg-slate-200 p-4 rounded-lg shadow-lg hover:bg-slate-300 cursor:pointer font-semibold text-gray-800 basis-1/3">
                   Статистика моих курсов
                 </NavLink>
               </>
             )}
             {status === "admin" && (
               <>
+                <div className="w-full bg-gray-400 h-[1px] rounded"></div>
                 <NavLink
                   to={"course-moderation"}
-                  className="bg-slate-200 p-4 rounded-lg shadow-lg hover:bg-slate-300 cursor:pointer font-semibold text-gray-800 basis-1/4">
-                  Модерация курсов
+                  className="bg-slate-200 p-4 rounded-lg shadow-lg hover:bg-slate-300 cursor:pointer font-semibold text-gray-800 basis-1/3">
+                  Модерация курсов{" "}
+                  <i className="fa-solid fa-user-tie text-blue-600"></i>
                 </NavLink>
-                <button className="bg-slate-200 p-4 rounded-lg shadow-lg hover:bg-slate-300 cursor:pointer font-semibold text-gray-800 basis-1/4">
-                  Создать промокод
+                <button className="bg-slate-200 p-4 rounded-lg shadow-lg hover:bg-slate-300 cursor:pointer font-semibold text-gray-800 basis-1/3">
+                  Создать промокод{" "}
+                  <i className="fa-solid fa-percent text-red-600"></i>
                 </button>
               </>
             )}
