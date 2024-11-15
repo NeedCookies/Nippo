@@ -12,7 +12,10 @@ namespace AuthorizationService.Core
         public string PasswordHash { get; private set; }
         public DateOnly RegistrationDate { get; private set; }
 
-        private User(Guid id, string firstName, string lastName, DateOnly birthDate, string email, string passwordHash, DateOnly registrationDate)
+        private User(
+            Guid id, string firstName, string lastName, 
+            DateOnly birthDate, string email, string passwordHash, 
+            DateOnly registrationDate)
         {
             Id = id;
             FirstName = firstName;
@@ -23,9 +26,13 @@ namespace AuthorizationService.Core
             RegistrationDate = registrationDate;
         }
 
-        public static User Create(Guid id, string firstName, string lastName, DateOnly birthDate, string email, string passwordHash)
+        public static User Create(
+            Guid id, string firstName, string lastName, 
+            DateOnly birthDate, string email, 
+            string passwordHash, DateOnly registrationDate)
         {
-            return new User(id, firstName, lastName, birthDate, email, passwordHash, DateOnly.FromDateTime(DateTime.Now));
+            return new User(id, firstName, lastName, birthDate,
+                email, passwordHash, registrationDate);
         }
     }
 }
