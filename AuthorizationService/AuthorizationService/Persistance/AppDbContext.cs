@@ -5,14 +5,15 @@ using Microsoft.Extensions.Options;
 
 namespace AuthorizationService.Persistance
 {
-    public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(options)
+    public class AppDbContext : DbContext
     {
+        public AppDbContext(DbContextOptions<AppDbContext> options)
+        : base(options)
+        {
+        }
+
         public DbSet<User> Users { get; set; }
 
-        
-
-
-        #region Required
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<User>()
@@ -27,7 +28,8 @@ namespace AuthorizationService.Persistance
                 .Property(u => u.PasswordHash).IsRequired().HasMaxLength(1024);
             modelBuilder.Entity<User>()
                 .Property(u => u.BirthDate).IsRequired();
+
+            base.OnModelCreating(modelBuilder);
         }
-        #endregion
     }
 }
