@@ -37,6 +37,10 @@ namespace AuthorizationService.Application.Services
             }
 
             var token = _jwtProvider.GenerateToken(user);
+            if (token == null)
+            {
+                throw new Exception("Can't generate token");
+            }
 
             return token;
         }
@@ -44,6 +48,12 @@ namespace AuthorizationService.Application.Services
         public async Task RegisterUserAsync(
             string firstName, string lastName, DateOnly birthDate, string email, string password)
         {
+            var checkUser = await _userRepository.GetByEmailAsync(email);
+            if (checkUser != null)
+            {
+                throw new AuthenticationException("Account already exist");
+            }
+
             var hashedPassword = _passwordHasher.Generate(password);
 
             var user = User.Create(
