@@ -4,6 +4,7 @@ using AuthorizationService.Endpoints;
 using AuthorizationService.Infrastructure;
 using AuthorizationService.Persistance;
 using AuthorizationService.Persistance.Repositories;
+using Microsoft.AspNetCore.CookiePolicy;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -35,6 +36,13 @@ namespace AuthorizationService
             services.AddScoped<IPasswordHasher, PasswordHasher>();
 
             var app = builder.Build();
+
+            app.UseCookiePolicy(new CookiePolicyOptions
+            {
+                MinimumSameSitePolicy = SameSiteMode.Strict,
+                HttpOnly = HttpOnlyPolicy.Always,
+                Secure = CookieSecurePolicy.Always
+            });
 
             if (app.Environment.IsDevelopment())
             {

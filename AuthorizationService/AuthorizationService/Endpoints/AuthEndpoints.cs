@@ -19,7 +19,8 @@ namespace AuthorizationService.Endpoints
             return Results.Ok();
         }
 
-        private static async Task<IResult> Login(UserLoginRequest request, IAuthService authService)
+        private static async Task<IResult> Login(UserLoginRequest request, IAuthService authService,
+            HttpContext context)
         {
             var token = await authService.LoginUserAsync(request.email, request.password);
 
@@ -28,7 +29,9 @@ namespace AuthorizationService.Endpoints
                 throw new InvalidDataException("Token hasn't been created");
             }
 
-            return Results.Ok(token);
+            context.Response.Cookies.Append("bearer", token);
+
+            return Results.Ok();
         }
     }
 }
