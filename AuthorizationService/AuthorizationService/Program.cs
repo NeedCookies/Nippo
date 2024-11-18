@@ -23,6 +23,7 @@ namespace AuthorizationService
             services.AddControllers();
 
             services.Configure<JwtOptions>(configuration.GetSection(nameof(JwtOptions)));
+            services.Configure<AuthorizationOptions>(configuration.GetSection(nameof(AuthorizationOptions)));
 
             services.AddDbContext<AppDbContext>(
                 options =>
@@ -36,13 +37,6 @@ namespace AuthorizationService
             services.AddScoped<IPasswordHasher, PasswordHasher>();
 
             var app = builder.Build();
-
-            app.UseCookiePolicy(new CookiePolicyOptions
-            {
-                MinimumSameSitePolicy = SameSiteMode.Strict,
-                HttpOnly = HttpOnlyPolicy.Always,
-                Secure = CookieSecurePolicy.Always
-            });
 
             if (app.Environment.IsDevelopment())
             {

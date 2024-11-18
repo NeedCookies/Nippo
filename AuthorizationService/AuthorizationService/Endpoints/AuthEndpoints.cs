@@ -1,4 +1,5 @@
-﻿using AuthorizationService.Application.Abstractions;
+﻿using Microsoft.AspNetCore.Mvc;
+using AuthorizationService.Application.Abstractions;
 using AuthorizationService.Application.Contracts;
 using System.Security.Authentication;
 
@@ -23,7 +24,7 @@ namespace AuthorizationService.Endpoints
             }
             catch (AuthenticationException ex)
             {
-                return Results.Conflict(new {message = ex.Message});
+                return Results.Conflict(new { message = ex.Message });
             }
         }
 
@@ -34,7 +35,14 @@ namespace AuthorizationService.Endpoints
             {
                 var token = await authService.LoginUserAsync(request.email, request.password);
 
-                context.Response.Cookies.Append("bearer", token);
+                var cookieOptions = new CookieOptions
+                {
+                    HttpOnly = true,
+                    Secure = true,
+                    SameSite = SameSiteMode.Strict
+                };
+
+                context.Response.Cookies.Append("jwt-token-cookie", token, cookieOptions);
 
                 return Results.Ok();
             }

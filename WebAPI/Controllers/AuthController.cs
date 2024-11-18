@@ -1,11 +1,6 @@
 ﻿using Application.Abstractions.Services;
 using Application.Contracts;
-using Infrastructure;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Options;
-using Microsoft.IdentityModel.Tokens;
-using System.IdentityModel.Tokens.Jwt;
-using System.Text;
 
 namespace WebAPI.Controllers
 {
