@@ -14,9 +14,9 @@ namespace AuthorizationService.Infrastructure
 
         public JwtProvider(IOptions<JwtOptions> options) => _options = options.Value;
 
-        public string GenerateToken(User user)
+        public string GenerateToken(UserEntity user)
         {
-            Claim[] claims = [new ("userId", user.Id.ToString()), 
+            Claim[] claims = [new ("userId", user.Id.ToString()),
                 new ("email", user.Email.ToString()),
                 new ("regDate", user.RegistrationDate.ToString())];
 

@@ -56,7 +56,7 @@ namespace AuthorizationService.Application.Services
 
             var hashedPassword = _passwordHasher.Generate(password);
 
-            var user = User.Create(
+            var user = UserEntity.Create(
                 Guid.NewGuid(), firstName, lastName, birthDate, email,
                 hashedPassword, DateOnly.FromDateTime(DateTime.Now));
 
