@@ -13,13 +13,13 @@ namespace AuthorizationService.Persistance.Repositories
             _dbContext = dbContext;
         }
 
-        public async Task AddAsync(User user)
+        public async Task AddAsync(UserEntity user)
         {
             await _dbContext.Users.AddAsync(user);
             await _dbContext.SaveChangesAsync();
         }
 
-        public async Task<User> GetByEmailAsync(string email)
+        public async Task<UserEntity> GetByEmailAsync(string email)
         {
             var user = await _dbContext.Users.AsNoTracking().FirstOrDefaultAsync(u => u.Email == email);
             return user;

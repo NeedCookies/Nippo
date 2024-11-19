@@ -1,8 +1,11 @@
 using AuthorizationService.Application.Abstractions;
 using AuthorizationService.Application.Services;
+using AuthorizationService.Core;
 using AuthorizationService.Endpoints;
 using AuthorizationService.Infrastructure;
 using AuthorizationService.Persistance;
+using AuthorizationService.Persistance.Configurations;
+using AuthorizationService.Persistance.Entities;
 using AuthorizationService.Persistance.Repositories;
 using Microsoft.AspNetCore.CookiePolicy;
 using Microsoft.EntityFrameworkCore;

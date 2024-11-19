@@ -1,35 +1,24 @@
 ﻿using AuthorizationService.Core;
+using AuthorizationService.Persistance.Configurations;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Internal;
 using Microsoft.Extensions.Options;
 
 namespace AuthorizationService.Persistance
 {
-    public class AppDbContext : DbContext
+    public class AppDbContext(DbContextOptions<AppDbContext> options,
+            IOptions<AuthorizationOptions> authOptions) : DbContext(options)
     {
-        public AppDbContext(DbContextOptions<AppDbContext> options)
-        : base(options)
-        {
-        }
-
-        public DbSet<User> Users { get; set; }
+        public DbSet<UserEntity> Users { get; set; }
+        public DbSet<RoleEntity> Roles { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<User>()
-                .Property(u => u.Id).IsRequired();
-            modelBuilder.Entity<User>()
-                .Property(u => u.FirstName).IsRequired().HasMaxLength(256);
-            modelBuilder.Entity<User>()
-                .Property(u => u.LastName).IsRequired().HasMaxLength(256);
-            modelBuilder.Entity<User>()
-                .Property(u => u.Email).IsRequired().HasMaxLength(256);
-            modelBuilder.Entity<User>()
-                .Property(u => u.PasswordHash).IsRequired().HasMaxLength(1024);
-            modelBuilder.Entity<User>()
-                .Property(u => u.BirthDate).IsRequired();
+            modelBuilder.ApplyConfigurationsFromAssembly(typeof(AppDbContext).Assembly);
 
-            base.OnModelCreating(modelBuilder);
+            modelBuilder.ApplyConfiguration(new RolePermissionConfiguration(authOptions.Value));
+
+            //base.OnModelCreating(modelBuilder);
         }
     }
 }
