@@ -38,6 +38,7 @@ namespace AuthorizationService
             services.AddScoped<IAuthService, AuthService>();
             services.AddScoped<IJwtProvider, JwtProvider>();
             services.AddScoped<IPasswordHasher, PasswordHasher>();
+            services.AddScoped<IPermissionService, PermissionService>();
 
             var app = builder.Build();
 
