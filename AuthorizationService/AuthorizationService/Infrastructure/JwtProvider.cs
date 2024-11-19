@@ -16,9 +16,9 @@ namespace AuthorizationService.Infrastructure
 
         public string GenerateToken(UserEntity user)
         {
-            Claim[] claims = [new ("userId", user.Id.ToString()),
-                new ("email", user.Email.ToString()),
-                new ("regDate", user.RegistrationDate.ToString())];
+            Claim[] claims = [new (CustomClaims.UserId, user.Id.ToString()),
+                new (CustomClaims.Email, user.Email.ToString()),
+                new (CustomClaims.RegDate, user.RegistrationDate.ToString())];
 
             var signingCredentials = new SigningCredentials(
                 new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_options.SecretKey)),
