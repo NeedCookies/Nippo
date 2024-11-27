@@ -1,8 +1,5 @@
 ﻿using AuthorizationService.Application.Abstractions;
-using AuthorizationService.Application.Contracts;
 using AuthorizationService.Core;
-using Microsoft.AspNetCore.Http.HttpResults;
-using Microsoft.AspNetCore.Mvc;
 using System.Security.Authentication;
 
 namespace AuthorizationService.Application.Services
@@ -12,13 +9,26 @@ namespace AuthorizationService.Application.Services
         private readonly IUserRepository _userRepository;
         private readonly IPasswordHasher _passwordHasher;
         private readonly IJwtProvider _jwtProvider;
+        private readonly IPermissionService _permissionService;
 
-        public AuthService(IUserRepository userRepository, 
+        public AuthService(
+            IUserRepository userRepository, IPermissionService permissionService,
             IPasswordHasher passwordHasher, IJwtProvider jwtProvider)
         {
             _userRepository = userRepository;
             _passwordHasher = passwordHasher;
             _jwtProvider = jwtProvider;
+            _permissionService = permissionService;
+        }
+
+        public async Task<HashSet<Permission>> GetUserPermissionsAsync(string userId)
+        {
+            if (!Guid.TryParse(userId, out var userGuidId))
+            {
+                throw new BadHttpRequestException("Cannot convert user id to guid");
+            }
+            var permissions = await _permissionService.GetPermissionsAsync(userGuidId);
+            return permissions;
         }
 
         public async Task<string> LoginUserAsync(string email, string password)

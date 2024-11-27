@@ -11,10 +11,13 @@ namespace AuthorizationService.Endpoints
         {
             app.MapPost("register", Register);
             app.MapPost("login", Login);
+            app.MapGet("get-user-permissions", GetUserPermissions);
             return app;
         }
 
-        private static async Task<IResult> Register(UserRegisterRequest request, IAuthService authService)
+        private static async Task<IResult> Register(
+            UserRegisterRequest request, 
+            IAuthService authService)
         {
             try
             {
@@ -58,6 +61,14 @@ namespace AuthorizationService.Endpoints
             {
                 return Results.Problem(ex.Message, statusCode: 500);
             }
+        }
+
+        private static async Task<IResult> GetUserPermissions(
+            IAuthService authService,
+            [FromQuery] string userId)
+        {
+            var permissions =  await authService.GetUserPermissionsAsync(userId);
+            return Results.Ok(permissions);
         }
     }
 }
