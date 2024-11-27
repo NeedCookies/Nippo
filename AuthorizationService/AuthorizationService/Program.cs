@@ -1,15 +1,12 @@
 using AuthorizationService.Application.Abstractions;
+using AuthorizationService.Application.Extensions;
 using AuthorizationService.Application.Services;
-using AuthorizationService.Core;
 using AuthorizationService.Endpoints;
 using AuthorizationService.Infrastructure;
 using AuthorizationService.Persistance;
-using AuthorizationService.Persistance.Configurations;
-using AuthorizationService.Persistance.Entities;
 using AuthorizationService.Persistance.Repositories;
-using Microsoft.AspNetCore.CookiePolicy;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace AuthorizationService
 {
@@ -26,7 +23,8 @@ namespace AuthorizationService
             services.AddControllers();
 
             services.Configure<JwtOptions>(configuration.GetSection(nameof(JwtOptions)));
-            services.Configure<AuthorizationOptions>(configuration.GetSection(nameof(AuthorizationOptions)));
+            services.Configure<Persistance.AuthorizationOptions>(
+                configuration.GetSection(nameof(Persistance.AuthorizationOptions)));
 
             services.AddDbContext<AppDbContext>(
                 options =>
@@ -39,6 +37,7 @@ namespace AuthorizationService
             services.AddScoped<IJwtProvider, JwtProvider>();
             services.AddScoped<IPasswordHasher, PasswordHasher>();
             services.AddScoped<IPermissionService, PermissionService>();
+            //services.AddScoped<IAuthorizationHandler, PermissionAuthorizationHandler>();
 
             var app = builder.Build();
 

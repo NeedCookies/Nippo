@@ -1,7 +1,6 @@
 ﻿using AuthorizationService.Core;
 using AuthorizationService.Persistance.Configurations;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Internal;
 using Microsoft.Extensions.Options;
 
 namespace AuthorizationService.Persistance
