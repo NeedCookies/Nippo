@@ -21,14 +21,20 @@ namespace AuthorizationService.Application.Services
             _permissionService = permissionService;
         }
 
-        public async Task<HashSet<Permission>> GetUserPermissionsAsync(string userId)
+        public async Task<HashSet<string>> GetUserPermissionsAsync(string userId)
         {
             if (!Guid.TryParse(userId, out var userGuidId))
             {
                 throw new BadHttpRequestException("Cannot convert user id to guid");
             }
             var permissions = await _permissionService.GetPermissionsAsync(userGuidId);
-            return permissions;
+
+            var strPermissions = new HashSet<string>();
+            foreach ( var permission in permissions )
+            {
+                strPermissions.Add(permission.ToString());
+            }
+            return strPermissions;
         }
 
         public async Task<string> LoginUserAsync(string email, string password)

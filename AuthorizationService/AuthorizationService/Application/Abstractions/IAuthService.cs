@@ -8,6 +8,6 @@ namespace AuthorizationService.Application.Abstractions
         Task RegisterUserAsync(
             string firstName, string lastName, DateOnly birthDate, string email, string password);
         Task<string> LoginUserAsync(string email, string password);
-        Task<HashSet<Permission>> GetUserPermissionsAsync(string userId);
+        Task<HashSet<string>> GetUserPermissionsAsync(string userId);
     }
 }
