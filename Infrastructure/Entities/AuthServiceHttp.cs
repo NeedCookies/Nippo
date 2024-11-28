@@ -4,21 +4,20 @@ using System.Net.Http.Json;
 
 namespace Infrastructure.Entities
 {
-    internal class AuthServiceHttp(
-        IConfiguration configurations,
+    public class AuthServiceHttp(
         IHttpClientFactory httpClientFactory
         ) : IAuthServiceHttp
     {
-        public async Task<HashSet<Permission>> GetUserPermissionsAsync(Guid userId)
+        public async Task<string> GetUserPermissionsAsync(Guid userId)
         {
-            using var httpClient = httpClientFactory.CreateClient();
+            using var httpClient = httpClientFactory.CreateClient("authServ");
 
             var response = await httpClient.GetAsync(
-                $"{configurations["AuthServiceUrl"]}/get-user-permissions?userId={userId}");
+                $"/get-user-permissions?userId={userId}");
 
             if (response.Content == null)
-                return new HashSet<Permission>();
-            return await response.Content.ReadFromJsonAsync<HashSet<Permission>>();
+                return "";
+            return await response.Content.ReadAsStringAsync();
         }
     }
 }

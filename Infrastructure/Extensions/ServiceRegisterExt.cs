@@ -1,5 +1,7 @@
 ﻿using Application.Abstractions.Services;
+using Infrastructure.Entities;
 using Infrastructure.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Infrastructure.Extensions
@@ -10,6 +12,8 @@ namespace Infrastructure.Extensions
         {
             services.AddScoped<IPasswordHasher, PasswordHasher>();
             services.AddScoped<IJwtProvider, JwtProvider>();
+            services.AddScoped<IAuthServiceHttp, AuthServiceHttp>();
+            services.AddSingleton<IAuthorizationHandler, PermissionAuthorizationHandler>();
             return services;
         }
     }

@@ -32,7 +32,7 @@ namespace Infrastructure.Services
             var authService = scope.ServiceProvider.GetRequiredService<IAuthServiceHttp>();
             var permissions = await authService.GetUserPermissionsAsync(userId);
 
-            if (permissions.Contains(requirement.Permission))
+            if (permissions.Contains(requirement.Permission.ToString()))
             {
                 context.Succeed(requirement);
             }

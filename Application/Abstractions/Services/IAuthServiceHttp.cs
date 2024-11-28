@@ -4,6 +4,6 @@ namespace Application.Abstractions.Services
 {
     public interface IAuthServiceHttp
     {
-        Task<HashSet<Permission>> GetUserPermissionsAsync(Guid userId);
+        Task<string> GetUserPermissionsAsync(Guid userId);
     }
 }
