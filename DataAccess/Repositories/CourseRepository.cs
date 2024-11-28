@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace DataAccess.Repositories
 {
-    public class CourseRepository(AppDbContext appDbContext, IUserRepository userRepository) : ICourseRepository
+    public class CourseRepository(AppDbContext appDbContext /*IUserRepository userRepository*/) : ICourseRepository
     {
         private readonly AppDbContext _appDbContext = appDbContext;
         public async Task<List<Course>> GetAllCourses()
@@ -70,7 +70,8 @@ namespace DataAccess.Repositories
 
         public async Task<ApplicationUser> PurchaseCourse(int courseId, string userId)
         {
-            var user = await userRepository.GetByUserId(userId);
+            var user = new ApplicationUser();
+            //await userRepository.GetByUserId(userId);
             Course course = await _appDbContext.Courses.FirstOrDefaultAsync(u => u.Id == courseId);
             decimal coursePrice = course.Price;
 

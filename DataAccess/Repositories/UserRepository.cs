@@ -1,11 +1,11 @@
 ﻿using Application.Abstractions.Repositories;
 using Domain.Entities;
 using Domain.Entities.Identity;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
 namespace DataAccess.Repositories
 {
+    /*
     public class UserRepository(AppDbContext appDbContext) : IUserRepository
     {
         private readonly AppDbContext _appDbContext = appDbContext;
@@ -78,4 +78,5 @@ namespace DataAccess.Repositories
             return user.Courses.ToList();
         }
     }
+    */
 }

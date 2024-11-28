@@ -1,7 +1,6 @@
-﻿using Microsoft.AspNetCore.Identity;
-
-namespace Domain.Entities.Identity
+﻿namespace Domain.Entities.Identity
 {
+    /*
     public class AppRole : IdentityRole<string>
     {
         public AppRole() { }
@@ -12,4 +11,5 @@ namespace Domain.Entities.Identity
             NormalizedName = roleName.ToUpperInvariant();
         }
     }
+    */
 }

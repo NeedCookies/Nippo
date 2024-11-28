@@ -2,8 +2,6 @@
 using Application.Abstractions.Services;
 using Application.Contracts;
 using Domain.Entities;
-using Domain.Entities.Identity;
-using Microsoft.AspNetCore.Identity;
 using System.Text;
 
 namespace Application.Services

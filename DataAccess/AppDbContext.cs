@@ -1,12 +1,11 @@
 ﻿using DataAccess.Configurations;
 using Domain.Entities;
 using Domain.Entities.Identity;
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace DataAccess
 {
-    public class AppDbContext(DbContextOptions<AppDbContext> options) : IdentityDbContext<ApplicationUser, AppRole, string>(options)
+    public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(options)
     {
         public DbSet<Answer> Answers => Set<Answer>();
         public DbSet<Block> Blocks => Set<Block>();
@@ -30,11 +29,12 @@ namespace DataAccess
             modelBuilder.ApplyConfiguration(new UserAnswerEntityConfiguration());
             modelBuilder.ApplyConfiguration(new UserCoursesConfiguration());
 
-            SeedRoles(modelBuilder);
+            //SeedRoles(modelBuilder);
 
             base.OnModelCreating(modelBuilder);
         }
 
+        /*
         private static void SeedRoles(ModelBuilder builder)
         {
             builder.Entity<AppRole>().HasData(
@@ -43,5 +43,6 @@ namespace DataAccess
                 new AppRole("admin") { Id = "3" }
             );
         }
+        */
     }
 }

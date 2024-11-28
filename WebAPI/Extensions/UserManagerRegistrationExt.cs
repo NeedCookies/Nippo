@@ -6,6 +6,7 @@ namespace WebAPI.Extensions
 {
     public static class UserManagerRegistrationExt
     {
+        /*
         public static IServiceCollection AddIdentityServices(this IServiceCollection services)
         {
             services.AddIdentityCore<ApplicationUser>(options => { })
@@ -16,5 +17,6 @@ namespace WebAPI.Extensions
             services.AddScoped<RoleManager<AppRole>>();
             return services;
         }
+        */
     }
 }

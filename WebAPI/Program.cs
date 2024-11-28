@@ -9,6 +9,8 @@ using Microsoft.AspNetCore.Identity;
 using Domain.Entities.Identity;
 using Microsoft.Extensions.Options;
 using WebAPI.Middlewares;
+using Application.Abstractions.Services;
+using Infrastructure.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -18,29 +20,36 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.Configure<JwtOptions>(builder.Configuration.GetSection(nameof(JwtOptions)));
 
+string authServ = builder.Configuration["AuthServiceUrl"];
+Console.WriteLine(builder.Configuration["AuthServiceUrl"]);
+builder.Services.AddHttpClient("authServ",
+    httpClient =>
+    {
+        httpClient.BaseAddress = new Uri(authServ);
+    });
+
 var jwtOptions = builder.Services.BuildServiceProvider().GetRequiredService<IOptions<JwtOptions>>();
 
-builder.Services.AddIdentity<ApplicationUser, AppRole>()
+/*builder.Services.AddIdentity<ApplicationUser, AppRole>()
     .AddEntityFrameworkStores<AppDbContext>()
     .AddDefaultTokenProviders();
+*/
+
 
 builder.Services.AddDbContext(builder.Configuration);
 builder.Services.AddAppRepositories();
 builder.Services.AddInfrastructureServices();
-builder.Services.AddIdentityServices();
+//builder.Services.AddIdentityServices();
 builder.Services.AddAppServices();
 
 builder.Services.AddApiAuthentication(jwtOptions);
-builder.Services.AddAuthorization(options =>
-{
-    options.AddPolicy("RequireAdminRole", policy => policy.RequireRole("admin"));
-});
 
 builder.Services.AddCorsWithFrontendPolicy();
 
 var app = builder.Build();
 
 //В случае если приложение запускается в первый раз, и база данных не создана - будут выполнены миграции
+/*
 await using (var scope = app.Services.CreateAsyncScope())
 {
     await Task.Delay(1000);
@@ -50,7 +59,7 @@ await using (var scope = app.Services.CreateAsyncScope())
     {
         await dbContext.Database.MigrateAsync();
     }
-}
+}*/
 
 app.UseSwagger();
 app.UseSwaggerUI();
@@ -65,7 +74,7 @@ app.UseCors("Frontend");
 
 app.UseHttpsRedirection();
 
-app.UseMiddleware<AuthorizationMiddleware>();
+//app.UseMiddleware<AuthorizationMiddleware>();
 
 app.UseAuthentication();
 app.UseAuthorization();

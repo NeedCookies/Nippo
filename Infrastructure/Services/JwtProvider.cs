@@ -1,7 +1,6 @@
 ﻿using Application.Abstractions.Services;
 using Domain.Entities.Identity;
 using Infrastructure.Options;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
@@ -10,11 +9,11 @@ using System.Text;
 
 namespace Infrastructure.Services
 {
-    public class JwtProvider(IOptions<JwtOptions> options,
-        UserManager<ApplicationUser> userManager) : IJwtProvider
+    public class JwtProvider(IOptions<JwtOptions> options) : IJwtProvider
     {
         private readonly JwtOptions _options = options.Value;
 
+        /*
         public async Task<string> GenerateAsync(ApplicationUser user)
         {
             var userRoles = await userManager.GetRolesAsync(user);
@@ -22,10 +21,10 @@ namespace Infrastructure.Services
 
             var claims = new List<Claim>
             {
-                new Claim("userId", user.Id)
+                new Claim("userId", user.Id.ToString())
             };
 
-            claims.AddRange(userRoles.Select(role => new Claim(ClaimTypes.Role, role)));
+            claims.AddRange(userRoles.Select(role => new Claim("userId", role)));
 
             var signingCredentials = new SigningCredentials(
                 new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_options.SecretKey)),
@@ -40,6 +39,7 @@ namespace Infrastructure.Services
 
             return tokenValue;
         }
+        */
 
         public async Task<string> GetUserId(string token)
         {

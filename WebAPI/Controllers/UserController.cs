@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace WebAPI.Controllers
 {
+    /*
     [Authorize]
     [ApiController]
     [Authorize]
@@ -33,6 +34,8 @@ namespace WebAPI.Controllers
             return Ok(userInfo);
         }
 
+        //TODO move update userInfo to authService
+        
         [HttpPost("update-personal-info")]
         public async Task<IActionResult> UpdateUserInfo(
             [FromForm] UserInfoUpdateRequest infoUpdateRequest,
@@ -45,9 +48,10 @@ namespace WebAPI.Controllers
             return Ok(newUserInfo);
         }
 
-        private string GetUserId()
+    private string GetUserId()
         {
             return HttpContext.User.FindFirst("userId")!.Value;
         }
     }
+    */
 }

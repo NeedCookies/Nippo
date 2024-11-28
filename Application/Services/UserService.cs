@@ -4,10 +4,11 @@ using Domain.Entities;
 using Application.Contracts;
 using Domain.Entities.Identity;
 using System.Text.RegularExpressions;
-using Microsoft.AspNetCore.Identity;
 
+/*
 namespace Application.Services
 {
+    
     public class UserService(
         IPasswordHasher passwordHasher, 
         IUserRepository userRepository,
@@ -101,7 +102,7 @@ namespace Application.Services
             return user;
         }
 
-        public async Task<List<Course>> GetUserCourses(string userId)
+    public async Task<List<Course>> GetUserCourses(string userId)
         {
             List<Course> userCourses = new List<Course>();
             var coursesId = await userCoursesRepository.GetUserCourses(userId);
@@ -119,6 +120,7 @@ namespace Application.Services
             return userCourses;
         }
 
+        /*
         public async Task<PersonalInfoDto> UpdateUserInfo(string userId, UserInfoUpdateRequest updateRequest, Stream pictureStream)
         {
             var user = await userRepository.GetByUserId(userId);
@@ -139,6 +141,7 @@ namespace Application.Services
 
             return await GetUserInfoById(user.Id);
         }
+        
 
         private bool IsValidEmail(string email)
         {
@@ -152,6 +155,6 @@ namespace Application.Services
 
             return passwordRegex.IsMatch(password);
         }
-    }
 }
-    
+}
+*/
