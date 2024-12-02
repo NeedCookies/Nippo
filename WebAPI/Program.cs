@@ -1,16 +1,9 @@
 using DataAccess.Extensions;
 using Application.Extensions;
 using Infrastructure.Extensions;
-using DataAccess;
-using Microsoft.EntityFrameworkCore;
 using WebAPI.Extensions;
 using Infrastructure.Options;
-using Microsoft.AspNetCore.Identity;
-using Domain.Entities.Identity;
 using Microsoft.Extensions.Options;
-using WebAPI.Middlewares;
-using Application.Abstractions.Services;
-using Infrastructure.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 

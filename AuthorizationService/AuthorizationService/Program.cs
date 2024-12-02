@@ -1,5 +1,4 @@
 using AuthorizationService.Application.Abstractions;
-using AuthorizationService.Application.Extensions;
 using AuthorizationService.Application.Services;
 using AuthorizationService.Endpoints;
 using AuthorizationService.Infrastructure;

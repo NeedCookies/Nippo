@@ -23,8 +23,10 @@ public static class ApiExt
             {
                 options.TokenValidationParameters = new()
                 {
-                    ValidateIssuer = false,
-                    ValidateAudience = false,
+                    ValidateIssuer = true,
+                    ValidIssuer = jwtOptions.Value.Issuer,
+                    ValidateAudience = true,
+                    ValidAudience = jwtOptions.Value.Audience,
                     ValidateLifetime = true,
                     ValidateIssuerSigningKey = true,
                     IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtOptions.Value.SecretKey))
