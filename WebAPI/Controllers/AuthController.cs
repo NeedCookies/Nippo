@@ -4,11 +4,12 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace WebAPI.Controllers
 {
+    /*
     [ApiController]
     [Route("auth")]
     public class AuthController(IUserService userService) : ControllerBase
     {
-        /*
+        
         [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] RegisterUserRequest request)
         {
@@ -31,7 +32,7 @@ namespace WebAPI.Controllers
             HttpContext.Response.Cookies.Append("jwt-token-cookie", token, cookieOptions);
 
             return Ok(token);
-        }*/
+        }
 
         [HttpPost("logout")]
         public IActionResult Logout()
@@ -40,5 +41,5 @@ namespace WebAPI.Controllers
 
             return Ok(new { message = "Logged out successfully" });
         }
-    }
+    }*/
 }

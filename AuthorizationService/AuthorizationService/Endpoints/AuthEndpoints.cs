@@ -12,6 +12,7 @@ namespace AuthorizationService.Endpoints
             app.MapPost("register", Register);
             app.MapPost("login", Login);
             app.MapGet("get-user-permissions", GetUserPermissions);
+            app.MapPost("logout", Logout);
             return app;
         }
 
@@ -31,7 +32,8 @@ namespace AuthorizationService.Endpoints
             }
         }
 
-        private static async Task<IResult> Login(UserLoginRequest request, IAuthService authService,
+        private static async Task<IResult> Login(UserLoginRequest request, 
+            IAuthService authService,
             HttpContext context)
         {
             try
@@ -61,6 +63,13 @@ namespace AuthorizationService.Endpoints
             {
                 return Results.Problem(ex.Message, statusCode: 500);
             }
+        }
+
+        private static async Task<IResult> Logout(HttpContext httpContext)
+        {
+            httpContext.Response.Cookies.Delete("jwt-token-cookie");
+
+            return Results.Ok(new { message = "Logged out successfully" });
         }
 
         private static async Task<IResult> GetUserPermissions(
