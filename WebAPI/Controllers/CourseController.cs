@@ -13,11 +13,12 @@ namespace WebAPI.Controllers
     [Route("course")]
     public class CourseController(ICoursesService coursesService, IJwtProvider jwtProvider, UserManager<ApplicationUser> userManager) : ControllerBase
     {
+        [AllowAnonymous]
         [HttpGet("get-all-courses")]
         public async Task<IActionResult> GetAllCourses()
         {
-            var allCourses = await coursesService.GetAllCourses();
-
+            //var allCourses = await coursesService.GetAllCourses();
+            var allCourses = "all courses";
             return Ok(allCourses);
         }
 
@@ -63,7 +64,7 @@ namespace WebAPI.Controllers
             return Ok(result);
         }
 
-        [Authorize(Roles = "admin")]
+        [Authorize(Policy = "UpdateCourse")]
         [HttpPost("edit-course")]
         public async Task<IActionResult> Update([FromBody] UpdateCourseRequest request)
         {
@@ -71,7 +72,7 @@ namespace WebAPI.Controllers
             return Ok(course);
         }
 
-        [Authorize(Roles = "admin")]
+        [Authorize(Policy = "DeleteCourse")]
         [HttpDelete("delete-course")]
         public async Task<IActionResult> Delete(int courseId)
         {

@@ -31,8 +31,13 @@ public static class ApiExt
                 };
             });
 
+        // TODO - move permission names to third party library
         services.AddAuthorization(options =>
         {
+            options.AddPolicy("UpdateCourse", policy => policy.Requirements.Add(
+                new PermissionRequirement(Permission.UpdateCourse)));
+            options.AddPolicy("DeleteCourse", policy => policy.Requirements.Add(
+                new PermissionRequirement(Permission.DeleteCourse)));
             options.AddPolicy("CreateCourse", policy => policy.Requirements.Add(
                 new PermissionRequirement(Permission.CreateCourse)));
             options.AddPolicy("CreatePromo", policy => policy.Requirements.Add(
