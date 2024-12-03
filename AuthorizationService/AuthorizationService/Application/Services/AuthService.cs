@@ -37,6 +37,16 @@ namespace AuthorizationService.Application.Services
             return strPermissions;
         }
 
+        public async Task<string> GetUserRoleAsync(string userId)
+        {
+            if (!Guid.TryParse(userId, out var userGuidId))
+            {
+                throw new BadHttpRequestException("Cannot convert user id to guid");
+            }
+            var role = await _userRepository.GetUserRoleAsync(userGuidId);
+            return role.ToString();
+        }
+
         public async Task<string> LoginUserAsync(string email, string password)
         {
             var user = await _userRepository.GetByEmailAsync(email);

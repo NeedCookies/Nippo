@@ -12,6 +12,7 @@ namespace AuthorizationService.Endpoints
             app.MapPost("register", Register);
             app.MapPost("login", Login);
             app.MapGet("get-user-permissions", GetUserPermissions);
+            app.MapGet("get-user-role", GetUserRole);
             app.MapPost("logout", Logout);
             return app;
         }
@@ -78,6 +79,14 @@ namespace AuthorizationService.Endpoints
         {
             var permissions =  await authService.GetUserPermissionsAsync(userId);
             return Results.Ok(permissions);
+        }
+
+        private static async Task<IResult> GetUserRole(
+            IAuthService authService,
+            [FromQuery] string userId)
+        {
+            var role = await authService.GetUserRoleAsync(userId);
+            return Results.Ok(role);
         }
     }
 }

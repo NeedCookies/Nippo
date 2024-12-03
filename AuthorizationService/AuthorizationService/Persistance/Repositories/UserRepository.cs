@@ -42,5 +42,20 @@ namespace AuthorizationService.Persistance.Repositories
                 .Select(p => (Permission)p.Id)
                 .ToHashSet();
         }
+        
+        public async Task<Role> GetUserRoleAsync(Guid userId)
+        {
+            var roles = await _dbContext.Users
+                .AsNoTracking()
+                .Include(u => u.Roles)
+                .Where(u => u.Id == userId)
+                .Select(u => u.Roles)
+                .ToListAsync();
+
+            return roles
+                .SelectMany(r => r)
+                .Select(r => (Role)r.Id)
+                .FirstOrDefault();
+        }
     }
 }
