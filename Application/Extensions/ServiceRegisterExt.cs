@@ -1,8 +1,6 @@
 ﻿using Application.Abstractions.Services;
-using Microsoft.Extensions.Configuration;
 using Application.Services;
 using Microsoft.Extensions.DependencyInjection;
-using Application.Abstractions.Repositories;
 
 namespace Application.Extensions
 {

@@ -11,6 +11,13 @@ namespace Application.Abstractions.Repositories
         Task<Course> Update(int id, string title, string desc, decimal price, string imgPath);
         Task<Course> Delete(int id);
         Task<Course?> GetById(int id);
+        /// <summary>
+        /// Represents course purchasing process
+        /// Add course to user.Courses if enough mony
+        /// </summary>
+        /// <param name="courseId"></param>
+        /// <param name="userId"></param>
+        /// <returns></returns>
         Task<ApplicationUser> PurchaseCourse(int courseId, string userId);
     }
 }

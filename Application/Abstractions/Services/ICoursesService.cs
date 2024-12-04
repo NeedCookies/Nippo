@@ -11,6 +11,12 @@ namespace Application.Abstractions.Services
         public Task<Course> Update(UpdateCourseRequest request);
         public Task<Course> Delete(int id);
         public Task<Course> GetById(int id);
+        /// <summary>
+        /// Purchase course for user
+        /// </summary>
+        /// <param name="courseId"></param>
+        /// <param name="userId"></param>
+        /// <returns></returns>
         public Task<UserCourses> PurchaseCourse(int courseId, string userId);
     }
 }
