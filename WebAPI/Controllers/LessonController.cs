@@ -17,7 +17,7 @@ namespace WebAPI.Controllers
             return Ok(lessons);
         }
 
-        [Authorize(Roles = "admin")]
+        [Authorize(Policy = "UpdateCourse")]
         [HttpPost("create-lesson")]
         public async Task<IActionResult> Create([FromBody] CreateLessonRequest request)
         {

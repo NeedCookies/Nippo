@@ -1,5 +1,6 @@
 using Infrastructure.Entities;
 using Infrastructure.Options;
+using Domain.Entities.Identity;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
@@ -44,6 +45,8 @@ public static class ApiExt
                 new PermissionRequirement(Permission.CreateCourse)));
             options.AddPolicy("CreatePromo", policy => policy.Requirements.Add(
                 new PermissionRequirement(Permission.CreatePromo)));
+            options.AddPolicy("AdminRole", policy => policy.RequireRole("Admin"));
+            options.AddPolicy("AuthorRole", policy => policy.RequireRole("Author"));
         });
     }
 }

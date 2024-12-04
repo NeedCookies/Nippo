@@ -1,7 +1,6 @@
 ﻿using Application.Abstractions.Services;
 using Application.Contracts;
 using Domain.Entities.Identity;
-using Infrastructure;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -35,7 +34,7 @@ namespace WebAPI.Controllers
             return Ok(course);
         }
 
-        [Authorize(Roles = "admin")]
+        [Authorize(Policy = "CreateCourse")]
         [HttpPost("create-course")]
         public async Task<IActionResult> Create([FromBody] CreateCourseRequest request)
         {

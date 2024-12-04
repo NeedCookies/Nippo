@@ -36,7 +36,7 @@ namespace WebAPI.Controllers
             return Ok(block);
         }
 
-        [Authorize(Roles = "admin")]
+        [Authorize(Policy = "UpdateCourse")]
         [HttpPost("create-block")]
         public async Task<IActionResult> Create([FromBody] CreateBlockRequest request)
         {

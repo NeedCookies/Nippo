@@ -7,7 +7,7 @@ namespace WebAPI.Controllers
 {
     [ApiController]
     [Route("admin")]
-    [Authorize(Roles = "admin")]
+    [Authorize(Policy = "AdminRole")]
     public class AdminController(IUserService userService): ControllerBase
     {
         [HttpPost("give-points")]
