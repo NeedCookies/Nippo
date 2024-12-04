@@ -19,5 +19,17 @@ namespace Infrastructure.Entities
                 return "";
             return await response.Content.ReadAsStringAsync();
         }
+
+        public async Task<string> GetUserRoleAsync(Guid userId)
+        {
+            using var httpClient = httpClientFactory.CreateClient("authServ");
+
+            var response = await httpClient.GetAsync(
+                $"/get-user-role?userId={userId}");
+
+            if (response.Content == null)
+                return "";
+            return await response.Content.ReadAsStringAsync();
+        }
     }
 }
