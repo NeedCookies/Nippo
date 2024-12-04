@@ -19,6 +19,29 @@ namespace AuthorizationService.Persistance.Repositories
             await _dbContext.SaveChangesAsync();
         }
 
+        public async Task SetUserRole(Guid userId, Role newRole)
+        {
+            var user = await _dbContext.Users
+                .Include(u => u.Roles)
+                .Where(u => u.Id == userId)
+                .FirstOrDefaultAsync();
+
+            if (user == null)
+            {
+                throw new ArgumentException($"Can't find user with id {userId}");
+            }
+
+            user.Roles = new List<RoleEntity>
+            {
+                new RoleEntity()
+                {
+                    Id = (int)newRole,
+                    Name = newRole.ToString()
+                }
+            };
+            await _dbContext.SaveChangesAsync();
+        }
+
         public async Task<UserEntity> GetByEmailAsync(string email)
         {
             var user = await _dbContext.Users.AsNoTracking().FirstOrDefaultAsync(u => u.Email == email);

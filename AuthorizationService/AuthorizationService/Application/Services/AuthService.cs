@@ -82,11 +82,13 @@ namespace AuthorizationService.Application.Services
 
             var hashedPassword = _passwordHasher.Generate(password);
 
+            var userId = Guid.NewGuid();
             var user = UserEntity.Create(
-                Guid.NewGuid(), firstName, lastName, birthDate, email,
+                userId, firstName, lastName, birthDate, email,
                 hashedPassword, DateOnly.FromDateTime(DateTime.Now));
 
             await _userRepository.AddAsync(user);
+            await _userRepository.SetUserRole(userId, Role.User);
         }
     }
 }

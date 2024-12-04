@@ -8,5 +8,6 @@ namespace AuthorizationService.Application.Abstractions
         Task<UserEntity> GetByEmailAsync(string email);
         Task<HashSet<Permission>> GetUserPermissionsAsync(Guid userId);
         Task<Role> GetUserRoleAsync(Guid userId);
+        Task SetUserRole(Guid userId, Role role);
     }
 }
