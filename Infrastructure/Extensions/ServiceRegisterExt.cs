@@ -10,7 +10,6 @@ namespace Infrastructure.Extensions
     {
         public static IServiceCollection AddInfrastructureServices(this IServiceCollection services)
         {
-            //services.AddScoped<IPasswordHasher, PasswordHasher>();
             services.AddScoped<IJwtProvider, JwtProvider>();
             services.AddScoped<IAuthServiceHttp, AuthServiceHttp>();
             services.AddSingleton<IAuthorizationHandler, PermissionAuthorizationHandler>();

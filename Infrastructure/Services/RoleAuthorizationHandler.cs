@@ -9,7 +9,15 @@ namespace Infrastructure.Services
     public class RoleAuthorizationHandler(
         IServiceScopeFactory scopeFactory) :
         AuthorizationHandler<RolesAuthorizationRequirement>
-    { 
+    {
+        /// <summary>
+        /// Check if user has required role for certain controller. 
+        /// Get user roles from auth service, compare them with required
+        /// </summary>
+        /// <param name="context"></param>
+        /// <param name="requirement"></param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentException"></exception>
         protected override async Task HandleRequirementAsync(AuthorizationHandlerContext context, RolesAuthorizationRequirement requirement)
         {
             var userIdClaim = context.User.Claims.FirstOrDefault(

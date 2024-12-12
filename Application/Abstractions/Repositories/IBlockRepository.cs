@@ -1,5 +1,4 @@
-﻿using Application.Contracts;
-using Domain.Entities;
+﻿using Domain.Entities;
 
 namespace Application.Abstractions.Repositories
 {

@@ -9,36 +9,6 @@ namespace Infrastructure.Services
 {
     public class JwtProvider(IOptions<JwtOptions> options) : IJwtProvider
     {
-        private readonly JwtOptions _options = options.Value;
-
-        /*
-        public async Task<string> GenerateAsync(ApplicationUser user)
-        {
-            var userRoles = await userManager.GetRolesAsync(user);
-            //Claim[] claims = [new("userId", user.Id), new(ClaimTypes.Role, userRoles.First())];
-
-            var claims = new List<Claim>
-            {
-                new Claim("userId", user.Id.ToString())
-            };
-
-            claims.AddRange(userRoles.Select(role => new Claim("userId", role)));
-
-            var signingCredentials = new SigningCredentials(
-                new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_options.SecretKey)),
-                SecurityAlgorithms.HmacSha256);
-
-            var token = new JwtSecurityToken(
-                claims: claims,
-                signingCredentials: signingCredentials,
-                expires: DateTime.UtcNow.AddHours(_options.ExpiresHours));
-
-            var tokenValue = new JwtSecurityTokenHandler().WriteToken(token);
-
-            return tokenValue;
-        }
-        */
-
         public async Task<string> GetUserId(string token)
         {
             var tokenHandler = new JwtSecurityTokenHandler();

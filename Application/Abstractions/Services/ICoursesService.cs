@@ -1,6 +1,5 @@
 ﻿using Application.Contracts;
 using Domain.Entities;
-using Domain.Entities.Identity;
 
 namespace Application.Abstractions.Services
 {

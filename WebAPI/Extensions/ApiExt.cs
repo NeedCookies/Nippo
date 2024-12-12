@@ -1,6 +1,5 @@
 using Infrastructure.Entities;
 using Infrastructure.Options;
-using Domain.Entities.Identity;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;

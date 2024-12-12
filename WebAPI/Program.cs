@@ -14,7 +14,6 @@ builder.Services.AddSwaggerGen();
 builder.Services.Configure<JwtOptions>(builder.Configuration.GetSection(nameof(JwtOptions)));
 
 string authServ = builder.Configuration["AuthServiceUrl"];
-Console.WriteLine(builder.Configuration["AuthServiceUrl"]);
 builder.Services.AddHttpClient("authServ",
     httpClient =>
     {
@@ -23,16 +22,9 @@ builder.Services.AddHttpClient("authServ",
 
 var jwtOptions = builder.Services.BuildServiceProvider().GetRequiredService<IOptions<JwtOptions>>();
 
-/*builder.Services.AddIdentity<ApplicationUser, AppRole>()
-    .AddEntityFrameworkStores<AppDbContext>()
-    .AddDefaultTokenProviders();
-*/
-
-
 builder.Services.AddDbContext(builder.Configuration);
 builder.Services.AddAppRepositories();
 builder.Services.AddInfrastructureServices();
-//builder.Services.AddIdentityServices();
 builder.Services.AddAppServices();
 
 builder.Services.AddApiAuthentication(jwtOptions);
@@ -66,8 +58,6 @@ if (app.Environment.IsDevelopment())
 app.UseCors("Frontend");
 
 app.UseHttpsRedirection();
-
-//app.UseMiddleware<AuthorizationMiddleware>();
 
 app.UseAuthentication();
 app.UseAuthorization();

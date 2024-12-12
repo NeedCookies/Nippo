@@ -1,6 +1,5 @@
 ﻿using DataAccess.Configurations;
 using Domain.Entities;
-using Domain.Entities.Identity;
 using Microsoft.EntityFrameworkCore;
 
 namespace DataAccess
@@ -27,22 +26,8 @@ namespace DataAccess
             modelBuilder.ApplyConfiguration(new QuizEntityConfiguration());
             modelBuilder.ApplyConfiguration(new QuizResultEntityConfiguration());
             modelBuilder.ApplyConfiguration(new UserAnswerEntityConfiguration());
-            modelBuilder.ApplyConfiguration(new UserCoursesConfiguration());
-
-            //SeedRoles(modelBuilder);
 
             base.OnModelCreating(modelBuilder);
         }
-
-        /*
-        private static void SeedRoles(ModelBuilder builder)
-        {
-            builder.Entity<AppRole>().HasData(
-                new AppRole("user") { Id = "1" },
-                new AppRole("author") { Id = "2" },
-                new AppRole("admin") { Id = "3" }
-            );
-        }
-        */
     }
 }

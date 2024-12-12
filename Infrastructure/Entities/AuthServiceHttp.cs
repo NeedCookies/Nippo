@@ -1,6 +1,4 @@
 ﻿using Application.Abstractions.Services;
-using Microsoft.Extensions.Configuration;
-using System.Net.Http.Json;
 
 namespace Infrastructure.Entities
 {

@@ -5,10 +5,13 @@
         public int Id { get; set; }
         public int LessonId { get; set; }
         public Lesson Lesson { get; set; } = null!;
+        /// <summary>
+        /// BlockType represents 3 types: text, image, video
+        /// </summary>
         public BlockType Type { get; set; }
         /// <summary>
-        /// depend on typr content property will
-        /// contain text, or url on image or video
+        /// Depend on 'Type' property and will
+        /// contain text, or url to image or to video in S3
         /// </summary>
         public string Content { get; set; } = null!;
         public int Order { get; set; }

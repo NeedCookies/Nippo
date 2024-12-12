@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace WebAPI.Controllers
 {
+    /*
     [ApiController]
     [Route("admin")]
     [Authorize(Policy = "AdminRole")]
@@ -18,4 +19,5 @@ namespace WebAPI.Controllers
             return Ok(newUserInfo);
         }
     }
+    */
 }

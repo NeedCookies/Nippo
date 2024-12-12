@@ -10,7 +10,8 @@ namespace Infrastructure.Services
         AuthorizationHandler<PermissionRequirement>
     {
         /// <summary>
-        /// Check if user has all required permissions. Get user permissions from auth service
+        /// Check if user has all required permissions for certain controller. 
+        /// Get user permissions from auth service, compare them with required
         /// </summary>
         /// <param name="context"></param>
         /// <param name="requirement"></param>
