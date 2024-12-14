@@ -26,6 +26,7 @@ namespace DataAccess
             modelBuilder.ApplyConfiguration(new QuizEntityConfiguration());
             modelBuilder.ApplyConfiguration(new QuizResultEntityConfiguration());
             modelBuilder.ApplyConfiguration(new UserAnswerEntityConfiguration());
+            modelBuilder.ApplyConfiguration(new ApplicationUserConfiguration());
 
             base.OnModelCreating(modelBuilder);
         }
