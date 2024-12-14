@@ -12,15 +12,15 @@ namespace Application.Abstractions.Repositories
         /// </summary>
         /// <param name="userId"></param>
         /// <returns></returns>
-        Task<List<int>> GetUserCourses(string userId);
+        Task<List<int>> GetUserCourses(Guid userId);
         /// <summary>
         /// Returns list of user ids who was bought this course
         /// </summary>
         /// <param name="courseId"></param>
         /// <returns></returns>
         Task<List<int>> GetAcquiredUsers(int courseId);
-        Task<UserCourses> Add(int courseId, string userId);
-        Task<UserCourses> Delete(int courseId, string userId);
+        Task<UserCourses> Add(int courseId, Guid userId);
+        Task<UserCourses> Delete(int courseId, Guid userId);
 
     }
 }

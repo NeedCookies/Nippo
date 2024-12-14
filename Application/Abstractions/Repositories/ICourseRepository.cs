@@ -5,9 +5,9 @@ namespace Application.Abstractions.Repositories
 {
     public interface ICourseRepository
     {
-        Task<List<Course>> GetCoursesByAuthorAsync(int authorId);
+        Task<List<Course>> GetCoursesByAuthorAsync(Guid authorId);
         Task<List<Course>> GetAllCourses();
-        Task<Course> Create(string title, string desc, decimal price, string imgPath, string authorId);
+        Task<Course> Create(string title, string desc, decimal price, string imgPath, Guid authorId);
         Task<Course> Update(int id, string title, string desc, decimal price, string imgPath);
         Task<Course> Delete(int id);
         Task<Course?> GetById(int id);

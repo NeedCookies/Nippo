@@ -6,7 +6,7 @@ namespace DataAccess.Repositories
 {
     public class UserCoursesRepository(AppDbContext appDbContext) : IUserCoursesRepository
     {
-        public async Task<UserCourses> Add(int courseId, string userId)
+        public async Task<UserCourses> Add(int courseId, Guid userId)
         {
             var userCourse = new UserCourses
             {
@@ -20,7 +20,7 @@ namespace DataAccess.Repositories
             return userCourse;
         }
 
-        public async Task<UserCourses> Delete(int courseId, string userId)
+        public async Task<UserCourses> Delete(int courseId, Guid userId)
         {
             var deletedUserCourse = await appDbContext.UserCourses
                 .FirstOrDefaultAsync(
@@ -47,7 +47,7 @@ namespace DataAccess.Repositories
             return usersId;
         }
 
-        public async Task<List<int>> GetUserCourses(string userId)
+        public async Task<List<int>> GetUserCourses(Guid userId)
         {
             List<int> coursesId = new List<int>();
 

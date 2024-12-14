@@ -1,8 +1,6 @@
 ﻿using Application.Abstractions.Services;
 using Application.Contracts;
-using Domain.Entities.Identity;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
 namespace WebAPI.Controllers
@@ -10,14 +8,13 @@ namespace WebAPI.Controllers
     [Authorize]
     [ApiController]
     [Route("course")]
-    public class CourseController(ICoursesService coursesService, IJwtProvider jwtProvider, UserManager<ApplicationUser> userManager) : ControllerBase
+    public class CourseController(ICoursesService coursesService, IJwtProvider jwtProvider) : ControllerBase
     {
         [AllowAnonymous]
         [HttpGet("get-all-courses")]
         public async Task<IActionResult> GetAllCourses()
         {
-            //var allCourses = await coursesService.GetAllCourses();
-            var allCourses = "all courses";
+            var allCourses = await coursesService.GetAllCourses();
             return Ok(allCourses);
         }
 
@@ -40,13 +37,6 @@ namespace WebAPI.Controllers
         {
             string token = HttpContext.Request.Cookies["jwt-token-cookie"];
             string userId = await jwtProvider.GetUserId(token);
-
-            var user = await userManager.FindByIdAsync(userId);
-            if (user == null)
-            {
-                throw new ArgumentException($"User with id '{userId}' not found.");
-                // Или выполняем другие действия по обработке ошибки, например, возвращаем NotFound или BadRequest
-            }
 
             var course = await coursesService.Create(request, userId);
             return Ok(course);

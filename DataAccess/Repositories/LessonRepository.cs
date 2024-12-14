@@ -6,7 +6,7 @@ namespace DataAccess.Repositories
 {
     public class LessonRepository(AppDbContext dbContext) : ILessonRepository
     {
-        public async Task<Lesson> Create(string title, int courseId, string authorId, DateTime date)
+        public async Task<Lesson> Create(string title, int courseId, Guid authorId, DateTime date)
         {
             var lesson = new Lesson
             {

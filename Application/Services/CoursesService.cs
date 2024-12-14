@@ -19,24 +19,23 @@ namespace Application.Services
 
             StringBuilder error = new StringBuilder("");
             if (title.Length == 0)
-            {
                 error.Append("Title shouldn't be null");
-            }
+
             if (descript.Length == 0)
-            {
                 error.Append("Description shouldn't be null");
-            }
+
             if (price < 0)
-            {
                 error.Append("Prize should be equal 0 or more");
-            }
+
+            if (authorId == null || !Guid.TryParse(authorId, out var guidAuthorId))
+                throw new ArgumentException("Author Id has incorrect format");
 
             if (error.Length > 0)
             {
                 throw new ArgumentException(error.ToString());
             }
 
-            return await courseRepository.Create(title, descript, price, imgPath, authorId);
+            return await courseRepository.Create(title, descript, price, imgPath, guidAuthorId);
         }
 
         public async Task<Course> Update(UpdateCourseRequest request)
@@ -73,7 +72,10 @@ namespace Application.Services
 
         public async Task<UserCourses> PurchaseCourse(int courseId, string userId)
         {
-            return await userCoursesRepository.Add(courseId, userId);
+            if (userId == null || Guid.TryParse(userId, out var guidUserId))
+                throw new ArgumentException("Author Id has incorrect format");
+
+            return await userCoursesRepository.Add(courseId, guidUserId);
         }
     }
 }

@@ -9,7 +9,7 @@ namespace Domain.Entities
         public string Title { get; set; } = null!;
         public string Description { get; set; } = null!;
         public decimal Price { get; set; }
-        public string AuthorId { get; set; } = null!;
+        public Guid AuthorId { get; set; }
         public ApplicationUser Author { get; set; } = null!;
         public string? ImgPath { get; set; }
         public ICollection<Lesson>? Lessons { get; set; } 

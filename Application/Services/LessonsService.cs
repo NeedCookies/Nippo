@@ -17,19 +17,20 @@ namespace Application.Services
 
             StringBuilder error = new StringBuilder("");
             if (title.Length == 0)
-            {
                 error.AppendLine("Title shouldn't be empty");
-            }
+
             if (courseId < 0)
-            {
                 error.AppendLine("Wrong course id");
-            }
+
+            if (authorId == null || !Guid.TryParse(authorId, out var guidAuthorId))
+                throw new ArgumentException("Author Id has incorrect format");
+
             if (error.Length > 0)
             {
                 throw new ArgumentException(error.ToString());
             }
 
-            return await lessonRepository.Create(title, courseId, authorId, date);
+            return await lessonRepository.Create(title, courseId, guidAuthorId, date);
         }
 
         public async Task<Lesson> GetById(int courseId, int lessonId)

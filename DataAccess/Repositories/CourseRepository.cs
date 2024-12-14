@@ -13,7 +13,7 @@ namespace DataAccess.Repositories
             return await _appDbContext.Courses.ToListAsync();
         }
 
-        public async Task<Course> Create(string title, string desc, decimal price, string imgPath, string authorId)
+        public async Task<Course> Create(string title, string desc, decimal price, string imgPath, Guid authorId)
         {
             var course = new Course
             {
@@ -58,7 +58,7 @@ namespace DataAccess.Repositories
             return course;
         }
 
-        public Task<List<Course>> GetCoursesByAuthorAsync(int authorId)
+        public Task<List<Course>> GetCoursesByAuthorAsync(Guid authorId)
         {
             throw new NotImplementedException();
         }
