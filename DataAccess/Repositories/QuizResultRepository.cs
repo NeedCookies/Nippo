@@ -7,7 +7,7 @@ namespace DataAccess.Repositories
     public class QuizResultRepository(AppDbContext dbContext)
         : IQuizResultRepository
     {
-        public async Task<QuizResult> Create(int quizId, string userId, int score, int attempt)
+        public async Task<QuizResult> Create(int quizId, Guid userId, int score, int attempt)
         {
             var quizResult = new QuizResult
             {
@@ -23,7 +23,7 @@ namespace DataAccess.Repositories
             return quizResult;
         }
 
-        public async Task<QuizResult?> GetQuizResultByQuizAsync(int quizId, string userId)
+        public async Task<QuizResult?> GetQuizResultByQuizAsync(int quizId, Guid userId)
         {
             return await dbContext.QuizResults
                 .FirstOrDefaultAsync(qr => qr.QuizId == quizId

@@ -4,22 +4,18 @@ using Domain.Entities;
 using Application.Contracts;
 using Domain.Entities.Identity;
 using System.Text.RegularExpressions;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using Application.Contracts.Update;
 
 namespace Application.Services
 {
     public class UserService(
-        IPasswordHasher passwordHasher,
         IUserRepository userRepository,
         IUnitOfWork unitOfWork,
         IJwtProvider jwtProvider,
         IUserCoursesRepository userCoursesRepository,
         IUserRolesRepository userRolesRepository,
         ICourseRepository courseRepository,
-        UserManager<ApplicationUser> userManager,
-        RoleManager<AppRole> roleManager,
         IStorageService storageService,
         IUserProgressRepository userProgressRepository,
         IDiscountService discountService,
@@ -27,14 +23,16 @@ namespace Application.Services
     {
         public async Task<PersonalInfoDto> GetUserInfoById(string userId)
         {
-            var user = await userRepository.GetByUserId(userId);
+            if (userId == null || !Guid.TryParse(userId, out var guidUserId))
+                throw new ArgumentException($"User Id has incorrect format: {userId}");
+
+            var user = await userRepository.GetByUserId(guidUserId);
 
             if (user == null)
             {
                 throw new ArgumentException("User with such Id was not found");
             }
 
-            var userRoles = await userManager.GetRolesAsync(user);
             var pictureUrl = user.PictureUrl != null
                 ? await storageService.GetUrlAsync(user.PictureUrl)
                 : null;
@@ -50,14 +48,17 @@ namespace Application.Services
                 PhoneNumber = user.PhoneNumber,
                 PictureUrl = pictureUrl,
                 Points = user.Points,
-                Role = userRoles.First(),
+                Role = user.Role.ToString(),
                 UserName = user.UserName
             };
         }
 
         public async Task<PersonalInfoDto> GivePointsToUser(string userId, int points)
         {
-            var user = await userRepository.GetByUserId(userId);
+            if (userId == null || !Guid.TryParse(userId, out var guidUserId))
+                throw new ArgumentException($"User Id has incorrect format: {userId}");
+
+            var user = await userRepository.GetByUserId(guidUserId);
 
             if (user == null)
             {
@@ -73,55 +74,16 @@ namespace Application.Services
             return await GetUserInfoById(userId);
         }
 
-        public async Task<string> Login(string userName, string password)
-        {
-            var user = await userRepository.GetByUserName(userName);
-
-            var result = passwordHasher.Verify(password, user.PasswordHash!);
-
-            if (result == false)
-            {
-                throw new Exception("Failed to login");
-            }
-
-            var token = await jwtProvider.GenerateAsync(user);
-
-            logger.LogInformation("User were logged in. User Id: {UserId}", user.Id);
-            return token;
-        }
-
-        public async Task<ApplicationUser> Register(string userName, string email, string password)
-        {
-            if (IsValidEmail(email) == false)
-            {
-                throw new ArgumentException("Invalid email address.");
-            }
-
-            if (IsValidPassword(password) == false)
-            {
-                throw new ArgumentException("Password does not meet the requirements.");
-            }
-
-            var hashedPassword = passwordHasher.Generate(password);
-
-            var user = await userRepository.Add(userName, email, hashedPassword);
-
-            var registeredUser = await userRepository.GetByUserName(userName);
-
-            var defaultRole = await userRepository.GetDefaultUserRole();
-
-            await userRolesRepository.AssignRole(registeredUser.Id, defaultRole.Id);
-
-            logger.LogInformation("A new user has registered. UserId: {UserId}, Role: {Role}", user.Id, defaultRole.Name);
-
-            return user;
-        }
-
         public async Task<List<Course>> GetUserCourses(string userId)
         {
-            List<Course> userCourses = new List<Course>();
-            var coursesId = await userCoursesRepository.GetUserCourses(userId);
+            if (userId == null || !Guid.TryParse(userId, out var guidUserId))
+                throw new ArgumentException($"User Id has incorrect format: {userId}");
 
+            List<Course> userCourses = new List<Course>();
+            var coursesId = await userCoursesRepository.GetUserCourses(guidUserId);
+
+            // We need this code to fully get info about course by its id
+            // That's why we don't use lambda here
             foreach (var courseId in coursesId)
             {
                 var course = await courseRepository.GetById(courseId);
@@ -140,7 +102,10 @@ namespace Application.Services
 
         public async Task<List<Course>> GetCreatedCourses(string userId)
         {
-            var courses = await courseRepository.GetCoursesByAuthorAsync(userId);
+            if (userId == null || !Guid.TryParse(userId, out var guidUserId))
+                throw new ArgumentException($"User Id has incorrect format: {userId}");
+
+            var courses = await courseRepository.GetCoursesByAuthorAsync(guidUserId);
 
             foreach (var course in courses)
             {
@@ -152,20 +117,24 @@ namespace Application.Services
             return courses;
         }
 
-        public async Task<PersonalInfoDto> UpdateUserInfo(string userId, UserInfoUpdateRequest updateRequest)
+        public async Task<PersonalInfoDto> UpdateUserInfo(string userId, UpdateUserInfoRequest updateRequest)
         {
-            var user = await userRepository.GetByUserId(userId);
+            if (userId == null || !Guid.TryParse(userId, out var guidUserId))
+                throw new ArgumentException($"User Id has incorrect format: {userId}");
+
+            var user = await userRepository.GetByUserId(guidUserId);
 
             if (user == null)
             {
                 throw new ArgumentException("User with such Id was not found");
             }
 
-            user.FirstName = updateRequest.FirstName;
-            user.LastName = updateRequest.LastName;
-            user.PhoneNumber = updateRequest.PhoneNumber;
-            user.BirthDate = updateRequest.BirthDate == null
-                ? null
+            user.FirstName = updateRequest.FirstName ?? user.FirstName;
+            user.LastName = updateRequest.LastName ?? user.LastName;
+            user.UserName = updateRequest.UserName ?? user.UserName;
+            user.PhoneNumber = updateRequest.PhoneNumber ?? user.PhoneNumber;
+            user.BirthDate = updateRequest.BirthDate == null ?
+                null 
                 : DateOnly.ParseExact(updateRequest.BirthDate, "yyyy-MM-dd");
 
             if (updateRequest.UserPictureFile != null)
@@ -180,7 +149,7 @@ namespace Application.Services
 
             await unitOfWork.SaveChangesAsync();
 
-            return await GetUserInfoById(user.Id);
+            return await GetUserInfoById(userId);
         }
 
         public async Task<int> GetUsersByCourse(int courseId)
@@ -190,67 +159,25 @@ namespace Application.Services
             return userIds.Count;
         }
 
-        public async Task<List<GetUsersAndRolesRequest>> GetUsersAndRoles()
-        {
-            var users = await userRepository.GetAllUsers();
-            var roles = await roleManager.Roles.ToListAsync();
-            var userRoles = await userRolesRepository.GetUsersAndRoles();
-
-            var userDict = users.ToDictionary(u => u.Id, u => u.UserName);
-            var roleDict = roles.ToDictionary(r => r.Id, r => r.Name);
-
-            List<GetUsersAndRolesRequest> usersAndRoles = new List<GetUsersAndRolesRequest>();
-
-            foreach (var userRole in userRoles)
-            {
-                if (userDict.TryGetValue(userRole.UserId, out var userName) &&
-                    roleDict.TryGetValue(userRole.RoleId, out var roleName))
-                {
-                    usersAndRoles.Add(new GetUsersAndRolesRequest(
-                        userRole.UserId, 
-                        userName, 
-                        roleName));
-                }
-            }
-
-            return usersAndRoles;
-        }
-
-        public async Task<List<ApplicationUser>> GenerateUsers()
-        {
-            const int numberOfNewUsers = 5;
-            List<ApplicationUser> users = new List<ApplicationUser>();
-
-            for (int i = 0; i < numberOfNewUsers; i++)
-            {
-                string userName = $"user{i}_{Guid.NewGuid().ToString().Substring(0, 4)}";
-                string email = $"{userName}@example.com";
-                string defaultPassword = "Password123";
-
-                await Register(userName, email, defaultPassword);
-
-                users.Add(await userRepository.GetByUserName(userName));
-            }
-
-            return users;
-        }
-
         public async Task AssignRole(string userId, string roleId)
         {
-            if(await userRolesRepository.GetByUserId(userId) != null)
-            {
-                await userRolesRepository.RemoveRole(userId);
-            }
+            if (userId == null || !Guid.TryParse(userId, out var guidUserId))
+                throw new ArgumentException($"User Id has incorrect format: {userId}");
 
-            await userRolesRepository.AssignRole(userId, roleId);
+            if (roleId == null || !Enum.TryParse<AppRole>(roleId, out var appRole))
+                throw new ArgumentException($"There's no role with id: {roleId}");
+
+            await userRolesRepository.AssignRole(guidUserId, appRole);
 
             logger.LogInformation("User was assigned a new role. User Id: {UserId}. New role Id: {RoleId}", userId, roleId);
         }
 
         public async Task UpgradeRoleToAuthor(string userId)
         {
+            if (userId == null || !Guid.TryParse(userId, out var guidUserId))
+                throw new ArgumentException($"User Id has incorrect format: {userId}");
+            
             var user = await GetUserInfoById(userId);
-            string authorRoleId = "2";
 
             if (user.FirstName == null)
                 throw new Exception("FirstName Field Is Empty!");
@@ -261,24 +188,28 @@ namespace Application.Services
             if (user.PictureUrl == null)
                 throw new Exception("PictureUrl Field Is Empty!");
 
-            await userRolesRepository.RemoveRole(userId);
-            await userRolesRepository.AssignRole(userId, authorRoleId);
+            await userRolesRepository.AssignRole(guidUserId, AppRole.Author);
 
             logger.LogInformation("User role was changed to 'Author'. User Id: {UserId}.", userId);
         }
 
         public async Task DowngradeRoleToUser(string userId)
         {
-            string userRoleId = "1";
+            if (userId == null || !Guid.TryParse(userId, out var guidUserId))
+                throw new ArgumentException($"User Id has incorrect format: {userId}");
 
-            await userRolesRepository.RemoveRole(userId);
-            await userRolesRepository.AssignRole(userId, userRoleId);
+            await userRolesRepository.SetDefaultRole(guidUserId);
 
             logger.LogInformation("User role was downgraded to 'User'. User Id: {UserId}.", userId);
         }
 
-        public async Task<List<UserProgress>> GetUserProgresses(string userId, int courseId) =>
-            await userProgressRepository.GetElementsByUserCourseId(userId, courseId);
+        public async Task<List<UserProgress>> GetUserProgresses(string userId, int courseId)
+        {
+            if (userId == null || !Guid.TryParse(userId, out var guidUserId))
+                throw new ArgumentException($"User Id has incorrect format: {userId}");
+
+            return await userProgressRepository.GetElementsByUserCourseId(guidUserId, courseId);
+        }
 
         private bool IsValidEmail(string email)
         {

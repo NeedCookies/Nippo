@@ -1,5 +1,6 @@
 ﻿using Application.Abstractions.Services;
 using Application.Contracts;
+using Application.Contracts.Update;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -30,7 +31,7 @@ namespace WebAPI.Controllers
 
         [HttpPost("update-personal-info")]
         public async Task<IActionResult> UpdateUserInfo(
-            [FromForm] UserInfoUpdateRequest infoUpdateRequest)
+            [FromForm] UpdateUserInfoRequest infoUpdateRequest)
         {
             var userId = GetUserId();
 

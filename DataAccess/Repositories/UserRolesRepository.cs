@@ -1,44 +1,42 @@
 ﻿using Application.Abstractions.Repositories;
-using Application.Contracts;
 using Domain.Entities.Identity;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
 
 namespace DataAccess.Repositories
 {
-    public class UserRolesRepository(AppDbContext appDbContext) : IUserRolesRepository
+    public class UserRolesRepository(
+        AppDbContext appDbContext, IUserRepository userRepository
+        ) : IUserRolesRepository
     {
-        public async Task AssignRole(string userId, string roleId)
+        public async Task AssignRole(Guid userId, AppRole role)
         {
-            var userRole = new IdentityUserRole<string>
-            {
-                UserId = userId,
-                RoleId = roleId
-            };
+            var user = await userRepository.GetByUserId(userId);
 
-            appDbContext.UserRoles.Add(userRole);
+            if (user == null)
+                throw new NullReferenceException($"There's no user with id: {userId}");
+            
+            user.Role = role;
             await appDbContext.SaveChangesAsync();
         }
 
-        public async Task RemoveRole(string userId)
+        public async Task SetDefaultRole(Guid userId)
         {
-            var userRole = await appDbContext.UserRoles
-                .FirstOrDefaultAsync(ur => ur.UserId == userId);
-            appDbContext.UserRoles.Remove(userRole);
+            var user = await userRepository.GetByUserId(userId);
+
+            if (user == null)
+                throw new NullReferenceException($"There's no user with id: {userId}");
+
+            user.Role = AppRole.User;
             await appDbContext.SaveChangesAsync();
         }
 
-        public async Task<IdentityUserRole<string>> GetByUserId(string userId)
+        public async Task<AppRole> GetByUserId(Guid userId)
         {
-            var userRole = await appDbContext.UserRoles
-                .FirstOrDefaultAsync(ur => ur.UserId == userId);
+            var user = await userRepository.GetByUserId(userId);
 
-            return userRole;
-        }
+            if (user == null)
+                throw new NullReferenceException($"There's no user with id: {userId}");
 
-        public async Task<List<IdentityUserRole<string>>> GetUsersAndRoles()
-        {
-            return await appDbContext.UserRoles.ToListAsync();
+            return user.Role;
         }
     }
 }

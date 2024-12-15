@@ -19,10 +19,10 @@ namespace WebAPI.Controllers
         }
 
         [HttpPost("save")]
-        public async Task<IActionResult> Save([FromBody]CreateQuizResultRequest request)
+        public async Task<IActionResult> Save(int quizId)
         {
             var userId = GetUserId();
-            var quizResult = await quizResultService.SaveQuizResult(request, userId);
+            var quizResult = await quizResultService.SaveQuizResult(quizId, userId);
 
             return Ok(quizResult);
         }

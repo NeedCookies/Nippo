@@ -16,6 +16,7 @@ namespace Domain.Entities.Identity
         public string? UserName { get; set; }
         public string? PictureUrl { get; set; }
         public int Points { get; set; }
+        public AppRole Role { get; set; }
         [JsonIgnore]
         public ICollection<Course>? Courses { get; set; }
         [JsonIgnore]

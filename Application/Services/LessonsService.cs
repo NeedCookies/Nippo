@@ -3,7 +3,6 @@ using Application.Abstractions.Services;
 using Application.Contracts;
 using Domain.Entities;
 using Domain.Entities.Identity;
-using Microsoft.AspNetCore.Identity;
 using System.Text;
 
 namespace Application.Services
@@ -28,15 +27,12 @@ namespace Application.Services
             if (courseId < 0)
                 error.AppendLine("Wrong course id");
 
-            if (authorId == null || !Guid.TryParse(authorId, out var guidAuthorId))
-                throw new ArgumentException("Author Id has incorrect format");
-
             if (error.Length > 0)
             {
                 throw new ArgumentException(error.ToString());
             }
 
-            return await lessonRepository.Create(title, courseId, guidAuthorId, date);
+            return await lessonRepository.Create(title, courseId, date);
         }
 
         public async Task<Lesson> Update(int lessonId, string title) =>
@@ -49,7 +45,7 @@ namespace Application.Services
         {
             StringBuilder error = new StringBuilder("");
 
-            if (userId == null || Guid.TryParse(userId, out var guidUserId))
+            if (userId == null || !Guid.TryParse(userId, out var guidUserId))
                 throw new ArgumentException("User Id has incorrect format");
 
             if (lessonId < 0)
@@ -62,9 +58,10 @@ namespace Application.Services
 
             if (await Validate(lesson.CourseId, guidUserId))
             {
-                var user = await userService.GetUserInfoById(guidUserId);
+                /*
+                var user = await userService.GetUserInfoById(userId);
 
-                if (user.Role == "user")
+                if (user.Role.ToLower() == "user")
                     await userProgressRepository.UpdateProgress(
                         new UserProgressRequest
                         (
@@ -74,7 +71,7 @@ namespace Application.Services
                             0
                          )
                     );
-
+                */
                 return lesson;
             }
             else
@@ -84,28 +81,33 @@ namespace Application.Services
 
         public async Task<List<Lesson>> GetByCourseId(int courseId, string userId)
         {
-            if (userId == null || Guid.TryParse(userId, out var guidUserId))
+            if (userId == null || !Guid.TryParse(userId, out var guidUserId))
                 throw new ArgumentException("User Id has incorrect format");
 
-            if (await Validate(courseId, userId))
+            if (await Validate(courseId, guidUserId))
                 return await lessonRepository.GetLessonsByCourseAsync(courseId);
             else
                 throw new Exception("Access denied");
         }
 
+        /// <summary>
+        /// Check if this course was bought by user
+        /// or is user author of the course
+        /// or is user has admin role
+        /// </summary>
+        /// <param name="courseId"></param>
+        /// <param name="userId"></param>
+        /// <returns></returns>
         private async Task<bool> Validate(int courseId, Guid userId)
         {
             bool isPurchased = await userCoursesRepository.IsCoursePurchased(userId, courseId);
-            string courseAuthor = await courseRepository.GetAuthorById(courseId);
+            Guid courseAuthor = await courseRepository.GetAuthorById(courseId);
 
-            var user = await userService.GetUserInfoById(userId);
-
-            bool result = false;
+            var user = await userService.GetUserInfoById(userId.ToString());
 
             if (isPurchased || courseAuthor == userId || user.Role == "admin")
-                result = true;
-
-            return result;
+                return true;
+            return false;
         }
     }
 }

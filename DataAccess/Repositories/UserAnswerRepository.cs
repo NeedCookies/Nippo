@@ -7,7 +7,7 @@ namespace DataAccess.Repositories
     public class UserAnswerRepository(AppDbContext dbContext)
         : IUserAnswerRepository
     {
-        public async Task<UserAnswer> Create(int questionId, string text, string userId, int attempt)
+        public async Task<UserAnswer> Create(int questionId, string text, Guid userId, int attempt)
         {
             var userAnswer = new UserAnswer
             {
@@ -40,7 +40,7 @@ namespace DataAccess.Repositories
                 .FirstOrDefaultAsync(ua => ua.Id == userAnswerId);
         }
 
-        public async Task<UserAnswer?> GetByQuestion(string userId, int questionId)
+        public async Task<UserAnswer?> GetByQuestion(Guid userId, int questionId)
         {
             return await dbContext.UserAnswers
                 .FirstOrDefaultAsync(ua => ua.UserId == userId

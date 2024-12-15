@@ -1,7 +1,6 @@
 ﻿using Application.Abstractions.Repositories;
 using Domain.Entities;
 using Domain.Entities.Identity;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
 namespace DataAccess.Repositories
@@ -10,17 +9,25 @@ namespace DataAccess.Repositories
     {
         private readonly AppDbContext _appDbContext = appDbContext;
 
-        public async Task<ApplicationUser> Add(string userName, string email, string password)
+        public async Task<ApplicationUser> Add(Guid userId,
+            string firstName, string lastName,
+            string userName, string email,
+            DateOnly birthDate, string phoneNumber,
+            AppRole role, int points)
         {
             var id = Guid.NewGuid().ToString();
 
             var user = new ApplicationUser()
             {
-                Id = id,
+                Id = userId,
+                FirstName = firstName,
+                LastName = lastName,
                 UserName = userName,
                 Email = email,
-                PasswordHash = password,
-                Points = 1500
+                Role = role,
+                BirthDate = birthDate,
+                PhoneNumber = phoneNumber,
+                Points = points
             };
 
             await _appDbContext.Users.AddAsync(user);
@@ -29,46 +36,37 @@ namespace DataAccess.Repositories
             return user;
         }
 
-        public async Task<ApplicationUser?> GetByUserId(string userId)
-        {
-            var user = await appDbContext.Users.FindAsync(userId);
+        public async Task<ApplicationUser?> GetByUserId(Guid userId) =>
+            await appDbContext.Users.AsNoTracking().FirstOrDefaultAsync(u => u.Id == userId);
 
-            return user;
+        public async Task<ApplicationUser?> GetByUserName(string userName) =>
+            await _appDbContext.Users.AsNoTracking().FirstOrDefaultAsync(u => u.UserName == userName);
+        
+        public async Task<ApplicationUser?> GetByEmail(string email) => 
+            await _appDbContext.Users.AsNoTracking().FirstOrDefaultAsync(u => u.Email == email);
+        public async Task<AppRole> GetUserRole(Guid userId)
+        {
+            var user = await _appDbContext.Users.AsNoTracking().FirstOrDefaultAsync(u => u.Id == userId);
+
+            if (user == null)
+                throw new NullReferenceException($"There's no user with id: {userId}");
+
+            return user.Role;
         }
 
-        public async Task<ApplicationUser> GetByUserName(string userName)
-        {
-            var userEntity = await _appDbContext.Users
-                .AsNoTracking()
-                .FirstOrDefaultAsync(u => u.UserName == userName)
-                ?? throw new Exception();
-
-            return userEntity;
-        }
-
-        public async Task<AppRole> GetDefaultUserRole()
-        {
-            const string userRoleName = "user";
-            var userRole = await _appDbContext.Roles
-                .AsNoTracking()
-                .FirstOrDefaultAsync(r => r.Name == userRoleName)
-                ?? throw new Exception();
-
-            return userRole;
-        }
-
-        public async Task<List<Course>> GetUserCourses(string userId)
+        public async Task<List<Course>> GetUserCourses(Guid userId)
         {
             var user = await _appDbContext.Users
                 .Include(u => u.Courses)
                 .FirstOrDefaultAsync(u => u.Id == userId);
 
+            if (user == null)
+                throw new NullReferenceException($"There's no user with id: {userId}");
+
             return user.Courses.ToList();
         }
 
-        public async Task<List<ApplicationUser>> GetAllUsers()
-        {
-            return await _appDbContext.Users.ToListAsync();
-        }
+        public async Task<List<ApplicationUser>> GetAllUsers() =>
+            await _appDbContext.Users.ToListAsync();
     }
 }

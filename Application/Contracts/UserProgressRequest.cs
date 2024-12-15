@@ -2,7 +2,7 @@
 {
     public record UserProgressRequest
     (
-        string UserId,
+        Guid UserId,
         int CourseId,
         int ElementId,
         int ElementType

@@ -38,14 +38,17 @@ namespace Application.Services
             int questionId = request.QuestionId;
             string text = request.Text.Trim();
 
-            var userAnswer = await userAnswerRepository.GetByQuestion(userId, request.QuestionId);
+            if (userId == null || !Guid.TryParse(userId, out var guidUserId))
+                throw new ArgumentException($"Wrong user Id {userId}");
+
+            var userAnswer = await userAnswerRepository.GetByQuestion(guidUserId, request.QuestionId);
 
             if (userAnswer == null)
             {
                 // create user answer
                 int attempt = 1;
                 return await
-                userAnswerRepository.Create(questionId, text, userId, attempt);
+                userAnswerRepository.Create(questionId, text, guidUserId, attempt);
             }
             else
             {

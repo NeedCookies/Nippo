@@ -14,7 +14,10 @@ namespace Application.Services
             var courseLessons = await lessonRepository.GetLessonsSizeByCourse(request.courseId);
             var courseQuizzes = await quizRepository.GetQuizzesSizeByCourse(request.courseId);
 
-            var completedElements = await userProgressRepository.GetCompletedCourses(request.userId, request.courseId);
+            if (request.userId == null || !Guid.TryParse(request.userId, out var guidUserId))
+                throw new ArgumentException($"User Id has incorrect format: {request.userId}");
+
+            var completedElements = await userProgressRepository.GetCompletedCourses(guidUserId, request.courseId);
 
             CompletedElementsCourseResponse completed = new CompletedElementsCourseResponse
             (

@@ -32,7 +32,7 @@ namespace DataAccess.Repositories
             await appDbContext.SaveChangesAsync();
         }
 
-        public async Task<List<UserProgress>> GetElementsByUserCourseId(string userId, int courseId)
+        public async Task<List<UserProgress>> GetElementsByUserCourseId(Guid userId, int courseId)
         {
             var userProgresses = await appDbContext.UserProgresses
                 .Where(up => up.UserId == userId 
@@ -63,7 +63,7 @@ namespace DataAccess.Repositories
             return userProgress;
         }
 
-        public async Task<int> GetCompletedCourses(string userId, int courseId) =>
+        public async Task<int> GetCompletedCourses(Guid userId, int courseId) =>
             await appDbContext.UserProgresses
                 .Where(up => up.UserId == userId
                     && up.CourseId == courseId 

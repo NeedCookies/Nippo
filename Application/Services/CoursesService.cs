@@ -132,7 +132,8 @@ namespace Application.Services
                 throw new ArgumentException($"Wrong course Id: {id}");
             }
 
-            return await courseRepository.GetAuthorById(id);
+            var authorId = await courseRepository.GetAuthorById(id);
+            return authorId.ToString();
         }
 
         public async Task<List<Course>> GetCoursesToCheck()
@@ -191,12 +192,12 @@ namespace Application.Services
         {
             var courseAuthor = await courseRepository.GetAuthorById(courseId);
 
-            if (userId == null || Guid.TryParse(userId, out var guidUserId))
+            if (userId == null || !Guid.TryParse(userId, out var guidUserId))
                 throw new ArgumentException("Author Id has incorrect format");
 
-            var userInfo = await userService.GetUserInfoById(guidUserId);
+            var userInfo = await userService.GetUserInfoById(userId);
 
-            if (courseAuthor == userId && userInfo.Role == "author")
+            if (courseAuthor == guidUserId && userInfo.Role == "author")
             {
                 logger.LogInformation("Course has been sent for review. Course Id: {CourseId}", courseId);
                 return await courseRepository.ChangeStatus(courseId, PublishStatus.Check);
@@ -242,7 +243,7 @@ namespace Application.Services
             int courseId = request.CourseId;
 
             StringBuilder error = new StringBuilder();
-            if (userId == null || Guid.TryParse(userId, out var guidUserId))
+            if (userId == null || !Guid.TryParse(userId, out var guidUserId))
                 throw new ArgumentException("Author Id has incorrect format");
 
             if (courseId < 0)
@@ -251,7 +252,7 @@ namespace Application.Services
             if (error.Length > 0)
                 throw new ArgumentException(error.ToString());
 
-            var maybeBought = await userCoursesRepository.GetUserCourse(courseId, userId);
+            var maybeBought = await userCoursesRepository.GetUserCourse(courseId, guidUserId);
 
             if (maybeBought != null)
                 throw new InvalidOperationException(
@@ -282,7 +283,7 @@ namespace Application.Services
             {
                 UserProgressRequest newRequest = new UserProgressRequest
                 (
-                    userId,
+                    guidUserId,
                     courseId,
                     courseLessons[i].Id,
                     0
@@ -295,7 +296,7 @@ namespace Application.Services
             {
                 UserProgressRequest newRequest = new UserProgressRequest
                 (
-                    userId,
+                    guidUserId,
                     courseId,
                     courseQuizzes[i].Id,
                     1
@@ -311,7 +312,7 @@ namespace Application.Services
         public async Task<BasketCourses> AddToBasket(int courseId, string userId)
         {
             StringBuilder error = new StringBuilder();
-            if (userId == null || Guid.TryParse(userId, out var guidUserId))
+            if (userId == null || !Guid.TryParse(userId, out var guidUserId))
                 throw new ArgumentException("User Id has incorrect format");
             if (courseId < 0)
                 error.AppendLine("Wrong course id");
@@ -337,7 +338,7 @@ namespace Application.Services
         public async Task<BasketCourses> DeleteFromBasket(int courseId, string userId)
         {
             StringBuilder error = new StringBuilder();
-            if (userId == null || Guid.TryParse(userId, out var guidUserId))
+            if (userId == null || !Guid.TryParse(userId, out var guidUserId))
                 throw new ArgumentException("User Id has incorrect format");
             if (courseId < 0)
                 error.AppendLine("Wrong course id");
@@ -349,7 +350,7 @@ namespace Application.Services
 
         public async Task<List<BasketCourses>> GetBasketCourses(string userId)
         {
-            if (userId == null || Guid.TryParse(userId, out var guidUserId))
+            if (userId == null || !Guid.TryParse(userId, out var guidUserId))
                 throw new ArgumentException("User Id has incorrect format");
 
             return await basketRepository.GetBasketCourses(guidUserId);

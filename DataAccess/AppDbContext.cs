@@ -1,11 +1,13 @@
 ﻿using DataAccess.Configurations;
 using Domain.Entities;
+using Domain.Entities.Identity;
 using Microsoft.EntityFrameworkCore;
 
 namespace DataAccess
 {
     public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(options)
     {
+        public DbSet<ApplicationUser> Users=> Set<ApplicationUser>();
         public DbSet<Answer> Answers => Set<Answer>();
         public DbSet<Block> Blocks => Set<Block>();
         public DbSet<Course> Courses => Set<Course>();

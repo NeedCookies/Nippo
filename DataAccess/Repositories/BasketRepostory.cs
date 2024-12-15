@@ -6,12 +6,12 @@ namespace DataAccess.Repositories
 {
     public class BasketRepostory(AppDbContext dbContext) : IBasketRepository
     {
-        public async Task<BasketCourses> AddtoBasket(int courseId, string UserId)
+        public async Task<BasketCourses> AddtoBasket(int courseId, Guid userId)
         {
             var basketCourse = new BasketCourses()
             {
                 CourseId = courseId,
-                UserId = UserId
+                UserId = userId
             };
 
             await dbContext.BasketCourses.AddAsync(basketCourse);
@@ -20,17 +20,17 @@ namespace DataAccess.Repositories
             return basketCourse;
         }
 
-        public async Task<BasketCourses> DeleteFromBasket(int courseId, string UserId)
+        public async Task<BasketCourses> DeleteFromBasket(int courseId, Guid userId)
         {
             var deleteFromBasket = await dbContext.BasketCourses.
                 FirstOrDefaultAsync(
                 bc => bc.CourseId == courseId &&
-                bc.UserId == UserId);
+                bc.UserId == userId);
 
             if (deleteFromBasket == null)
             {
                 throw new NullReferenceException(
-                    $"No course in basket with id {courseId}");
+                    $"There's no course in basket with id {courseId}");
             }
 
             dbContext.BasketCourses.Remove(deleteFromBasket);
@@ -39,19 +39,15 @@ namespace DataAccess.Repositories
             return deleteFromBasket;
         }
 
-        public async Task<List<BasketCourses>> GetBasketCourses(string userId)
-        {
-            return await dbContext.BasketCourses.
-                Where(bc => bc.UserId == userId).
-                ToListAsync();
-        }
+        public async Task<List<BasketCourses>> GetBasketCourses(Guid userId) =>
+            await dbContext.BasketCourses
+                .Where(bc => bc.UserId == userId)
+                .ToListAsync();
 
-        public async Task<BasketCourses?> GetBasketCourse(int courseId, string userId)
-        {
-            return await dbContext.BasketCourses
+        public async Task<BasketCourses?> GetBasketCourse(int courseId, Guid userId) => 
+            await dbContext.BasketCourses
                 .Where(bc => bc.UserId == userId
                 && bc.CourseId == courseId)
                 .FirstOrDefaultAsync();
-        }
     }
 }

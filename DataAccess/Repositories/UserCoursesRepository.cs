@@ -69,7 +69,7 @@ namespace DataAccess.Repositories
             return coursesId;
         }
 
-        public async Task<bool> IsCoursePurchased(string userId, int courseId)
+        public async Task<bool> IsCoursePurchased(Guid userId, int courseId)
         {
             bool isPurchased = await appDbContext.UserCourses
                 .AnyAsync(uc =>

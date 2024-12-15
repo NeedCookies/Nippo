@@ -1,16 +1,11 @@
-﻿using Application.Contracts;
-using Domain.Entities;
-using Domain.Entities.Identity;
-using Microsoft.AspNetCore.Identity;
+﻿using Domain.Entities.Identity;
 
 namespace Application.Abstractions.Repositories
 {
     public interface IUserRolesRepository
     {
-        Task AssignRole(string userId, string roleId);
-        Task RemoveRole(string userId);
-        Task<IdentityUserRole<string>> GetByUserId(string userId);
-
-        Task<List<IdentityUserRole<string>>> GetUsersAndRoles();
+        Task AssignRole(Guid userId, AppRole role);
+        Task SetDefaultRole(Guid userId);
+        Task<AppRole> GetByUserId(Guid userId);
     }
 }

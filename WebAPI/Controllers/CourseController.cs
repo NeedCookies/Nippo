@@ -1,7 +1,6 @@
 ﻿using Application.Abstractions.Services;
 using Application.Contracts;
 using Application.Contracts.Operations;
-using Domain.Entities.Identity;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -140,7 +139,7 @@ namespace WebAPI.Controllers
         {
             UserProgressRequest request = new UserProgressRequest
                 (
-                GetUserId(),
+                Guid.Parse(GetUserId()),
                 courseId,
                 elementId,
                 elementType

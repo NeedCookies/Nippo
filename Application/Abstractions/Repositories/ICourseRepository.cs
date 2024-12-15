@@ -1,4 +1,5 @@
 using Domain.Entities;
+using Domain.Entities.Identity;
 
 namespace Application.Abstractions.Repositories
 {
@@ -10,7 +11,7 @@ namespace Application.Abstractions.Repositories
                 Task<Course> Update(int id, string title, string desc, decimal price, string imgPath);
                 Task<Course> Delete(int id);
                 Task<Course?> GetById(int id);
-                Task<string> GetAuthorById(int id);
+                Task<Guid> GetAuthorById(int id);
                 Task<List<Course>> GetCoursesByStatus(PublishStatus status);
                 Task<Course> ChangeStatus(int courseId, PublishStatus status);
                 /// <summary>
@@ -20,6 +21,6 @@ namespace Application.Abstractions.Repositories
                 /// <param name="courseId"></param>
                 /// <param name="userId"></param>
                 /// <returns></returns>
-                Task<ApplicationUser> PurchaseCourse(int courseId, string userId);
+                Task<List<Course>> PurchaseCourse(int courseId, Guid userId);
         }
 }
