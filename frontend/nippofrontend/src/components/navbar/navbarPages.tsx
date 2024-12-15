@@ -1,33 +1,35 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import Nav from "react-bootstrap/Nav";
+import { Link } from "react-router-dom";
+import "./navbar.css";
 
 function NavbarPages() {
   const [activeItem, setActiveItem] = useState("/course");
 
-  const handleSelect = (selectedKey) => {
+  const handleSelect = (selectedKey: string | null) => {
     if (selectedKey !== null) {
       setActiveItem(selectedKey);
     }
   };
 
+  const CustomNavLink : React.FC<{ to: string; children: React.ReactNode }> = ({ to, children }) => (
+    <Link to={to} className="custom-nav-link">
+      {children}
+    </Link>
+  );
+
   return (
-    <Nav.Item className="col-8">
-      <Nav variant="tabs" activeKey={activeItem} onSelect={handleSelect}>
-        <Nav.Item>
-          <Nav.Link href="/courses" eventKey="/courses">
-            Главная страница
-          </Nav.Link>
-        </Nav.Item>
-        <Nav.Item>
-          <Nav.Link href="/courses/liked" eventKey="/courses/liked">
-            Избранные курсы
-          </Nav.Link>
-        </Nav.Item>
-        <Nav.Item>
-          <Nav.Link eventKey="link-2">Корзина</Nav.Link>
-        </Nav.Item>
-      </Nav>
-    </Nav.Item>
+    <Nav variant="tabs" activeKey={activeItem} onSelect={handleSelect}>
+      <Nav.Item>
+        <CustomNavLink to="/courses">Главная страница</CustomNavLink>
+      </Nav.Item>
+      <Nav.Item>
+        <CustomNavLink to="/my-courses">Я прохожу</CustomNavLink>
+      </Nav.Item>
+      <Nav.Item>
+        <CustomNavLink to="/basket">Корзина</CustomNavLink>
+      </Nav.Item>
+    </Nav>
   );
 }
 

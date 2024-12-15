@@ -15,10 +15,14 @@ namespace DataAccess
         public DbSet<QuizResult> QuizResults => Set<QuizResult>();
         public DbSet<UserAnswer> UserAnswers => Set<UserAnswer>();
         public DbSet<UserCourses> UserCourses => Set<UserCourses>();
+        public DbSet<UserProgress> UserProgresses => Set<UserProgress>();
+        public DbSet<BasketCourses> BasketCourses => Set<BasketCourses>();
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            modelBuilder.ApplyConfiguration(new ApplicationUserConfiguration());
             modelBuilder.ApplyConfiguration(new AnswerEntityConfiguration());
+            modelBuilder.ApplyConfiguration(new BasketCourseConfiguration());
             modelBuilder.ApplyConfiguration(new BlockEntityConfiguration());
             modelBuilder.ApplyConfiguration(new CourseEntityConfiguration());
             modelBuilder.ApplyConfiguration(new LessonEntityConfiguration());
@@ -26,7 +30,8 @@ namespace DataAccess
             modelBuilder.ApplyConfiguration(new QuizEntityConfiguration());
             modelBuilder.ApplyConfiguration(new QuizResultEntityConfiguration());
             modelBuilder.ApplyConfiguration(new UserAnswerEntityConfiguration());
-            modelBuilder.ApplyConfiguration(new ApplicationUserConfiguration());
+            modelBuilder.ApplyConfiguration(new UserCoursesConfiguration());
+            modelBuilder.ApplyConfiguration(new UserProgressEntityConfiguration());
 
             base.OnModelCreating(modelBuilder);
         }

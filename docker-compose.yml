@@ -10,14 +10,99 @@ services:
       - ASPNETCORE_ENVIRONMENT=Development
     depends_on:
       - database
+      - minio 
+      - redis
+      - seq
+      - rabbitmq
+  
+
+  notification-service:
+    build:
+      context: "."
+      dockerfile: "./NotificationService/Dockerfile"
+    ports:
+      - "5000:5000"
+      - "5001:5001"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+    depends_on:
+      - rabbitmq
+
 
   database:
     container_name: postgres
     image: postgres
-    restart: always
     environment:
       POSTGRES_DB: nippo
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: admin
     ports:
       - 5435:5432
+    volumes:
+      - db-data:/var/lib/postgresql/data
+  
+
+  minio:
+    image: minio/minio:latest
+    command: server --console-address ":9001" /data/
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    environment:
+      MINIO_ROOT_USER: rootUser
+      MINIO_ROOT_PASSWORD: rootPassword
+      MINIO_BROWSER_REDIRECT_URL: http://localhost/minio-console/
+    volumes:
+      - minio-storage:/data
+
+
+  redis:
+    image: redis:alpine
+    container_name: redis
+    volumes:
+      - redis-data:/data
+    restart: always
+    ports:
+      - "6379:6379"
+
+
+  proxy:
+    image: nginx:latest
+    volumes:
+      - ./Nginx/nginx.conf:/etc/nginx/nginx.conf
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+  
+
+  seq:
+    image: datalust/seq:latest
+    container_name: seq
+    environment:
+      - ACCEPT_EULA=Y
+    ports:
+      - 5341:5341
+      - 5340:80
+    volumes:
+      - seq-data:/data
+  
+
+  rabbitmq:
+    image: rabbitmq:management
+    container_name: rabbitmq
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+    ports:
+      - 15672:15672
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq 
+    
+
+volumes:
+  redis-data:
+  seq-data:
+  minio-storage:
+  db-data:
+  rabbitmq_data:  

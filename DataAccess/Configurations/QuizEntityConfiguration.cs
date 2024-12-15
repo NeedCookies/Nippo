@@ -1,6 +1,7 @@
 ﻿using Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using System.Reflection.Emit;
 
 namespace DataAccess.Configurations
 {
@@ -15,6 +16,10 @@ namespace DataAccess.Configurations
             builder.HasOne(q => q.Course)
                 .WithMany(c => c.Quizes)
                 .HasForeignKey(q => q.CourseId);
+
+            //builder.HasMany(q => q.UserProgresses)
+            //    .WithOne()
+            //    .HasForeignKey(up => up.ElementId);
         }
     }
 }

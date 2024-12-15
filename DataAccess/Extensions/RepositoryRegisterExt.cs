@@ -8,11 +8,20 @@ namespace DataAccess.Extensions
     {
         public static IServiceCollection AddAppRepositories(this IServiceCollection services)
         {
+            services.AddScoped<IAnswerRepository, AnswerRepository>();
+            services.AddScoped<IBasketRepository, BasketRepostory>();
             services.AddScoped<ICourseRepository, CourseRepository>();
             services.AddScoped<ILessonRepository, LessonRepository>();
             services.AddScoped<IBlockRepository, BlockRepository>();
+            services.AddScoped<IQuizRepository, QuizRepository>();
+            services.AddScoped<IQuestionRepository, QuestionRepository>();
+            services.AddScoped<IQuizResultRepository, QuizResultRepository>();
+            services.AddScoped<IUserAnswerRepository, UserAnswerRepository>();
+            services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<IUserCoursesRepository, UserCoursesRepository>();
             services.AddScoped<IUnitOfWork, UnitOfWork>();
+            services.AddScoped<IUserRolesRepository, UserRolesRepository>();
+            services.AddScoped<IUserProgressRepository, UserProgressRepository>();
 
             return services;
         }

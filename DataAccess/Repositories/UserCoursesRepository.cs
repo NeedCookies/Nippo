@@ -47,6 +47,14 @@ namespace DataAccess.Repositories
             return usersId;
         }
 
+        public async Task<UserCourses?> GetUserCourse(int courseId, Guid userId)
+        {
+            return await appDbContext.UserCourses
+                .Where(uc => uc.CourseId == courseId &&
+                uc.UserId == userId)
+                .FirstOrDefaultAsync();
+        }
+
         public async Task<List<int>> GetUserCourses(Guid userId)
         {
             List<int> coursesId = new List<int>();
@@ -59,6 +67,16 @@ namespace DataAccess.Repositories
                 coursesId.Add(userCourse.CourseId);
 
             return coursesId;
+        }
+
+        public async Task<bool> IsCoursePurchased(string userId, int courseId)
+        {
+            bool isPurchased = await appDbContext.UserCourses
+                .AnyAsync(uc =>
+                uc.UserId == userId &&
+                uc.CourseId == courseId);
+
+            return isPurchased;
         }
     }
 }

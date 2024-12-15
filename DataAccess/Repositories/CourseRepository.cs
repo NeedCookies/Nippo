@@ -5,13 +5,17 @@ using Microsoft.EntityFrameworkCore;
 
 namespace DataAccess.Repositories
 {
-    public class CourseRepository(AppDbContext appDbContext /*IUserRepository userRepository*/) : ICourseRepository
+    public class CourseRepository(
+        AppDbContext appDbContext,
+        IUserRepository userRepository,
+        IUserCoursesRepository userCoursesRepository) : ICourseRepository
     {
         private readonly AppDbContext _appDbContext = appDbContext;
-        public async Task<List<Course>> GetAllCourses()
-        {
-            return await _appDbContext.Courses.ToListAsync();
-        }
+
+        public async Task<List<Course>> GetAllCourses() =>
+            await _appDbContext.Courses.AsNoTracking()
+                .Where(c => c.Status == (int)PublishStatus.Publish)
+                .ToListAsync();
 
         public async Task<Course> Create(string title, string desc, decimal price, string imgPath, Guid authorId)
         {
@@ -21,7 +25,8 @@ namespace DataAccess.Repositories
                 Description = desc,
                 Price = price,
                 AuthorId = authorId,
-                ImgPath = imgPath
+                ImgPath = imgPath,
+                Status = 0
             };
 
             await _appDbContext.Courses.AddAsync(course);
@@ -49,48 +54,61 @@ namespace DataAccess.Repositories
         {
             var course = await _appDbContext.Courses.FindAsync(courseId);
 
-            if(course != null)
+            if (course == null)
             {
-                _appDbContext.Courses.Remove(course);
-                await _appDbContext.SaveChangesAsync();
+                throw new NullReferenceException($"No course with id {courseId}");
             }
+
+            _appDbContext.Courses.Remove(course);
+            await _appDbContext.SaveChangesAsync();
 
             return course;
         }
 
-        public Task<List<Course>> GetCoursesByAuthorAsync(Guid authorId)
+        public Task<List<Course>> GetCoursesByAuthorAsync(Guid authorId) =>
+            await _appDbContext.Courses
+            .Where(c => c.AuthorId == authorId)
+            .ToListAsync();
+
+        public async Task<Course?> GetById(int id) =>
+            await _appDbContext.Courses
+            .FindAsync(id);
+
+        public async Task<string> GetAuthorById(int id)
         {
-            throw new NotImplementedException();
+            var course = await _appDbContext.Courses
+                .FirstOrDefaultAsync(c => c.Id == id);
+
+            if (course == null)
+                throw new NullReferenceException($"No course with id: {id}");
+
+            return course.AuthorId;
         }
 
-        public async Task<Course?> GetById(int id)
-        {
-            return await _appDbContext.Courses.FindAsync(id);
-        }
 
-        public async Task<ApplicationUser> PurchaseCourse(int courseId, string userId)
+        public async Task<List<Course>> GetCoursesByStatus(PublishStatus status) =>
+            await _appDbContext.Courses.Where(c => c.Status == (int)status).ToListAsync();
+
+        public async Task<Course> ChangeStatus(int courseId, PublishStatus status)
+        {
+            var course = await _appDbContext.Courses.Include(c => c.Author)
+                .FirstOrDefaultAsync(c => c.Id == courseId);
+
+        public async Task<ApplicationUser> PurchaseCourse(int courseId, Guid userId)
         {
             var user = new ApplicationUser();
             //await userRepository.GetByUserId(userId);
             Course course = await _appDbContext.Courses.FirstOrDefaultAsync(u => u.Id == courseId);
             decimal coursePrice = course.Price;
+            if (course == null)
+                return null;
 
-            if (coursePrice > user.Points)
-            {
-                throw new Exception("Not enough money");
-            }
+            course.Status = (int)status;
 
-            user.Points -= (int)coursePrice;
-
-            if (user.Courses == null)
-            {
-                user.Courses = new List<Course>();
-            }
-
-            user.Courses.Add(course);
+            _appDbContext.Courses.Update(course);
             await _appDbContext.SaveChangesAsync();
 
-            return user;
+            return course;
         }
     }
 }

@@ -10,10 +10,11 @@ namespace WebAPI.Controllers
     [Route("lesson")]
     public class LessonController(ILessonsService lessonsService) : ControllerBase
     {
-        [HttpGet("get-lessons-by-course")]
+        [HttpGet("get-by-course")]
         public async Task<IActionResult> GetLessonsByCourse(int courseId)
         {
-            var lessons = await lessonsService.GetByCourseId(courseId);
+            var lessons = await lessonsService.GetByCourseId(courseId, GetUserId());
+
             return Ok(lessons);
         }
 
@@ -25,5 +26,34 @@ namespace WebAPI.Controllers
 
             return Ok(lesson);
         }
+
+        [Authorize(Policy = "UpdateCourse")]
+        [HttpPost("update")]
+        public async Task<IActionResult> Update(int lessonId, string title)
+        {
+            var lesson = await lessonsService.Update(lessonId, title);
+
+            return Ok(lesson);
+        }
+
+        [Authorize(Policy = "UpdateCourse")]
+        [HttpDelete("delete")]
+        public async Task<IActionResult> Delete(int lessonId)
+        {
+            var lesson = await lessonsService.Delete(lessonId);
+
+            return Ok(lesson);
+        }
+
+        [HttpGet("get-by-id")]
+        public async Task<IActionResult> GetLessonById(int id)
+        {
+            var lesson = await lessonsService.GetById(id, GetUserId());
+
+            return Ok(lesson);
+        }
+
+        private string GetUserId() =>
+            HttpContext.User.FindFirst("userId")!.Value;
     }
 }

@@ -11,6 +11,13 @@ namespace Application.Extensions
             services.AddScoped<ICoursesService, CoursesService>();
             services.AddScoped<ILessonsService, LessonsService>();
             services.AddScoped<IBlockService, BlockService>();
+            services.AddScoped<IQuizService, QuizService>();
+            services.AddScoped<IQuestionService, QuestionService>();
+            services.AddScoped<IAnswerService, AnswerService>();
+            services.AddScoped<IUserService, UserService>();
+            services.AddScoped<IUserAnswerService, UserAnswerService>();
+            services.AddScoped<IQuizResultService, QuizResultService>();
+            services.AddScoped<IUserProgressService, UserProgressService>();
             return services;
         }
     }

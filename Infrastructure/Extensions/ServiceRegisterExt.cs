@@ -14,6 +14,9 @@ namespace Infrastructure.Extensions
             services.AddScoped<IAuthServiceHttp, AuthServiceHttp>();
             services.AddSingleton<IAuthorizationHandler, PermissionAuthorizationHandler>();
             services.AddSingleton<IAuthorizationHandler, RoleAuthorizationHandler>();
+            services.AddScoped<IStorageService, MinIOStorageService>();
+            services.AddScoped<IDiscountService, DiscountService>();
+
             return services;
         }
     }

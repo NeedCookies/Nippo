@@ -3,7 +3,6 @@
     public record CreateLessonRequest
         (
         int CourseId,
-        string Title,
-        string AuthorId
+        string Title
         );
 }
