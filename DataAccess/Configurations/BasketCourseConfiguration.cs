@@ -4,6 +4,11 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace DataAccess.Configurations
 {
+    /// <summary>
+    /// Represents course which user added to basket
+    /// Middle table in many to many relationshib
+    /// between users and their courses in basket
+    /// </summary>
     public class BasketCourseConfiguration :
         IEntityTypeConfiguration<BasketCourses>
     {
