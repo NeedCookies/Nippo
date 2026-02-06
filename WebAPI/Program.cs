@@ -7,7 +7,7 @@ using WebAPI.Extensions;
 using Infrastructure.Options;
 using WebAPI.Middlewares;
 using Serilog;
-using MassTransit;
+using Microsoft.AspNetCore.HttpOverrides;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -56,9 +56,12 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.UseCors("Frontend");
+app.UseForwardedHeaders(new ForwardedHeadersOptions
+{
+    ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
+});
 
-app.UseHttpsRedirection();
+app.UseCors("Proxy");
 
 app.UseSerilogRequestLogging();
 

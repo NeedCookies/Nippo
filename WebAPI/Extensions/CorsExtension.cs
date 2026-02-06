@@ -6,10 +6,10 @@
         {
             serviceCollection.AddCors(options =>
             {
-                options.AddPolicy(name: "Frontend",
+                options.AddPolicy(name: "Proxy",
                     policy =>
                     {
-                        policy.WithOrigins("http://localhost:5173")
+                        policy.WithOrigins("http://localhost")
                             .AllowAnyHeader()
                             .AllowAnyMethod()
                             .AllowCredentials();
